@@ -85,6 +85,7 @@ export async function seedMager() {
 	const [user] = await db.insert(users).values({
 		username: 'mager',
 		displayName: 'Mager',
+		email: 'andrew.mager@gmail.com',
 		bio: 'Building things that matter. Based in Chicago.',
 		verified: true,
 		topics: ['coding', 'music', 'Chicago']
