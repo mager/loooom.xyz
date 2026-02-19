@@ -54,9 +54,9 @@
 	}
 	.logo-mark { font-size: 1.5rem; color: var(--accent); }
 	.logo-text {
-		font-family: var(--font-mono);
+		font-family: var(--font-handwriting);
 		font-size: 1.25rem;
-		font-weight: 700;
+		font-weight: 200;
 	}
 	.login-card {
 		width: 100%;
@@ -96,7 +96,7 @@
 		border: 1px solid var(--border);
 		border-radius: var(--radius-md);
 		color: var(--text-primary);
-		font-family: var(--font-mono);
+		font-family: var(--font-handwriting);
 		font-size: 1rem;
 		outline: none;
 		transition: border-color 0.2s;

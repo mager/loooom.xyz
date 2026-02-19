@@ -257,7 +257,8 @@
 	.logo:hover { color: var(--text-primary); }
 	.logo-text {
 		font-family: var(--font-handwriting);
-		font-size: 1.4rem;
+		font-size: 1.3rem;
+		font-weight: 200;
 		letter-spacing: 0.01em;
 	}
 	.nav-links {
@@ -289,14 +290,14 @@
 	/* ===== Handwriting ===== */
 	.handwriting {
 		font-family: var(--font-handwriting);
-		font-weight: 400;
+		font-weight: 300;
 	}
 	.handwriting.accent {
 		color: var(--accent);
 	}
 	.sketch {
 		font-family: var(--font-sketch);
-		font-weight: 700;
+		font-weight: 400;
 		color: var(--yarn-pink);
 	}
 	.marker {
@@ -335,8 +336,8 @@
 		align-items: center;
 	}
 	h1 {
-		font-size: clamp(2.8rem, 5.5vw, 4.5rem);
-		line-height: 1.15;
+		font-size: clamp(2.2rem, 4.5vw, 3.5rem);
+		line-height: 1.3;
 		margin-bottom: 1.5rem;
 	}
 	.hero-sub {
@@ -412,7 +413,7 @@
 		color: var(--yarn-green);
 		font-weight: 500;
 	}
-	.success-check { font-size: 1.2rem; font-weight: 700; }
+	.success-check { font-size: 1.2rem; font-weight: 400; }
 	.hero-visual {
 		display: flex;
 		align-items: center;
@@ -491,7 +492,7 @@
 	}
 	.case-arrow {
 		color: var(--accent);
-		font-weight: 700;
+		font-weight: 400;
 	}
 	.case-what {
 		font-family: var(--font-sketch);

@@ -116,9 +116,9 @@
 	.logo:hover { color: var(--text-primary); }
 	.logo-mark { font-size: 1.5rem; color: var(--accent); }
 	.logo-text {
-		font-family: var(--font-mono);
+		font-family: var(--font-handwriting);
 		font-size: 1.25rem;
-		font-weight: 700;
+		font-weight: 200;
 		letter-spacing: -0.02em;
 	}
 
@@ -154,7 +154,7 @@
 	.handwriting {
 		font-family: var(--font-handwriting);
 		font-size: 3rem;
-		font-weight: 700;
+		font-weight: 200;
 		background: var(--gradient-hero);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
@@ -197,7 +197,7 @@
 		text-transform: uppercase;
 		letter-spacing: 0.08em;
 		color: var(--text-muted);
-		font-family: var(--font-mono);
+		font-family: var(--font-handwriting);
 	}
 
 	input {

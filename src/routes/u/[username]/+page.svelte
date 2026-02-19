@@ -293,22 +293,21 @@
 	.intro { margin-bottom: 1.5rem; }
 	.handwriting {
 		font-family: var(--font-handwriting);
-		font-size: clamp(2.5rem, 5vw, 4rem);
-		font-weight: 700;
-		line-height: 1.2;
+		font-size: clamp(2rem, 4vw, 3rem);
+		font-weight: 300;
+		line-height: 1.4;
 		color: var(--text-primary);
-		letter-spacing: -0.01em;
 	}
 	.writes {
-		font-weight: 500;
+		font-weight: 200;
 		color: var(--text-secondary);
 	}
 	.topics {
 		display: inline;
 		font-family: var(--font-handwriting);
-		font-size: clamp(2.5rem, 5vw, 4rem);
-		font-weight: 700;
-		line-height: 1.3;
+		font-size: clamp(2rem, 4vw, 3rem);
+		font-weight: 300;
+		line-height: 1.5;
 	}
 	.topic {
 		color: var(--text-primary);
