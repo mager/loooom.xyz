@@ -337,13 +337,13 @@
 	}
 	h1 {
 		font-size: clamp(2.2rem, 4.5vw, 3.5rem);
-		line-height: 1.3;
+		line-height: 1.1;
 		margin-bottom: 1.5rem;
 	}
 	.hero-sub {
 		font-size: 1.15rem;
 		color: var(--text-secondary);
-		line-height: 1.7;
+		line-height: 1.45;
 		max-width: 520px;
 		margin-bottom: 2rem;
 	}
@@ -450,7 +450,7 @@
 	}
 	.vision-card p {
 		font-size: 1.05rem;
-		line-height: 1.7;
+		line-height: 1.45;
 		color: var(--text-secondary);
 	}
 
@@ -560,7 +560,7 @@
 	.principle p {
 		font-size: 0.95rem;
 		color: var(--text-secondary);
-		line-height: 1.6;
+		line-height: 1.45;
 	}
 
 	/* ===== Footer ===== */

@@ -295,7 +295,7 @@
 		font-family: var(--font-handwriting);
 		font-size: clamp(2rem, 4vw, 3rem);
 		font-weight: 300;
-		line-height: 1.4;
+		line-height: 1.15;
 		color: var(--text-primary);
 	}
 	.writes {
@@ -307,7 +307,7 @@
 		font-family: var(--font-handwriting);
 		font-size: clamp(2rem, 4vw, 3rem);
 		font-weight: 300;
-		line-height: 1.5;
+		line-height: 1.25;
 	}
 	.topic {
 		color: var(--text-primary);
@@ -328,7 +328,7 @@
 		font-size: 1.1rem;
 		color: var(--text-secondary);
 		margin-bottom: 1.5rem;
-		line-height: 1.6;
+		line-height: 1.4;
 	}
 	.meta {
 		display: flex;
@@ -454,7 +454,7 @@
 	.skill-desc {
 		font-size: 0.85rem;
 		color: var(--text-secondary);
-		line-height: 1.5;
+		line-height: 1.25;
 		margin-bottom: 0.75rem;
 	}
 	.skill-card-bottom {
@@ -568,7 +568,7 @@
 		padding: 1.5rem;
 		font-family: var(--font-mono);
 		font-size: 0.82rem;
-		line-height: 1.7;
+		line-height: 1.5;
 		color: var(--text-secondary);
 		overflow-x: auto;
 		margin: 0;
