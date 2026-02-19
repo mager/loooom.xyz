@@ -8,11 +8,11 @@
 	let submitted = $state(false);
 
 	const useCases = [
-		{ who: 'Dave Grohl', what: 'drumming techniques & songwriting' },
 		{ who: 'A pastry chef', what: 'sourdough starters & lamination' },
 		{ who: 'Your favorite professor', what: 'research methodology' },
 		{ who: 'A manga artist', what: 'panel composition & storytelling' },
-		{ who: 'A startup founder', what: 'pitch decks & fundraising' },
+		{ who: 'Anthropic', what: 'prompt engineering & agent design' },
+		{ who: 'MIT OpenCourseWare', what: 'physics & computer science' },
 		{ who: 'An herbalist', what: 'plant medicine & tinctures' },
 	];
 
@@ -191,7 +191,7 @@
 		</div>
 	</div>
 	<div class="footer-bottom">
-		<span>© 2026 Loooom. Skills are free. Authors are supported.</span>
+		<span>A weeknight project by <a href="https://x.com/maboroshi" target="_blank" rel="noopener">@mager</a> & <a href="https://x.com/maboroshi" target="_blank" rel="noopener">@magerbot</a>. Woven with late nights & good taste.</span>
 	</div>
 </footer>
 
