@@ -190,7 +190,7 @@
 		</div>
 	</div>
 	<div class="footer-bottom">
-		<span>A weeknight project by <a href="https://x.com/mager" target="_blank" rel="noopener">@mager</a> & <a href="https://x.com/mager" target="_blank" rel="noopener">@magerbot</a>. Woven with late nights & good taste.</span>
+		<span>A weeknight project by <a href="https://x.com/mager" target="_blank" rel="noopener">@mager</a> & <a href="https://x.com/mager" target="_blank" rel="noopener">@magerbot</a>. Woven in Chicago. Never stop learning.</span>
 	</div>
 </footer>
 
