@@ -48,7 +48,7 @@
 			{/if}
 			<ThemeToggle />
 			{#if data?.user}
-				<a href="/u/{data.user.username}" class="btn-nav">{data.user.displayName}</a>
+				<a href="/dashboard" class="btn-nav">{data.user.displayName}</a>
 			{:else}
 				<a href="/login" class="btn-nav">Sign In</a>
 			{/if}
