@@ -177,7 +177,6 @@
 				<h4>Product</h4>
 				<a href="#vision">About</a>
 				<a href="#explore">Explore</a>
-				<a href="/startweaving">Start Weaving</a>
 			</div>
 			<div class="footer-col">
 				<h4>Open Source</h4>
