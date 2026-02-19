@@ -1,5 +1,9 @@
 <script lang="ts">
 	import YarnBall from '$lib/components/YarnBall.svelte';
+	import { enhance } from '$app/forms';
+
+	let { form } = $props();
+	let submitted = $state(false);
 
 	const features = [
 		{
@@ -85,13 +89,32 @@
 				from verified authors. Craft your own. Share with the world.
 			</p>
 			<div class="hero-actions">
-				<button class="btn-primary">
-					Join the Waitlist
-					<span class="btn-arrow">→</span>
-				</button>
-				<button class="btn-secondary">
-					Browse Skills
-				</button>
+				{#if submitted || form?.success}
+					<div class="waitlist-success">
+						<span class="success-check">✓</span>
+						You're on the list. We'll be in touch.
+					</div>
+				{:else}
+					<form method="POST" action="?/waitlist" use:enhance={() => {
+						return async ({ update }) => {
+							await update();
+							if (form?.success) submitted = true;
+							submitted = true;
+						};
+					}} class="waitlist-form">
+						<input
+							type="email"
+							name="email"
+							placeholder="your@email.com"
+							required
+							class="waitlist-input"
+						/>
+						<button type="submit" class="btn-primary">
+							Join Waitlist
+							<span class="btn-arrow">→</span>
+						</button>
+					</form>
+				{/if}
 			</div>
 			<div class="hero-stats">
 				<div class="stat">
@@ -185,10 +208,6 @@
 		</div>
 		<div class="explore-cta">
 			<p>Hundreds of skills from verified authors — launching soon.</p>
-			<button class="btn-primary">
-				Join the Waitlist
-				<span class="btn-arrow">→</span>
-			</button>
 		</div>
 	</div>
 </section>
@@ -425,6 +444,45 @@
 	}
 	.btn-primary:hover .btn-arrow {
 		transform: translateX(3px);
+	}
+	.waitlist-form {
+		display: flex;
+		gap: 0.5rem;
+		width: 100%;
+		max-width: 480px;
+	}
+	.waitlist-input {
+		flex: 1;
+		padding: 0.875rem 1.25rem;
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		color: var(--text-primary);
+		font-family: var(--font-display);
+		font-size: 1rem;
+		outline: none;
+		transition: border-color 0.2s;
+	}
+	.waitlist-input::placeholder {
+		color: var(--text-muted);
+	}
+	.waitlist-input:focus {
+		border-color: var(--accent);
+	}
+	.waitlist-success {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 1rem 1.5rem;
+		background: rgba(85, 239, 196, 0.1);
+		border: 1px solid rgba(85, 239, 196, 0.3);
+		border-radius: var(--radius-md);
+		color: var(--yarn-green);
+		font-weight: 500;
+	}
+	.success-check {
+		font-size: 1.2rem;
+		font-weight: 700;
 	}
 	.btn-secondary {
 		padding: 0.875rem 2rem;
