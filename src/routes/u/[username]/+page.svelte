@@ -58,7 +58,9 @@
 					{data.user.displayName[0]}
 				{/if}
 			</div>
-			{#if data.user.verified}
+			{#if data.user.username === 'loooom'}
+				<div class="creator-badge" title="Loooom Community">🧶</div>
+			{:else if data.user.verified}
 				<div class="verified-badge" title="Verified">✓</div>
 			{/if}
 		</div>
@@ -298,6 +300,20 @@
 		align-items: center;
 		justify-content: center;
 		border: 3px solid var(--bg-primary);
+	}
+	.creator-badge {
+		position: absolute;
+		bottom: -2px;
+		right: -2px;
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		background: var(--bg-primary);
+		font-size: 1.1rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border: 2px solid var(--border);
 	}
 
 	.intro { margin-bottom: 1.5rem; }
