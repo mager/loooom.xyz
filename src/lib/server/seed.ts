@@ -115,3 +115,142 @@ export async function seedMager() {
 
 	return { message: 'seeded mager + frontend-design skill', userId: user.id, skillId: skill.id };
 }
+
+const PLATO_SKILL = `---
+name: socratic-questioning
+description: The Socratic method for getting to the truth of any matter
+author: loooom (as Plato)
+version: 1.0.0
+---
+
+# Socratic Questioning
+
+*A skill inspired by Plato's dialogues. This is a historical/fictional skill created by the Loooom community for educational purposes.*
+
+## The Method
+
+Never give answers. Only ask questions. The goal is not to teach — it is to help someone discover what they already know but haven't yet examined.
+
+## Core Principles
+
+1. **Start with what they claim to know.** "You say you know what justice is. Tell me — what is it?"
+2. **Find the contradiction.** Every unexamined belief contains one. Your job is to surface it gently.
+3. **Use their own words against comfort.** Not cruelly — lovingly. "But didn't you just say...?"
+4. **Admit your own ignorance.** "I myself don't know. That's why I'm asking you."
+5. **Never humiliate.** The point is awakening, not winning.
+
+## When to Use This
+
+- Coaching or mentoring conversations
+- Helping someone think through a decision
+- Teaching critical thinking
+- Breaking someone out of an assumption loop
+- Therapy-adjacent dialogue
+
+## The Questions
+
+- What do you mean by that?
+- How do you know this to be true?
+- What would change your mind?
+- Can you give me an example?
+- What would someone who disagrees say?
+- Is there another way to look at this?
+`;
+
+const LINCOLN_SKILL = `---
+name: persuasive-speechwriting
+description: Writing speeches that move people to action
+author: loooom (as Abraham Lincoln)
+version: 1.0.0
+---
+
+# Persuasive Speechwriting
+
+*A skill inspired by Abraham Lincoln's rhetoric. This is a historical/fictional skill created by the Loooom community for educational purposes.*
+
+## The Gettysburg Principle
+
+Say less. The Gettysburg Address was 272 words. Edward Everett spoke for two hours before Lincoln and nobody remembers a word. Brevity is conviction.
+
+## Core Techniques
+
+### 1. Start with shared ground
+"Four score and seven years ago" — begin with something everyone already agrees on. Common ground is the foundation of persuasion.
+
+### 2. Elevate the stakes
+Connect the immediate situation to something universal — freedom, justice, legacy, the future. People act on big ideas, not small grievances.
+
+### 3. Use the rule of threes
+"Of the people, by the people, for the people." Three beats. Always three. It's the rhythm of conviction.
+
+### 4. Make it personal, then universal
+Start with "I" or a specific story, then zoom out to "we" and "our." The personal grounds the universal.
+
+### 5. End with a call forward
+Don't end with summary. End with what comes next. Give people something to DO, not just something to feel.
+
+## Structure
+
+1. Common ground (we all agree that...)
+2. The tension (but here's what's at stake...)
+3. The vision (imagine if we...)
+4. The call (so let us...)
+`;
+
+export async function seedLoooom() {
+	const existing = await db.select().from(users).where(eq(users.username, 'loooom'));
+	if (existing.length > 0) {
+		return { message: 'loooom already exists', userId: existing[0].id };
+	}
+
+	const [user] = await db.insert(users).values({
+		username: 'loooom',
+		displayName: 'Loooom',
+		email: 'hello@loooom.xyz',
+		bio: 'The official Loooom community account. We create historical & fictional skills to showcase what\'s possible. Donations to these skills support the Loooom community.',
+		verified: true,
+		topics: ['history', 'philosophy', 'writing', 'community']
+	}).returning();
+
+	// Plato
+	const [platoSkill] = await db.insert(skills).values({
+		authorId: user.id,
+		name: 'socratic-questioning',
+		title: 'Socratic Questioning',
+		description: 'The Socratic method for getting to the truth of any matter. Inspired by Plato\'s dialogues.',
+		category: 'Education',
+		currentVersion: '1.0.0',
+		isPublished: true,
+		installs: 0
+	}).returning();
+
+	const platoHash = 'sha256:' + createHash('sha256').update(PLATO_SKILL).digest('hex').slice(0, 12);
+	await db.insert(skillVersions).values({
+		skillId: platoSkill.id,
+		version: '1.0.0',
+		contentHash: platoHash,
+		files: [{ name: 'SKILL.md', content: PLATO_SKILL }]
+	});
+
+	// Lincoln
+	const [lincolnSkill] = await db.insert(skills).values({
+		authorId: user.id,
+		name: 'persuasive-speechwriting',
+		title: 'Persuasive Speechwriting',
+		description: 'Writing speeches that move people to action. Inspired by Abraham Lincoln\'s rhetoric.',
+		category: 'Writing',
+		currentVersion: '1.0.0',
+		isPublished: true,
+		installs: 0
+	}).returning();
+
+	const lincolnHash = 'sha256:' + createHash('sha256').update(LINCOLN_SKILL).digest('hex').slice(0, 12);
+	await db.insert(skillVersions).values({
+		skillId: lincolnSkill.id,
+		version: '1.0.0',
+		contentHash: lincolnHash,
+		files: [{ name: 'SKILL.md', content: LINCOLN_SKILL }]
+	});
+
+	return { message: 'seeded loooom + plato + lincoln skills', userId: user.id };
+}

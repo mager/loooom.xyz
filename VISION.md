@@ -31,5 +31,11 @@ The heart of Loooom. Big handwriting font: "Mager writes skills about **coding**
 - Vercel
 - Twitter/X OAuth 2.0
 
+## The "loooom" Creator Account
+The official community account creates historical & fictional skills — Plato's Socratic method, Lincoln's speechwriting, da Vinci's observation techniques. These are clearly disclaimed as inspired/educational, not endorsed. Donations to these skills fund the Loooom community and platform development.
+
+## Community
+Loooom is a grassroots, community-driven project. Open source (github.com/mager/loooom.xyz). Skills are always free. Authors can receive donations but never charge. The community decides what's valuable by installing, reviewing, and tipping.
+
 ## Name
 Loooom. Four o's. Like extra yarn on the spool. Domain: loooom.xyz.
