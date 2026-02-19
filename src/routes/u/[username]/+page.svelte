@@ -52,7 +52,11 @@
 	<div class="profile-inner">
 		<div class="avatar-ring">
 			<div class="avatar">
-				{data.user.displayName[0]}
+				{#if data.user.avatarUrl}
+					<img src={data.user.avatarUrl} alt={data.user.displayName} />
+				{:else}
+					{data.user.displayName[0]}
+				{/if}
 			</div>
 			{#if data.user.verified}
 				<div class="verified-badge" title="Verified">✓</div>
@@ -269,9 +273,15 @@
 		justify-content: center;
 		font-family: var(--font-serif);
 		font-size: 2.5rem;
-		font-weight: 700;
+		font-weight: 400;
 		color: white;
 		box-shadow: 0 0 0 3px var(--bg-primary), 0 0 0 5px var(--accent);
+		overflow: hidden;
+	}
+	.avatar img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
 	}
 	.verified-badge {
 		position: absolute;
