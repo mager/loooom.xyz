@@ -24,6 +24,7 @@ export const actions: Actions = {
 			await db.insert(users).values({
 				username,
 				displayName,
+				email,
 				bio: '',
 				verified: false,
 				topics: []
