@@ -218,7 +218,7 @@
 	.logo:hover { color: var(--text-primary); }
 	.logo-mark { font-size: 1.5rem; color: var(--accent); }
 	.logo-text {
-		font-family: var(--font-mono);
+		font-family: var(--font-handwriting);
 		font-size: 1.25rem;
 		font-weight: 700;
 		letter-spacing: -0.02em;

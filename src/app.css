@@ -1,8 +1,9 @@
 :root {
 	--font-display: 'Outfit', sans-serif;
 	--font-mono: 'Space Mono', monospace;
-	--font-handwriting: 'Caveat', cursive;
-	--font-serif: 'Playfair Display', serif;
+	--font-handwriting: 'Architects Daughter', cursive;
+	--font-sketch: 'Gaegu', cursive;
+	--font-serif: 'Caveat', cursive;
 	--radius-sm: 8px;
 	--radius-md: 12px;
 	--radius-lg: 20px;
