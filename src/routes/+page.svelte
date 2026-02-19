@@ -24,7 +24,7 @@
 
 <svelte:head>
 	<title>Loooom — Where Skills Are Woven</title>
-	<meta name="description" content="A social skills marketplace. Share what you know. Use what inspires you. Skills are always free." />
+	<meta name="description" content="A social skills marketplace. Everyone has something worth teaching. Skills are always free." />
 </svelte:head>
 
 <!-- Ambient background -->
@@ -54,9 +54,9 @@
 	<div class="hero-content">
 		<div class="hero-text">
 			<h1>
-				<span class="handwriting">Share what you know.</span>
+				<span class="handwriting">Everyone has something</span>
 				<br />
-				<span class="handwriting accent">Use what inspires you.</span>
+				<span class="handwriting accent">worth teaching.</span>
 			</h1>
 			<p class="hero-sub">
 				Loooom is where people share skills — the things they're actually good at — 
