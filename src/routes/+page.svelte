@@ -24,7 +24,7 @@
 
 <svelte:head>
 	<title>Loooom — Where Skills Are Woven</title>
-	<meta name="description" content="A social skills marketplace. Share what you know. Install what you need. Skills are always free." />
+	<meta name="description" content="A social skills marketplace. Share what you know. Use what inspires you. Skills are always free." />
 </svelte:head>
 
 <!-- Ambient background -->
@@ -56,7 +56,7 @@
 			<h1>
 				<span class="handwriting">Share what you know.</span>
 				<br />
-				<span class="handwriting accent">Install what you need.</span>
+				<span class="handwriting accent">Use what inspires you.</span>
 			</h1>
 			<p class="hero-sub">
 				Loooom is where people share skills — the things they're actually good at — 
@@ -107,7 +107,7 @@
 				<p>Imagine Dave Grohl sharing a skill for <span class="marker pink">drumming fills</span> and another for <span class="marker blue">writing lyrics from the gut</span>. A pastry chef sharing her <span class="marker orange">sourdough method</span>. Your favorite professor packaging their <span class="marker green">research framework</span>.</p>
 			</div>
 			<div class="vision-card">
-				<p>That's Loooom. A place where knowledge lives as <span class="marker pink">installable skills</span> — not locked in books or buried in YouTube comments. You write it down, your agent learns it, and anyone can benefit.</p>
+				<p>That's Loooom. A place where knowledge lives as <span class="marker pink">shareable skills</span> — not locked in books or buried in YouTube comments. You write it down, your agent learns it, and anyone can benefit.</p>
 			</div>
 			<div class="vision-card">
 				<p>No coding required. No git. Just a simple editor where you write what you know, and it becomes something an AI agent can actually use. <span class="marker blue">If you can write a recipe, you can write a skill.</span></p>
@@ -155,7 +155,7 @@
 			<div class="principle">
 				<span class="principle-icon">✅</span>
 				<h3>Verified authors</h3>
-				<p>Real people, verified profiles. You know exactly who created the skill you're installing.</p>
+				<p>Real people, verified profiles. You know exactly who created the skill you're using.</p>
 			</div>
 		</div>
 	</div>

@@ -101,7 +101,7 @@
 				>
 					<div class="skill-card-top">
 						<span class="skill-category">{skill.category}</span>
-						<span class="skill-installs">{skill.installs.toLocaleString()} installs</span>
+						<span class="skill-installs">{skill.installs.toLocaleString()} uses</span>
 					</div>
 					<h3 class="skill-title">{skill.title}</h3>
 					<p class="skill-desc">{skill.description}</p>
