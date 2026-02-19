@@ -1,42 +1,33 @@
-# sv
+# 🧶 Loooom
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+**Where skills are woven.**
 
-## Creating a project
+A social skills marketplace. Share what you know. Use what inspires you.
 
-If you're seeing this, you've probably already done this step. Congrats!
+## What
 
-```sh
-# create a new project
-npx sv create my-app
-```
+Loooom is a place where people share skills — the things they're actually good at — so AI agents can learn from the best. Not templates. Not prompts. Real expertise, from real people.
 
-To recreate this project with the same configuration:
+Skills are always free. Authors can receive donations. The whole thing is open source.
 
-```sh
-# recreate this project
-npx sv create --template minimal --types ts --no-install looom
-```
+## Stack
 
-## Developing
+SvelteKit 5 · TypeScript · Neon Postgres · Drizzle ORM · Vercel
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## Run locally
 
-```sh
+```bash
+npm install
+cp .env.example .env  # add your Neon DATABASE_URL
+npx drizzle-kit push   # sync schema
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
 
-## Building
+## Links
 
-To create a production version of your app:
+- **Site:** [loooom.xyz](https://loooom.xyz)
+- **Spec:** [agentskills.io](https://agentskills.io)
 
-```sh
-npm run build
-```
+## License
 
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+MIT
