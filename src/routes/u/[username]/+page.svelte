@@ -600,6 +600,9 @@
 		overflow-x: auto;
 		margin: 0;
 		tab-size: 2;
+		white-space: pre-wrap;
+		word-wrap: break-word;
+		overflow-wrap: break-word;
 	}
 	.code-content code { font-family: inherit; }
 

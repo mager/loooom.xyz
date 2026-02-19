@@ -4,7 +4,7 @@
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { enhance } from '$app/forms';
 
-	let { form } = $props();
+	let { form, data } = $props();
 	let submitted = $state(false);
 
 	const useCases = [
@@ -43,8 +43,15 @@
 		<div class="nav-links">
 			<a href="#vision">About</a>
 			<a href="#explore">Explore</a>
+			{#if data?.user}
+				<a href="/create">Create</a>
+			{/if}
 			<ThemeToggle />
-			<a href="/login" class="btn-nav">Sign In</a>
+			{#if data?.user}
+				<a href="/u/{data.user.username}" class="btn-nav">{data.user.displayName}</a>
+			{:else}
+				<a href="/login" class="btn-nav">Sign In</a>
+			{/if}
 		</div>
 	</div>
 </nav>
@@ -195,6 +202,9 @@
 </footer>
 
 <style>
+	/* ===== Global overflow fix ===== */
+	:global(body) { overflow-x: hidden; max-width: 100vw; }
+
 	/* ===== Ambient ===== */
 	.ambient {
 		position: fixed;
@@ -640,9 +650,15 @@
 		.hero-visual { order: -1; }
 		.vision-grid { grid-template-columns: 1fr; }
 		.cases-grid { grid-template-columns: 1fr; }
+		.case-card { flex-wrap: wrap; }
+		.case-who { white-space: normal; }
 		.principles { grid-template-columns: 1fr; }
+		.nav-inner { padding: 0 1rem; }
 		.nav-links a:not(.btn-nav):not(:global(.theme-toggle)) { display: none; }
 		.footer-inner { flex-direction: column; gap: 2rem; }
 		.footer-links { gap: 2rem; }
+		.waitlist-form { flex-direction: column; }
+		.hero { padding: 6rem 1rem 3rem; overflow-x: hidden; }
+		.section-inner { padding: 0 1rem; }
 	}
 </style>
