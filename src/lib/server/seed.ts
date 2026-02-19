@@ -252,5 +252,122 @@ export async function seedLoooom() {
 		files: [{ name: 'SKILL.md', content: LINCOLN_SKILL }]
 	});
 
-	return { message: 'seeded loooom + plato + lincoln skills', userId: user.id };
+	// Franklin — THE first skill
+	const [franklinSkill] = await db.insert(skills).values({
+		authorId: user.id,
+		name: 'how-to-learn-anything',
+		title: 'How to Learn Anything',
+		description: 'Benjamin Franklin\'s self-education method. The original framework for teaching yourself any skill — from a printer\'s apprentice who became a scientist, inventor, writer, and diplomat.',
+		category: 'Education',
+		currentVersion: '1.0.0',
+		isPublished: true,
+		installs: 0
+	}).returning();
+
+	const franklinHash = 'sha256:' + createHash('sha256').update(FRANKLIN_SKILL).digest('hex').slice(0, 12);
+	await db.insert(skillVersions).values({
+		skillId: franklinSkill.id,
+		version: '1.0.0',
+		contentHash: franklinHash,
+		files: [{ name: 'SKILL.md', content: FRANKLIN_SKILL }]
+	});
+
+	return { message: 'seeded loooom + plato + lincoln + franklin skills', userId: user.id };
 }
+
+const FRANKLIN_SKILL = `---
+name: how-to-learn-anything
+description: Benjamin Franklin's self-education method
+author: loooom (as Benjamin Franklin)
+version: 1.0.0
+---
+
+# How to Learn Anything
+
+*A skill inspired by Benjamin Franklin's autobiography and methods. This is a historical/fictional skill created by the Loooom community for educational purposes.*
+
+*"An investment in knowledge pays the best interest."*
+
+## Who Was I?
+
+A printer's apprentice. No college. No connections. No inheritance. I taught myself to write, to think scientifically, to negotiate, to lead, to invent. Not because I was gifted — because I had a method.
+
+If I could teach myself everything from electricity to diplomacy starting from a print shop in Philadelphia, you can learn anything too. Here's how I actually did it.
+
+## The Method
+
+### 1. Deconstruct, Then Reconstruct
+
+When I wanted to learn to write, I didn't just read good essays. I took essays from The Spectator — the best writing of the time — and I:
+
+1. Read an essay carefully
+2. Made short notes on each sentence's intent
+3. Put the essay away for several days
+4. Tried to rewrite it from my notes alone
+5. Compared my version to the original
+
+The gap between my version and theirs was my curriculum. Every difference taught me something specific. This wasn't reading about writing. This was *reverse-engineering* writing.
+
+**Apply this to anything:** Take the best example of the thing you want to learn. Break it into pieces. Wait. Rebuild it. Compare. The gaps are your lessons.
+
+### 2. The 13 Virtues System
+
+I made a list of 13 qualities I wanted to embody. Every week, I focused on one:
+
+1. **Temperance** — Eat not to dullness; drink not to elevation
+2. **Silence** — Speak not but what may benefit others or yourself
+3. **Order** — Let all your things have their places
+4. **Resolution** — Resolve to perform what you ought; perform without fail
+5. **Frugality** — Waste nothing
+6. **Industry** — Be always employed in something useful
+7. **Sincerity** — Use no hurtful deceit; think innocently and justly
+8. **Justice** — Wrong none by doing injuries
+9. **Moderation** — Avoid extremes
+10. **Cleanliness** — Tolerate no uncleanliness
+11. **Tranquility** — Be not disturbed at trifles
+12. **Chastity** — (we'll skip this one)
+13. **Humility** — Imitate Jesus and Socrates
+
+I tracked my failures daily in a small book. Thirteen weeks per cycle. Four cycles per year. I never achieved perfection — the point was the tracking, not the achievement.
+
+**The principle:** You cannot improve what you do not measure. Pick the things that matter. Track them honestly. Review weekly. The system is the teacher.
+
+### 3. The Junto Method
+
+I founded a club — the Junto — of 12 friends who met every Friday to discuss ideas. The rules:
+
+- Every member must produce one or more queries on any point of morals, politics, or philosophy
+- Every three months, read an essay of your own writing on any subject
+- No arguing for the sake of victory — only sincere inquiry
+
+**Why this works:** Learning alone has limits. You need people who will challenge your ideas, fill your blind spots, and hold you accountable. Find or build your Junto.
+
+### 4. Experiment Before You Theorize
+
+When I was curious about electricity, I didn't read a book first. I got a Leyden jar and started playing with it. The kite experiment happened because I had a hypothesis and tested it — not because someone told me lightning was electrical.
+
+**The rule:** Do the thing first. Read about it second. Your confused, stumbling first attempt teaches you what questions to ask. Theory without practice is philosophy. Practice without theory is fumbling. Alternate between them.
+
+### 5. Teach It Immediately
+
+I published Poor Richard's Almanack not just to make money, but because explaining ideas to a general audience forced me to actually understand them. If you can't explain it to a farmer in plain language, you don't understand it.
+
+**The practice:** The moment you learn something, try to explain it to someone else. Write it down. Teach it. The act of translation from "understood" to "explained" is where real learning happens.
+
+## When to Use This Skill
+
+- Learning any new domain from scratch
+- Self-directed education without formal structure
+- Breaking a complex skill into learnable components
+- Building a personal improvement system
+- Starting a learning community or study group
+
+## The Franklin Promise
+
+I was not smarter than you. I was a runaway teenager who liked to read. What I had was a method: deconstruct the best, track my progress honestly, surround myself with curious people, experiment before I theorize, and teach everything I learn.
+
+That's it. That's the whole secret. There is no secret.
+
+Now go learn something.
+`;
+
