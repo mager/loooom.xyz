@@ -1,0 +1,714 @@
+<script lang="ts">
+	import YarnBall from '$lib/components/YarnBall.svelte';
+
+	const features = [
+		{
+			icon: '🧵',
+			title: 'Craft & Publish',
+			desc: 'Build skills with our markdown editor. No git required — just write, preview, and publish.'
+		},
+		{
+			icon: '🔍',
+			title: 'Discover & Install',
+			desc: 'Browse by category, author, or trending. Find the perfect skill for your agent in seconds.'
+		},
+		{
+			icon: '✅',
+			title: 'Verified Authors',
+			desc: 'Real people, real expertise. Verified profiles so you know who built what you\'re installing.'
+		},
+		{
+			icon: '🔗',
+			title: 'GitHub Sync',
+			desc: 'Import skills from repos or publish from Loooom to GitHub. Your workflow, your choice.'
+		},
+		{
+			icon: '🧬',
+			title: 'Context-Rich',
+			desc: 'Skills ship with context — reference material, author notes, examples. Not just prompts.'
+		},
+		{
+			icon: '💜',
+			title: 'Support Creators',
+			desc: 'Tip skill authors directly. Great work deserves recognition.'
+		}
+	];
+
+	const categories = [
+		'Writing', 'Engineering', 'Research', 'Creative', 'Automation',
+		'Data', 'Design', 'DevOps', 'Music', 'Education'
+	];
+</script>
+
+<svelte:head>
+	<title>Loooom — Where Skills Are Woven</title>
+	<meta name="description" content="A social skills marketplace for AI agents. Discover, craft, and share agent skills from verified authors." />
+</svelte:head>
+
+<!-- Ambient background -->
+<div class="ambient">
+	<div class="orb orb-1"></div>
+	<div class="orb orb-2"></div>
+	<div class="orb orb-3"></div>
+</div>
+
+<!-- Nav -->
+<nav>
+	<div class="nav-inner">
+		<a href="/" class="logo">
+			<span class="logo-mark">◎</span>
+			<span class="logo-text">loooom</span>
+		</a>
+		<div class="nav-links">
+			<a href="#features">Features</a>
+			<a href="#how">How It Works</a>
+			<a href="#explore">Explore</a>
+			<button class="btn-nav">Sign In</button>
+		</div>
+	</div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+	<div class="hero-content">
+		<div class="hero-text">
+			<div class="badge">
+				<span class="badge-dot"></span>
+				Coming Soon
+			</div>
+			<h1>
+				Where skills are
+				<span class="gradient-text">woven</span>
+			</h1>
+			<p class="hero-sub">
+				A social marketplace for AI agent skills. Discover context-rich skills
+				from verified authors. Craft your own. Share with the world.
+			</p>
+			<div class="hero-actions">
+				<button class="btn-primary">
+					Join the Waitlist
+					<span class="btn-arrow">→</span>
+				</button>
+				<button class="btn-secondary">
+					Browse Skills
+				</button>
+			</div>
+			<div class="hero-stats">
+				<div class="stat">
+					<span class="stat-num">—</span>
+					<span class="stat-label">Skills</span>
+				</div>
+				<div class="stat-divider"></div>
+				<div class="stat">
+					<span class="stat-num">—</span>
+					<span class="stat-label">Authors</span>
+				</div>
+				<div class="stat-divider"></div>
+				<div class="stat">
+					<span class="stat-num">—</span>
+					<span class="stat-label">Installs</span>
+				</div>
+			</div>
+		</div>
+		<div class="hero-visual">
+			<YarnBall size={360} animated={true} />
+		</div>
+	</div>
+
+	<!-- Floating thread particles -->
+	<div class="threads">
+		{#each Array(6) as _, i}
+			<div class="thread-particle" style="--delay: {i * 0.8}s; --x: {15 + i * 14}%;"></div>
+		{/each}
+	</div>
+</section>
+
+<!-- Features -->
+<section id="features" class="features">
+	<div class="section-inner">
+		<span class="section-tag">Features</span>
+		<h2>Everything a skill needs to <span class="gradient-text">thrive</span></h2>
+		<div class="feature-grid">
+			{#each features as feature, i}
+				<div class="feature-card" style="--i: {i}">
+					<span class="feature-icon">{feature.icon}</span>
+					<h3>{feature.title}</h3>
+					<p>{feature.desc}</p>
+				</div>
+			{/each}
+		</div>
+	</div>
+</section>
+
+<!-- How It Works -->
+<section id="how" class="how-it-works">
+	<div class="section-inner">
+		<span class="section-tag">How It Works</span>
+		<h2>From idea to <span class="gradient-text">installed</span></h2>
+		<div class="steps">
+			<div class="step">
+				<div class="step-num">01</div>
+				<div class="step-content">
+					<h3>Craft your skill</h3>
+					<p>Use our WYSIWYG markdown editor to write your skill following the open AgentSkills spec. Add context, examples, and reference material.</p>
+				</div>
+			</div>
+			<div class="step-connector"></div>
+			<div class="step">
+				<div class="step-num">02</div>
+				<div class="step-content">
+					<h3>Publish & version</h3>
+					<p>Every version is content-hashed and immutable. Your skill's history is transparent and tamper-proof. No git required.</p>
+				</div>
+			</div>
+			<div class="step-connector"></div>
+			<div class="step">
+				<div class="step-num">03</div>
+				<div class="step-content">
+					<h3>Get discovered</h3>
+					<p>Your skill appears in search, categories, and feeds. Verified authors get priority placement. Great skills rise naturally.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- Explore Categories -->
+<section id="explore" class="explore">
+	<div class="section-inner">
+		<span class="section-tag">Explore</span>
+		<h2>Skills for <span class="gradient-text">every craft</span></h2>
+		<div class="categories">
+			{#each categories as cat}
+				<button class="cat-pill">{cat}</button>
+			{/each}
+		</div>
+		<div class="explore-cta">
+			<p>Hundreds of skills from verified authors — launching soon.</p>
+			<button class="btn-primary">
+				Join the Waitlist
+				<span class="btn-arrow">→</span>
+			</button>
+		</div>
+	</div>
+</section>
+
+<!-- Footer -->
+<footer>
+	<div class="footer-inner">
+		<div class="footer-brand">
+			<span class="logo-mark">◎</span>
+			<span class="logo-text">loooom</span>
+			<p class="footer-tagline">Where skills are woven.</p>
+		</div>
+		<div class="footer-links">
+			<div class="footer-col">
+				<h4>Product</h4>
+				<a href="#features">Features</a>
+				<a href="#how">How It Works</a>
+				<a href="#explore">Explore</a>
+			</div>
+			<div class="footer-col">
+				<h4>Spec</h4>
+				<a href="https://agentskills.io" target="_blank" rel="noopener">AgentSkills.io</a>
+				<a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+			</div>
+			<div class="footer-col">
+				<h4>Social</h4>
+				<a href="#">X / Twitter</a>
+				<a href="#">Discord</a>
+			</div>
+		</div>
+	</div>
+	<div class="footer-bottom">
+		<span>© 2026 Loooom. Open format. Open community.</span>
+	</div>
+</footer>
+
+<style>
+	/* ===== Ambient Background ===== */
+	.ambient {
+		position: fixed;
+		inset: 0;
+		pointer-events: none;
+		z-index: 0;
+		overflow: hidden;
+	}
+	.orb {
+		position: absolute;
+		border-radius: 50%;
+		filter: blur(120px);
+		opacity: 0.15;
+	}
+	.orb-1 {
+		width: 600px; height: 600px;
+		background: var(--accent);
+		top: -200px; left: -100px;
+		animation: drift 25s ease-in-out infinite;
+	}
+	.orb-2 {
+		width: 500px; height: 500px;
+		background: var(--yarn-pink);
+		top: 40%; right: -150px;
+		animation: drift 30s ease-in-out infinite reverse;
+	}
+	.orb-3 {
+		width: 400px; height: 400px;
+		background: var(--yarn-blue);
+		bottom: -100px; left: 30%;
+		animation: drift 20s ease-in-out infinite;
+	}
+	@keyframes drift {
+		0%, 100% { transform: translate(0, 0); }
+		25% { transform: translate(30px, -20px); }
+		50% { transform: translate(-20px, 30px); }
+		75% { transform: translate(15px, 15px); }
+	}
+
+	/* ===== Nav ===== */
+	nav {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 100;
+		backdrop-filter: blur(20px);
+		background: rgba(10, 10, 15, 0.8);
+		border-bottom: 1px solid rgba(42, 42, 58, 0.5);
+	}
+	.nav-inner {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 0 2rem;
+		height: 64px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.logo {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		color: var(--text-primary);
+	}
+	.logo:hover { color: var(--text-primary); }
+	.logo-mark {
+		font-size: 1.5rem;
+		color: var(--accent);
+	}
+	.logo-text {
+		font-family: var(--font-mono);
+		font-size: 1.25rem;
+		font-weight: 700;
+		letter-spacing: -0.02em;
+	}
+	.nav-links {
+		display: flex;
+		align-items: center;
+		gap: 2rem;
+	}
+	.nav-links a {
+		color: var(--text-secondary);
+		font-size: 0.875rem;
+		font-weight: 500;
+		transition: color 0.2s;
+	}
+	.nav-links a:hover { color: var(--text-primary); }
+	.btn-nav {
+		background: var(--bg-card);
+		color: var(--text-primary);
+		border: 1px solid var(--border);
+		padding: 0.5rem 1.25rem;
+		border-radius: var(--radius-sm);
+		font-family: var(--font-display);
+		font-size: 0.875rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+	.btn-nav:hover {
+		border-color: var(--accent);
+		background: rgba(108, 92, 231, 0.1);
+	}
+
+	/* ===== Hero ===== */
+	.hero {
+		position: relative;
+		min-height: 100vh;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 8rem 2rem 4rem;
+		z-index: 1;
+	}
+	.hero-content {
+		max-width: 1200px;
+		width: 100%;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 4rem;
+		align-items: center;
+	}
+	.badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.375rem 1rem;
+		border-radius: 100px;
+		background: rgba(108, 92, 231, 0.1);
+		border: 1px solid rgba(108, 92, 231, 0.3);
+		font-size: 0.8rem;
+		font-weight: 600;
+		color: var(--accent-bright);
+		margin-bottom: 1.5rem;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+	}
+	.badge-dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: var(--accent);
+		animation: pulse-dot 2s ease-in-out infinite;
+	}
+	@keyframes pulse-dot {
+		0%, 100% { opacity: 1; transform: scale(1); }
+		50% { opacity: 0.5; transform: scale(0.8); }
+	}
+	h1 {
+		font-size: clamp(3rem, 6vw, 4.5rem);
+		font-weight: 800;
+		line-height: 1.05;
+		letter-spacing: -0.03em;
+		margin-bottom: 1.5rem;
+	}
+	.gradient-text {
+		background: var(--gradient-hero);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+	.hero-sub {
+		font-size: 1.2rem;
+		color: var(--text-secondary);
+		line-height: 1.6;
+		max-width: 500px;
+		margin-bottom: 2.5rem;
+	}
+	.hero-actions {
+		display: flex;
+		gap: 1rem;
+		margin-bottom: 3rem;
+	}
+	.btn-primary {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.875rem 2rem;
+		background: var(--accent);
+		color: white;
+		border: none;
+		border-radius: var(--radius-md);
+		font-family: var(--font-display);
+		font-size: 1rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.25s;
+	}
+	.btn-primary:hover {
+		background: var(--accent-bright);
+		transform: translateY(-1px);
+		box-shadow: 0 8px 30px rgba(108, 92, 231, 0.4);
+	}
+	.btn-arrow {
+		transition: transform 0.2s;
+	}
+	.btn-primary:hover .btn-arrow {
+		transform: translateX(3px);
+	}
+	.btn-secondary {
+		padding: 0.875rem 2rem;
+		background: transparent;
+		color: var(--text-primary);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		font-family: var(--font-display);
+		font-size: 1rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.25s;
+	}
+	.btn-secondary:hover {
+		border-color: var(--accent);
+		background: rgba(108, 92, 231, 0.05);
+	}
+	.hero-stats {
+		display: flex;
+		align-items: center;
+		gap: 2rem;
+	}
+	.stat-num {
+		font-family: var(--font-mono);
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: var(--text-primary);
+	}
+	.stat-label {
+		display: block;
+		font-size: 0.8rem;
+		color: var(--text-muted);
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		margin-top: 0.25rem;
+	}
+	.stat-divider {
+		width: 1px;
+		height: 36px;
+		background: var(--border);
+	}
+	.hero-visual {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	/* Thread particles */
+	.threads {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		overflow: hidden;
+	}
+	.thread-particle {
+		position: absolute;
+		left: var(--x);
+		bottom: -10px;
+		width: 2px;
+		height: 60px;
+		background: linear-gradient(to top, transparent, var(--accent-bright));
+		opacity: 0.15;
+		animation: rise 8s ease-in infinite;
+		animation-delay: var(--delay);
+	}
+	@keyframes rise {
+		0% { transform: translateY(0); opacity: 0; }
+		10% { opacity: 0.15; }
+		90% { opacity: 0.15; }
+		100% { transform: translateY(-100vh); opacity: 0; }
+	}
+
+	/* ===== Sections Shared ===== */
+	.section-inner {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 0 2rem;
+	}
+	.section-tag {
+		display: inline-block;
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		letter-spacing: 0.15em;
+		color: var(--accent);
+		margin-bottom: 1rem;
+	}
+	section h2 {
+		font-size: clamp(2rem, 4vw, 3rem);
+		font-weight: 800;
+		letter-spacing: -0.02em;
+		margin-bottom: 3rem;
+	}
+
+	/* ===== Features ===== */
+	.features {
+		position: relative;
+		z-index: 1;
+		padding: 6rem 0;
+	}
+	.feature-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 1.5rem;
+	}
+	.feature-card {
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-lg);
+		padding: 2rem;
+		transition: all 0.3s;
+	}
+	.feature-card:hover {
+		background: var(--bg-card-hover);
+		border-color: var(--accent);
+		transform: translateY(-4px);
+		box-shadow: 0 12px 40px rgba(108, 92, 231, 0.15);
+	}
+	.feature-icon {
+		font-size: 2rem;
+		display: block;
+		margin-bottom: 1rem;
+	}
+	.feature-card h3 {
+		font-size: 1.125rem;
+		font-weight: 700;
+		margin-bottom: 0.75rem;
+	}
+	.feature-card p {
+		font-size: 0.925rem;
+		color: var(--text-secondary);
+		line-height: 1.6;
+	}
+
+	/* ===== How It Works ===== */
+	.how-it-works {
+		position: relative;
+		z-index: 1;
+		padding: 6rem 0;
+	}
+	.steps {
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+	}
+	.step {
+		display: flex;
+		gap: 2rem;
+		align-items: flex-start;
+		padding: 2rem 0;
+	}
+	.step-num {
+		font-family: var(--font-mono);
+		font-size: 3rem;
+		font-weight: 700;
+		color: var(--accent);
+		opacity: 0.3;
+		line-height: 1;
+		min-width: 80px;
+	}
+	.step-content h3 {
+		font-size: 1.5rem;
+		font-weight: 700;
+		margin-bottom: 0.75rem;
+	}
+	.step-content p {
+		color: var(--text-secondary);
+		line-height: 1.7;
+		max-width: 500px;
+	}
+	.step-connector {
+		width: 1px;
+		height: 40px;
+		background: linear-gradient(to bottom, var(--accent), transparent);
+		margin-left: 40px;
+		opacity: 0.3;
+	}
+
+	/* ===== Explore ===== */
+	.explore {
+		position: relative;
+		z-index: 1;
+		padding: 6rem 0;
+	}
+	.categories {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-bottom: 3rem;
+	}
+	.cat-pill {
+		padding: 0.625rem 1.5rem;
+		border-radius: 100px;
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		color: var(--text-secondary);
+		font-family: var(--font-display);
+		font-size: 0.9rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.25s;
+	}
+	.cat-pill:hover {
+		border-color: var(--accent);
+		color: var(--text-primary);
+		background: rgba(108, 92, 231, 0.1);
+	}
+	.explore-cta {
+		text-align: center;
+		padding: 3rem;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-xl);
+		background: var(--gradient-subtle);
+	}
+	.explore-cta p {
+		color: var(--text-secondary);
+		margin-bottom: 1.5rem;
+		font-size: 1.1rem;
+	}
+
+	/* ===== Footer ===== */
+	footer {
+		position: relative;
+		z-index: 1;
+		border-top: 1px solid var(--border);
+		padding: 4rem 2rem 2rem;
+		margin-top: 4rem;
+	}
+	.footer-inner {
+		max-width: 1200px;
+		margin: 0 auto;
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 3rem;
+	}
+	.footer-tagline {
+		color: var(--text-muted);
+		font-size: 0.875rem;
+		margin-top: 0.75rem;
+	}
+	.footer-links {
+		display: flex;
+		gap: 4rem;
+	}
+	.footer-col {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+	.footer-col h4 {
+		font-size: 0.8rem;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: var(--text-muted);
+		margin-bottom: 0.25rem;
+	}
+	.footer-col a {
+		color: var(--text-secondary);
+		font-size: 0.9rem;
+	}
+	.footer-col a:hover { color: var(--text-primary); }
+	.footer-bottom {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding-top: 2rem;
+		border-top: 1px solid rgba(42, 42, 58, 0.5);
+		text-align: center;
+		color: var(--text-muted);
+		font-size: 0.8rem;
+	}
+
+	/* ===== Responsive ===== */
+	@media (max-width: 900px) {
+		.hero-content {
+			grid-template-columns: 1fr;
+			text-align: center;
+		}
+		.hero-sub { margin: 0 auto 2.5rem; }
+		.hero-actions { justify-content: center; }
+		.hero-stats { justify-content: center; }
+		.hero-visual { order: -1; }
+		.feature-grid { grid-template-columns: 1fr; }
+		.nav-links a:not(.btn-nav) { display: none; }
+		.footer-inner { flex-direction: column; gap: 2rem; }
+		.footer-links { gap: 2rem; }
+	}
+</style>
