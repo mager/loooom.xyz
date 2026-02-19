@@ -108,7 +108,7 @@
 <!-- Vision -->
 <section id="vision" class="vision">
 	<div class="section-inner">
-		<h2 class="handwriting">Everyone has something worth teaching.</h2>
+		<h2 class="handwriting">Knowledge is meant to be <span class="sketch">shared.</span></h2>
 		<div class="vision-grid">
 			<div class="vision-card">
 				<p>Imagine Dave Grohl sharing a skill for <span class="marker pink">drumming fills</span> and another for <span class="marker blue">writing lyrics from the gut</span>. A pastry chef sharing her <span class="marker orange">sourdough method</span>. Your favorite professor packaging their <span class="marker green">research framework</span>.</p>
@@ -122,6 +122,37 @@
 		</div>
 	</div>
 </section>
+
+<!-- Featured Skill -->
+{#if data.featuredSkill}
+<section class="featured">
+	<div class="section-inner">
+		<h2 class="handwriting">See a skill in action<span class="sketch">.</span></h2>
+		<a href="/s/{data.featuredSkill.author.username}/{data.featuredSkill.name}" class="featured-card">
+			<div class="featured-meta">
+				<span class="featured-category">{data.featuredSkill.category}</span>
+				<span class="featured-uses">{data.featuredSkill.installs.toLocaleString()} uses</span>
+			</div>
+			<h3 class="featured-title">{data.featuredSkill.title}</h3>
+			<p class="featured-desc">{data.featuredSkill.description}</p>
+			<div class="featured-preview">
+				{#if data.featuredSkill.files[0]}
+					<div class="featured-code-header">
+						<span class="featured-filename">📄 {data.featuredSkill.files[0].name}</span>
+						<span class="featured-version">v{data.featuredSkill.version}</span>
+					</div>
+					<pre class="featured-code"><code>{data.featuredSkill.files[0].content.slice(0, 600)}{data.featuredSkill.files[0].content.length > 600 ? '\n...' : ''}</code></pre>
+				{/if}
+			</div>
+			<div class="featured-author">
+				<span class="featured-by">by</span>
+				<span class="featured-author-name">@{data.featuredSkill.author.username}</span>
+				<span class="featured-cta">View full skill →</span>
+			</div>
+		</a>
+	</div>
+</section>
+{/if}
 
 <!-- Use Cases -->
 <section class="use-cases">
@@ -640,6 +671,125 @@
 		font-size: 0.8rem;
 	}
 
+	/* ===== Featured Skill ===== */
+	.featured {
+		position: relative;
+		z-index: 1;
+		padding: 2rem 0 6rem;
+	}
+	.featured h2 {
+		font-size: clamp(2rem, 4vw, 3rem);
+		margin-bottom: 2rem;
+	}
+	.featured-card {
+		display: block;
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-lg);
+		padding: 2.5rem;
+		box-shadow: var(--card-shadow);
+		transition: all 0.3s;
+		color: inherit;
+		text-decoration: none;
+	}
+	.featured-card:hover {
+		border-color: var(--accent);
+		box-shadow: var(--card-shadow-hover);
+		transform: translateY(-3px);
+		color: inherit;
+	}
+	.featured-meta {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1rem;
+	}
+	.featured-category {
+		font-size: 0.7rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: var(--accent);
+	}
+	.featured-uses {
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		color: var(--text-muted);
+	}
+	.featured-title {
+		font-family: var(--font-handwriting);
+		font-size: clamp(1.5rem, 3vw, 2.2rem);
+		font-weight: 200;
+		margin-bottom: 0.75rem;
+		color: var(--text-primary);
+	}
+	.featured-desc {
+		font-size: 1.05rem;
+		color: var(--text-secondary);
+		line-height: 1.45;
+		margin-bottom: 1.5rem;
+		max-width: 700px;
+	}
+	.featured-preview {
+		background: var(--bg-secondary);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		overflow: hidden;
+		margin-bottom: 1.5rem;
+	}
+	.featured-code-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 0.6rem 1rem;
+		border-bottom: 1px solid var(--border);
+		background: rgba(108, 92, 231, 0.03);
+	}
+	.featured-filename {
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		color: var(--text-muted);
+	}
+	.featured-version {
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		color: var(--text-muted);
+	}
+	.featured-code {
+		padding: 1.25rem;
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+		line-height: 1.5;
+		color: var(--text-secondary);
+		margin: 0;
+		white-space: pre-wrap;
+		word-wrap: break-word;
+		overflow-wrap: break-word;
+		max-height: 300px;
+		overflow-y: auto;
+	}
+	.featured-code code { font-family: inherit; }
+	.featured-author {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.9rem;
+	}
+	.featured-by { color: var(--text-muted); }
+	.featured-author-name {
+		font-family: var(--font-handwriting);
+		font-weight: 200;
+		color: var(--text-primary);
+	}
+	.featured-cta {
+		margin-left: auto;
+		color: var(--accent);
+		font-weight: 600;
+		font-size: 0.875rem;
+		transition: transform 0.2s;
+	}
+	.featured-card:hover .featured-cta { transform: translateX(3px); }
+
 	/* ===== Responsive ===== */
 	@media (max-width: 900px) {
 		.hero-content {
@@ -659,6 +809,8 @@
 		.footer-inner { flex-direction: column; gap: 2rem; }
 		.footer-links { gap: 2rem; }
 		.waitlist-form { flex-direction: column; }
+		.featured-card { padding: 1.5rem; }
+		.featured-code { max-height: 200px; font-size: 0.72rem; }
 		.hero { padding: 6rem 1rem 3rem; overflow-x: hidden; }
 		.section-inner { padding: 0 1rem; }
 	}
