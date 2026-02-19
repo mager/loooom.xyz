@@ -1,139 +1,7 @@
 <script lang="ts">
-	import { page } from '$app/state';
+	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 
-	// Mock data — will come from Neon later
-	const profile = $derived({
-		username: page.params.username,
-		displayName: page.params.username === 'mager' ? 'Mager' : page.params.username,
-		avatar: null,
-		verified: true,
-		topics: ['coding', 'music', 'Chicago'],
-		bio: 'Building things that matter. Based in Chicago.',
-		followers: 342,
-		skills: [
-			{
-				name: 'sveltekit-patterns',
-				title: 'SvelteKit Patterns',
-				description: 'Production-grade SvelteKit patterns — routing, load functions, form actions, streaming. The good stuff.',
-				category: 'Engineering',
-				installs: 1283,
-				version: '2.1.0',
-				updatedAt: '2 days ago',
-				files: [
-					{
-						name: 'SKILL.md',
-						content: `---
-name: sveltekit-patterns
-description: Production SvelteKit patterns
-author: mager
-version: 2.1.0
----
-
-# SvelteKit Patterns
-
-## Load Functions
-Always colocate your load function with the route.
-Use \`+page.server.ts\` for sensitive data.
-
-## Form Actions
-Prefer progressive enhancement:
-\`\`\`typescript
-export const actions = {
-  default: async ({ request }) => {
-    const data = await request.formData();
-    // validate, persist, return
-  }
-};
-\`\`\``
-					},
-					{
-						name: 'scripts/setup.sh',
-						content: `#!/bin/bash
-# Quick project setup
-npm create svelte@latest my-app
-cd my-app
-npm install
-npm run dev`
-					}
-				]
-			},
-			{
-				name: 'chicago-food-guide',
-				title: 'Chicago Food Guide',
-				description: 'Deep-dish discourse. Tavern-style truths. The real guide to eating in Chicago, from someone who lives it.',
-				category: 'Writing',
-				installs: 876,
-				version: '1.4.0',
-				updatedAt: '1 week ago',
-				files: [
-					{
-						name: 'SKILL.md',
-						content: `---
-name: chicago-food-guide
-description: Authoritative Chicago food recommendations
-author: mager
-version: 1.4.0
----
-
-# Chicago Food Guide
-
-## The Rules
-1. Lou Malnati's > Giordano's (fight me)
-2. Italian beef: wet, with giardiniera
-3. Hot dogs: never ketchup
-4. Tavern-style pizza is the real Chicago pizza`
-					}
-				]
-			},
-			{
-				name: 'beat-discovery',
-				title: 'Beat Discovery',
-				description: 'Find new music before it blows up. Weighted scoring across Spotify, Reddit, and Pitchfork. Tuned for taste.',
-				category: 'Music',
-				installs: 2104,
-				version: '3.0.0',
-				updatedAt: '5 days ago',
-				files: [
-					{
-						name: 'SKILL.md',
-						content: `---
-name: beat-discovery
-description: Music discovery with weighted scoring
-author: mager
-version: 3.0.0
----
-
-# Beat Discovery
-
-Score = (spotify_weight * popularity)
-      + (reddit_weight * freshness)
-      + (pitchfork_weight * review_score)
-
-## Sources
-- Spotify New Releases API
-- Reddit r/indieheads [FRESH]
-- Pitchfork Best New Music`
-					},
-					{
-						name: 'scripts/score.py',
-						content: `import numpy as np
-
-def weighted_score(sources: dict) -> float:
-    """Calculate weighted discovery score."""
-    weights = {
-        'spotify': 0.35,
-        'reddit': 0.40,
-        'pitchfork': 0.25
-    }
-    return sum(
-        weights[k] * v
-        for k, v in sources.items()
-    )`
-					}
-				]
-			}
-		]
-	});
+	let { data } = $props();
 
 	let activeSkill = $state(0);
 	let activeFile = $state(0);
@@ -142,10 +10,20 @@ def weighted_score(sources: dict) -> float:
 		activeSkill = i;
 		activeFile = 0;
 	}
+
+	function relativeTime(iso: string): string {
+		const diff = Date.now() - new Date(iso).getTime();
+		const days = Math.floor(diff / 86400000);
+		if (days < 1) return 'today';
+		if (days === 1) return 'yesterday';
+		if (days < 7) return `${days} days ago`;
+		if (days < 30) return `${Math.floor(days / 7)} week${Math.floor(days / 7) > 1 ? 's' : ''} ago`;
+		return `${Math.floor(days / 30)} month${Math.floor(days / 30) > 1 ? 's' : ''} ago`;
+	}
 </script>
 
 <svelte:head>
-	<title>{profile.displayName} — Loooom</title>
+	<title>{data.user.displayName} — Loooom</title>
 </svelte:head>
 
 <!-- Ambient -->
@@ -162,6 +40,7 @@ def weighted_score(sources: dict) -> float:
 			<span class="logo-text">loooom</span>
 		</a>
 		<div class="nav-right">
+			<ThemeToggle />
 			<button class="btn-nav">Sign In</button>
 		</div>
 	</div>
@@ -170,40 +49,35 @@ def weighted_score(sources: dict) -> float:
 <!-- Profile Header -->
 <section class="profile-header">
 	<div class="profile-inner">
-		<!-- Avatar -->
 		<div class="avatar-ring">
 			<div class="avatar">
-				{profile.displayName[0]}
+				{data.user.displayName[0]}
 			</div>
-			{#if profile.verified}
+			{#if data.user.verified}
 				<div class="verified-badge" title="Verified">✓</div>
 			{/if}
 		</div>
 
-		<!-- The handwriting intro -->
 		<div class="intro">
 			<h1 class="handwriting">
-				{profile.displayName}
+				{data.user.displayName}
 				<span class="writes"> writes skills about</span>
 			</h1>
 			<div class="topics">
-				{#each profile.topics as topic, i}
+				{#each data.user.topics as topic, i}
 					<span class="topic">
-						{topic}{#if i < profile.topics.length - 1}<span class="topic-sep">,&nbsp;</span>{/if}
+						{topic}{#if i < data.user.topics.length - 1}<span class="topic-sep">,&nbsp;</span>{/if}
 					</span>
 				{/each}
 			</div>
 		</div>
 
-		<!-- Bio & meta -->
-		<p class="bio">{profile.bio}</p>
+		{#if data.user.bio}
+			<p class="bio">{data.user.bio}</p>
+		{/if}
 		<div class="meta">
 			<span class="meta-item">
-				<strong>{profile.followers}</strong> followers
-			</span>
-			<span class="meta-dot">·</span>
-			<span class="meta-item">
-				<strong>{profile.skills.length}</strong> skills
+				<strong>{data.skills.length}</strong> skill{data.skills.length !== 1 ? 's' : ''}
 			</span>
 			<span class="meta-dot">·</span>
 			<button class="follow-btn">Follow</button>
@@ -213,11 +87,12 @@ def weighted_score(sources: dict) -> float:
 </section>
 
 <!-- Skills Section -->
+{#if data.skills.length > 0}
 <section class="skills-section">
 	<div class="skills-inner">
 		<div class="skills-list">
 			<h2 class="section-label">Skills</h2>
-			{#each profile.skills as skill, i}
+			{#each data.skills as skill, i}
 				<button
 					class="skill-card"
 					class:active={activeSkill === i}
@@ -231,16 +106,16 @@ def weighted_score(sources: dict) -> float:
 					<p class="skill-desc">{skill.description}</p>
 					<div class="skill-card-bottom">
 						<span class="skill-version">v{skill.version}</span>
-						<span class="skill-updated">{skill.updatedAt}</span>
+						<span class="skill-updated">{relativeTime(skill.updatedAt)}</span>
 					</div>
 				</button>
 			{/each}
 		</div>
 
-		<!-- Skill Detail / Code Viewer -->
+		{#if data.skills[activeSkill]?.files?.length}
 		<div class="skill-detail">
 			<div class="detail-header">
-				<h2 class="detail-title">{profile.skills[activeSkill].title}</h2>
+				<h2 class="detail-title">{data.skills[activeSkill].title}</h2>
 				<div class="detail-actions">
 					<button class="install-btn">
 						Install
@@ -249,9 +124,8 @@ def weighted_score(sources: dict) -> float:
 				</div>
 			</div>
 
-			<!-- File tabs -->
 			<div class="file-tabs">
-				{#each profile.skills[activeSkill].files as file, i}
+				{#each data.skills[activeSkill].files as file, i}
 					<button
 						class="file-tab"
 						class:active={activeFile === i}
@@ -263,33 +137,30 @@ def weighted_score(sources: dict) -> float:
 				{/each}
 			</div>
 
-			<!-- Code/content viewer -->
 			<div class="code-viewer">
 				<div class="code-header">
-					<span class="code-filename">{profile.skills[activeSkill].files[activeFile].name}</span>
-					<button class="code-copy" onclick={() => navigator.clipboard.writeText(profile.skills[activeSkill].files[activeFile].content)}>
+					<span class="code-filename">{data.skills[activeSkill].files[activeFile].name}</span>
+					<button class="code-copy" onclick={() => navigator.clipboard.writeText(data.skills[activeSkill].files[activeFile].content)}>
 						Copy
 					</button>
 				</div>
-				<pre class="code-content"><code>{profile.skills[activeSkill].files[activeFile].content}</code></pre>
+				<pre class="code-content"><code>{data.skills[activeSkill].files[activeFile].content}</code></pre>
 			</div>
 
-			<!-- Version hash -->
 			<div class="version-hash">
 				<span class="hash-label">Content Hash</span>
-				<span class="hash-value">sha256:7f3a...e2b1</span>
+				<span class="hash-value">{data.skills[activeSkill].contentHash || 'sha256:...'}</span>
 				<span class="hash-sep">·</span>
 				<span class="hash-label">Version</span>
-				<span class="hash-value">v{profile.skills[activeSkill].version}</span>
-				<span class="hash-sep">·</span>
-				<a href="#" class="hash-link">View all versions →</a>
+				<span class="hash-value">v{data.skills[activeSkill].version}</span>
 			</div>
 		</div>
+		{/if}
 	</div>
 </section>
+{/if}
 
 <style>
-	/* ===== Ambient ===== */
 	.ambient {
 		position: fixed;
 		inset: 0;
@@ -320,13 +191,12 @@ def weighted_score(sources: dict) -> float:
 		50% { transform: translate(30px, -20px); }
 	}
 
-	/* ===== Nav ===== */
 	nav {
 		position: fixed;
 		top: 0; left: 0; right: 0;
 		z-index: 100;
 		backdrop-filter: blur(20px);
-		background: rgba(10, 10, 15, 0.8);
+		background: var(--nav-bg, rgba(10, 10, 15, 0.8));
 		border-bottom: 1px solid rgba(42, 42, 58, 0.5);
 	}
 	.nav-inner {
@@ -370,7 +240,6 @@ def weighted_score(sources: dict) -> float:
 		background: rgba(108, 92, 231, 0.1);
 	}
 
-	/* ===== Profile Header ===== */
 	.profile-header {
 		position: relative;
 		z-index: 1;
@@ -385,7 +254,6 @@ def weighted_score(sources: dict) -> float:
 		text-align: center;
 	}
 
-	/* Avatar */
 	.avatar-ring {
 		position: relative;
 		margin-bottom: 2.5rem;
@@ -421,10 +289,7 @@ def weighted_score(sources: dict) -> float:
 		border: 3px solid var(--bg-primary);
 	}
 
-	/* Handwriting intro */
-	.intro {
-		margin-bottom: 1.5rem;
-	}
+	.intro { margin-bottom: 1.5rem; }
 	.handwriting {
 		font-family: var(--font-handwriting);
 		font-size: clamp(2.5rem, 5vw, 4rem);
@@ -450,7 +315,7 @@ def weighted_score(sources: dict) -> float:
 		display: inline;
 		background-image: linear-gradient(to right, var(--accent), var(--yarn-pink));
 		background-position: 0 92%;
-		background-size: 100% 4px;
+		background-size: 100% var(--topic-underline-height, 4px);
 		background-repeat: no-repeat;
 		padding-bottom: 2px;
 	}
@@ -459,7 +324,6 @@ def weighted_score(sources: dict) -> float:
 		background: none;
 	}
 
-	/* Bio & meta */
 	.bio {
 		font-size: 1.1rem;
 		color: var(--text-secondary);
@@ -481,9 +345,7 @@ def weighted_score(sources: dict) -> float:
 		color: var(--text-primary);
 		font-weight: 600;
 	}
-	.meta-dot {
-		color: var(--text-muted);
-	}
+	.meta-dot { color: var(--text-muted); }
 	.follow-btn {
 		padding: 0.5rem 1.5rem;
 		border-radius: 100px;
@@ -518,7 +380,6 @@ def weighted_score(sources: dict) -> float:
 		color: var(--yarn-pink);
 	}
 
-	/* ===== Skills Section ===== */
 	.skills-section {
 		position: relative;
 		z-index: 1;
@@ -532,8 +393,6 @@ def weighted_score(sources: dict) -> float:
 		gap: 2rem;
 		align-items: start;
 	}
-
-	/* Skills list */
 	.skills-list {
 		display: flex;
 		flex-direction: column;
@@ -604,14 +463,9 @@ def weighted_score(sources: dict) -> float:
 		font-size: 0.75rem;
 		color: var(--text-muted);
 	}
-	.skill-version {
-		font-family: var(--font-mono);
-	}
+	.skill-version { font-family: var(--font-mono); }
 
-	/* ===== Skill Detail ===== */
-	.skill-detail {
-		min-width: 0;
-	}
+	.skill-detail { min-width: 0; }
 	.detail-header {
 		display: flex;
 		justify-content: space-between;
@@ -643,19 +497,13 @@ def weighted_score(sources: dict) -> float:
 		transform: translateY(-1px);
 		box-shadow: 0 6px 24px rgba(108, 92, 231, 0.4);
 	}
-	.install-arrow {
-		transition: transform 0.2s;
-	}
-	.install-btn:hover .install-arrow {
-		transform: translateX(3px);
-	}
+	.install-arrow { transition: transform 0.2s; }
+	.install-btn:hover .install-arrow { transform: translateX(3px); }
 
-	/* File tabs */
 	.file-tabs {
 		display: flex;
 		gap: 0;
 		border-bottom: 1px solid var(--border);
-		margin-bottom: 0;
 	}
 	.file-tab {
 		display: flex;
@@ -679,11 +527,8 @@ def weighted_score(sources: dict) -> float:
 		color: var(--accent-bright);
 		border-bottom-color: var(--accent);
 	}
-	.file-icon {
-		font-size: 0.9rem;
-	}
+	.file-icon { font-size: 0.9rem; }
 
-	/* Code viewer */
 	.code-viewer {
 		background: var(--bg-card);
 		border: 1px solid var(--border);
@@ -729,11 +574,8 @@ def weighted_score(sources: dict) -> float:
 		margin: 0;
 		tab-size: 2;
 	}
-	.code-content code {
-		font-family: inherit;
-	}
+	.code-content code { font-family: inherit; }
 
-	/* Version hash */
 	.version-hash {
 		display: flex;
 		align-items: center;
@@ -759,18 +601,11 @@ def weighted_score(sources: dict) -> float:
 		border: 1px solid var(--border);
 	}
 	.hash-sep { color: var(--text-muted); }
-	.hash-link {
-		font-family: var(--font-mono);
-		font-size: 0.75rem;
-	}
 
-	/* ===== Responsive ===== */
 	@media (max-width: 900px) {
 		.skills-inner {
 			grid-template-columns: 1fr;
 		}
-		.skills-list {
-			position: static;
-		}
+		.skills-list { position: static; }
 	}
 </style>

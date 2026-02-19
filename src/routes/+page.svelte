@@ -1,42 +1,10 @@
 <script lang="ts">
 	import YarnBall from '$lib/components/YarnBall.svelte';
+	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { enhance } from '$app/forms';
 
 	let { form } = $props();
 	let submitted = $state(false);
-
-	const features = [
-		{
-			icon: '🧵',
-			title: 'Craft & Publish',
-			desc: 'Build skills with our markdown editor. No git required — just write, preview, and publish.'
-		},
-		{
-			icon: '🔍',
-			title: 'Discover & Install',
-			desc: 'Browse by category, author, or trending. Find the perfect skill for your agent in seconds.'
-		},
-		{
-			icon: '✅',
-			title: 'Verified Authors',
-			desc: 'Real people, real expertise. Verified profiles so you know who built what you\'re installing.'
-		},
-		{
-			icon: '🔗',
-			title: 'GitHub Sync',
-			desc: 'Import skills from repos or publish from Loooom to GitHub. Your workflow, your choice.'
-		},
-		{
-			icon: '🧬',
-			title: 'Context-Rich',
-			desc: 'Skills ship with context — reference material, author notes, examples. Not just prompts.'
-		},
-		{
-			icon: '💜',
-			title: 'Support Creators',
-			desc: 'Tip skill authors directly. Great work deserves recognition.'
-		}
-	];
 
 	const categories = [
 		'Writing', 'Engineering', 'Research', 'Creative', 'Automation',
@@ -64,9 +32,8 @@
 			<span class="logo-text">loooom</span>
 		</a>
 		<div class="nav-links">
-			<a href="#features">Features</a>
-			<a href="#how">How It Works</a>
 			<a href="#explore">Explore</a>
+			<ThemeToggle />
 			<button class="btn-nav">Sign In</button>
 		</div>
 	</div>
@@ -116,22 +83,6 @@
 					</form>
 				{/if}
 			</div>
-			<div class="hero-stats">
-				<div class="stat">
-					<span class="stat-num">—</span>
-					<span class="stat-label">Skills</span>
-				</div>
-				<div class="stat-divider"></div>
-				<div class="stat">
-					<span class="stat-num">—</span>
-					<span class="stat-label">Authors</span>
-				</div>
-				<div class="stat-divider"></div>
-				<div class="stat">
-					<span class="stat-num">—</span>
-					<span class="stat-label">Installs</span>
-				</div>
-			</div>
 		</div>
 		<div class="hero-visual">
 			<YarnBall size={360} animated={true} />
@@ -143,56 +94,6 @@
 		{#each Array(6) as _, i}
 			<div class="thread-particle" style="--delay: {i * 0.8}s; --x: {15 + i * 14}%;"></div>
 		{/each}
-	</div>
-</section>
-
-<!-- Features -->
-<section id="features" class="features">
-	<div class="section-inner">
-		<span class="section-tag">Features</span>
-		<h2>Everything a skill needs to <span class="gradient-text">thrive</span></h2>
-		<div class="feature-grid">
-			{#each features as feature, i}
-				<div class="feature-card" style="--i: {i}">
-					<span class="feature-icon">{feature.icon}</span>
-					<h3>{feature.title}</h3>
-					<p>{feature.desc}</p>
-				</div>
-			{/each}
-		</div>
-	</div>
-</section>
-
-<!-- How It Works -->
-<section id="how" class="how-it-works">
-	<div class="section-inner">
-		<span class="section-tag">How It Works</span>
-		<h2>From idea to <span class="gradient-text">installed</span></h2>
-		<div class="steps">
-			<div class="step">
-				<div class="step-num">01</div>
-				<div class="step-content">
-					<h3>Craft your skill</h3>
-					<p>Use our WYSIWYG markdown editor to write your skill following the open AgentSkills spec. Add context, examples, and reference material.</p>
-				</div>
-			</div>
-			<div class="step-connector"></div>
-			<div class="step">
-				<div class="step-num">02</div>
-				<div class="step-content">
-					<h3>Publish & version</h3>
-					<p>Every version is content-hashed and immutable. Your skill's history is transparent and tamper-proof. No git required.</p>
-				</div>
-			</div>
-			<div class="step-connector"></div>
-			<div class="step">
-				<div class="step-num">03</div>
-				<div class="step-content">
-					<h3>Get discovered</h3>
-					<p>Your skill appears in search, categories, and feeds. Verified authors get priority placement. Great skills rise naturally.</p>
-				</div>
-			</div>
-		</div>
 	</div>
 </section>
 
@@ -223,8 +124,6 @@
 		<div class="footer-links">
 			<div class="footer-col">
 				<h4>Product</h4>
-				<a href="#features">Features</a>
-				<a href="#how">How It Works</a>
 				<a href="#explore">Explore</a>
 			</div>
 			<div class="footer-col">
@@ -292,7 +191,7 @@
 		right: 0;
 		z-index: 100;
 		backdrop-filter: blur(20px);
-		background: rgba(10, 10, 15, 0.8);
+		background: var(--nav-bg, rgba(10, 10, 15, 0.8));
 		border-bottom: 1px solid rgba(42, 42, 58, 0.5);
 	}
 	.nav-inner {
@@ -417,7 +316,6 @@
 	.hero-actions {
 		display: flex;
 		gap: 1rem;
-		margin-bottom: 3rem;
 	}
 	.btn-primary {
 		display: inline-flex;
@@ -484,46 +382,6 @@
 		font-size: 1.2rem;
 		font-weight: 700;
 	}
-	.btn-secondary {
-		padding: 0.875rem 2rem;
-		background: transparent;
-		color: var(--text-primary);
-		border: 1px solid var(--border);
-		border-radius: var(--radius-md);
-		font-family: var(--font-display);
-		font-size: 1rem;
-		font-weight: 500;
-		cursor: pointer;
-		transition: all 0.25s;
-	}
-	.btn-secondary:hover {
-		border-color: var(--accent);
-		background: rgba(108, 92, 231, 0.05);
-	}
-	.hero-stats {
-		display: flex;
-		align-items: center;
-		gap: 2rem;
-	}
-	.stat-num {
-		font-family: var(--font-mono);
-		font-size: 1.5rem;
-		font-weight: 700;
-		color: var(--text-primary);
-	}
-	.stat-label {
-		display: block;
-		font-size: 0.8rem;
-		color: var(--text-muted);
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		margin-top: 0.25rem;
-	}
-	.stat-divider {
-		width: 1px;
-		height: 36px;
-		background: var(--border);
-	}
 	.hero-visual {
 		display: flex;
 		align-items: center;
@@ -577,90 +435,6 @@
 		margin-bottom: 3rem;
 	}
 
-	/* ===== Features ===== */
-	.features {
-		position: relative;
-		z-index: 1;
-		padding: 6rem 0;
-	}
-	.feature-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 1.5rem;
-	}
-	.feature-card {
-		background: var(--bg-card);
-		border: 1px solid var(--border);
-		border-radius: var(--radius-lg);
-		padding: 2rem;
-		transition: all 0.3s;
-	}
-	.feature-card:hover {
-		background: var(--bg-card-hover);
-		border-color: var(--accent);
-		transform: translateY(-4px);
-		box-shadow: 0 12px 40px rgba(108, 92, 231, 0.15);
-	}
-	.feature-icon {
-		font-size: 2rem;
-		display: block;
-		margin-bottom: 1rem;
-	}
-	.feature-card h3 {
-		font-size: 1.125rem;
-		font-weight: 700;
-		margin-bottom: 0.75rem;
-	}
-	.feature-card p {
-		font-size: 0.925rem;
-		color: var(--text-secondary);
-		line-height: 1.6;
-	}
-
-	/* ===== How It Works ===== */
-	.how-it-works {
-		position: relative;
-		z-index: 1;
-		padding: 6rem 0;
-	}
-	.steps {
-		display: flex;
-		flex-direction: column;
-		gap: 0;
-	}
-	.step {
-		display: flex;
-		gap: 2rem;
-		align-items: flex-start;
-		padding: 2rem 0;
-	}
-	.step-num {
-		font-family: var(--font-mono);
-		font-size: 3rem;
-		font-weight: 700;
-		color: var(--accent);
-		opacity: 0.3;
-		line-height: 1;
-		min-width: 80px;
-	}
-	.step-content h3 {
-		font-size: 1.5rem;
-		font-weight: 700;
-		margin-bottom: 0.75rem;
-	}
-	.step-content p {
-		color: var(--text-secondary);
-		line-height: 1.7;
-		max-width: 500px;
-	}
-	.step-connector {
-		width: 1px;
-		height: 40px;
-		background: linear-gradient(to bottom, var(--accent), transparent);
-		margin-left: 40px;
-		opacity: 0.3;
-	}
-
 	/* ===== Explore ===== */
 	.explore {
 		position: relative;
@@ -699,7 +473,6 @@
 	}
 	.explore-cta p {
 		color: var(--text-secondary);
-		margin-bottom: 1.5rem;
 		font-size: 1.1rem;
 	}
 
@@ -762,9 +535,7 @@
 		}
 		.hero-sub { margin: 0 auto 2.5rem; }
 		.hero-actions { justify-content: center; }
-		.hero-stats { justify-content: center; }
 		.hero-visual { order: -1; }
-		.feature-grid { grid-template-columns: 1fr; }
 		.nav-links a:not(.btn-nav) { display: none; }
 		.footer-inner { flex-direction: column; gap: 2rem; }
 		.footer-links { gap: 2rem; }
