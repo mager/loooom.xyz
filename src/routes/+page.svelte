@@ -145,7 +145,7 @@
 		<h2 class="handwriting">Browse by <span class="sketch">craft</span></h2>
 		<div class="categories">
 			{#each categories as cat}
-				<button class="cat-pill">{cat}</button>
+				<a href="/browse?category={cat}" class="cat-pill">{cat}</a>
 			{/each}
 		</div>
 		<div class="principles">
@@ -546,6 +546,7 @@
 		cursor: pointer;
 		transition: all 0.25s;
 		box-shadow: var(--card-shadow);
+		text-decoration: none;
 	}
 	.cat-pill:hover {
 		border-color: var(--accent);
