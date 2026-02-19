@@ -198,7 +198,7 @@
 		z-index: 100;
 		backdrop-filter: blur(20px);
 		background: var(--nav-bg, rgba(10, 10, 15, 0.8));
-		border-bottom: 1px solid rgba(42, 42, 58, 0.5);
+		border-bottom: 1px solid var(--border);
 	}
 	.nav-inner {
 		max-width: 1200px;
@@ -542,7 +542,7 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 0.75rem 1.25rem;
-		border-bottom: 1px solid rgba(42, 42, 58, 0.5);
+		border-bottom: 1px solid var(--border);
 		background: rgba(108, 92, 231, 0.03);
 	}
 	.code-filename {

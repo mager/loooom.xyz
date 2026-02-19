@@ -157,6 +157,9 @@
 		position: absolute;
 		border-radius: 50%;
 		filter: blur(120px);
+		opacity: 0.08;
+	}
+	:global(html[data-theme="dark"]) .orb {
 		opacity: 0.15;
 	}
 	.orb-1 {
@@ -193,7 +196,7 @@
 		z-index: 100;
 		backdrop-filter: blur(20px);
 		background: var(--nav-bg, rgba(10, 10, 15, 0.8));
-		border-bottom: 1px solid rgba(42, 42, 58, 0.5);
+		border-bottom: 1px solid var(--border);
 	}
 	.nav-inner {
 		max-width: 1200px;
@@ -522,7 +525,7 @@
 		max-width: 1200px;
 		margin: 0 auto;
 		padding-top: 2rem;
-		border-top: 1px solid rgba(42, 42, 58, 0.5);
+		border-top: 1px solid var(--border);
 		text-align: center;
 		color: var(--text-muted);
 		font-size: 0.8rem;

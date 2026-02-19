@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 
-	let dark = $state(true);
+	let dark = $state(false);
 
 	if (browser) {
 		const stored = localStorage.getItem('theme');
-		dark = stored ? stored === 'dark' : true;
+		dark = stored === 'dark';
 		document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
 	}
 
@@ -53,7 +53,7 @@
 	}
 	.theme-toggle:hover {
 		border-color: var(--accent);
-		color: var(--accent-bright);
-		background: rgba(108, 92, 231, 0.1);
+		color: var(--accent);
+		background: rgba(108, 92, 231, 0.08);
 	}
 </style>

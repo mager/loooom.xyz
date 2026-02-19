@@ -1,4 +1,45 @@
+:root {
+	--font-display: 'Outfit', sans-serif;
+	--font-mono: 'Space Mono', monospace;
+	--font-handwriting: 'Caveat', cursive;
+	--font-serif: 'Playfair Display', serif;
+	--radius-sm: 8px;
+	--radius-md: 12px;
+	--radius-lg: 20px;
+	--radius-xl: 28px;
+}
+
+/* ===== LIGHT MODE (default — craft paper, paint markers, yarn shop) ===== */
 :root,
+html[data-theme="light"] {
+	--bg-primary: #faf6f0;
+	--bg-secondary: #f3ede4;
+	--bg-card: #ffffff;
+	--bg-card-hover: #fdf9f4;
+	--border: #e2d9cc;
+	--border-glow: #7c5ce7;
+	--text-primary: #2d2a3e;
+	--text-secondary: #5c576e;
+	--text-muted: #9a95a8;
+	--accent: #6c5ce7;
+	--accent-bright: #5a4bd4;
+	--accent-dim: #4a3db5;
+	--yarn-pink: #e84393;
+	--yarn-blue: #3d85c6;
+	--yarn-orange: #e8a020;
+	--yarn-green: #27ae60;
+	--yarn-red: #e74c3c;
+	--yarn-teal: #1abc9c;
+	--gradient-hero: linear-gradient(135deg, #6c5ce7 0%, #e84393 50%, #e8a020 100%);
+	--gradient-subtle: linear-gradient(135deg, rgba(108, 92, 231, 0.06) 0%, rgba(232, 67, 147, 0.03) 100%);
+	--nav-bg: rgba(250, 246, 240, 0.9);
+	--topic-underline-height: 7px;
+	--card-shadow: 0 2px 12px rgba(45, 42, 62, 0.06);
+	--card-shadow-hover: 0 8px 30px rgba(45, 42, 62, 0.1);
+	--paper-grain: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+/* ===== DARK MODE ===== */
 html[data-theme="dark"] {
 	--bg-primary: #0a0a0f;
 	--bg-secondary: #12121a;
@@ -16,41 +57,15 @@ html[data-theme="dark"] {
 	--yarn-blue: #74b9ff;
 	--yarn-orange: #fdcb6e;
 	--yarn-green: #55efc4;
+	--yarn-red: #ff6b6b;
+	--yarn-teal: #55efc4;
 	--gradient-hero: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 50%, #fd79a8 100%);
 	--gradient-subtle: linear-gradient(135deg, rgba(108, 92, 231, 0.1) 0%, rgba(253, 121, 168, 0.05) 100%);
 	--nav-bg: rgba(10, 10, 15, 0.8);
-	--topic-underline-height: 4px;
-	--font-display: 'Outfit', sans-serif;
-	--font-mono: 'Space Mono', monospace;
-	--font-handwriting: 'Caveat', cursive;
-	--font-serif: 'Playfair Display', serif;
-	--radius-sm: 8px;
-	--radius-md: 12px;
-	--radius-lg: 20px;
-	--radius-xl: 28px;
-}
-
-html[data-theme="light"] {
-	--bg-primary: #faf8f4;
-	--bg-secondary: #f0ece4;
-	--bg-card: #fff;
-	--bg-card-hover: #f5f0ea;
-	--border: #d4cfc6;
-	--border-glow: #7c6dd8;
-	--text-primary: #1a1a2e;
-	--text-secondary: #4a4a5e;
-	--text-muted: #8a8a9e;
-	--accent: #7c6dd8;
-	--accent-bright: #6c5ce7;
-	--accent-dim: #5a4bb5;
-	--yarn-pink: #e84393;
-	--yarn-blue: #4a90d9;
-	--yarn-orange: #e6a817;
-	--yarn-green: #2ecc71;
-	--gradient-hero: linear-gradient(135deg, #7c6dd8 0%, #a29bfe 50%, #e84393 100%);
-	--gradient-subtle: linear-gradient(135deg, rgba(124, 109, 216, 0.08) 0%, rgba(232, 67, 147, 0.04) 100%);
-	--nav-bg: rgba(250, 248, 244, 0.85);
-	--topic-underline-height: 7px;
+	--topic-underline-height: 5px;
+	--card-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+	--card-shadow-hover: 0 8px 30px rgba(108, 92, 231, 0.15);
+	--paper-grain: none;
 }
 
 * {
@@ -66,15 +81,16 @@ html {
 body {
 	font-family: var(--font-display);
 	background: var(--bg-primary);
+	background-image: var(--paper-grain);
 	color: var(--text-primary);
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	overflow-x: hidden;
-	transition: background 0.3s, color 0.3s;
+	transition: background-color 0.3s, color 0.3s;
 }
 
 a {
-	color: var(--accent-bright);
+	color: var(--accent);
 	text-decoration: none;
 	transition: color 0.2s;
 }
@@ -84,6 +100,6 @@ a:hover {
 }
 
 ::selection {
-	background: rgba(108, 92, 231, 0.4);
+	background: rgba(108, 92, 231, 0.25);
 	color: var(--text-primary);
 }

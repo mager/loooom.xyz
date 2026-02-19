@@ -96,7 +96,7 @@
 		z-index: 100;
 		backdrop-filter: blur(20px);
 		background: var(--nav-bg, rgba(10, 10, 15, 0.8));
-		border-bottom: 1px solid rgba(42, 42, 58, 0.5);
+		border-bottom: 1px solid var(--border);
 	}
 	.nav-inner {
 		max-width: 1200px;
