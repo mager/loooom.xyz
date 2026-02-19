@@ -294,19 +294,20 @@
 	.handwriting {
 		font-family: var(--font-handwriting);
 		font-size: clamp(2rem, 4vw, 3rem);
-		font-weight: 300;
+		font-weight: 100;
 		line-height: 1.15;
 		color: var(--text-primary);
+		text-shadow: 0 0.5px 0 rgba(0, 0, 0, 0.06);
 	}
 	.writes {
-		font-weight: 200;
+		font-weight: 100;
 		color: var(--text-secondary);
 	}
 	.topics {
 		display: inline;
 		font-family: var(--font-handwriting);
 		font-size: clamp(2rem, 4vw, 3rem);
-		font-weight: 300;
+		font-weight: 200;
 		line-height: 1.25;
 	}
 	.topic {

@@ -258,8 +258,8 @@
 	.logo-text {
 		font-family: var(--font-handwriting);
 		font-size: 1.3rem;
-		font-weight: 200;
-		letter-spacing: 0.01em;
+		font-weight: 100;
+		letter-spacing: 0.02em;
 	}
 	.nav-links {
 		display: flex;
@@ -290,10 +290,15 @@
 	/* ===== Handwriting ===== */
 	.handwriting {
 		font-family: var(--font-handwriting);
-		font-weight: 300;
+		font-weight: 100;
+		text-shadow: 0 0.5px 0 rgba(0, 0, 0, 0.06);
+	}
+	:global(html[data-theme="dark"]) .handwriting {
+		text-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.08);
 	}
 	.handwriting.accent {
 		color: var(--accent);
+		font-weight: 200;
 	}
 	.sketch {
 		font-family: var(--font-sketch);

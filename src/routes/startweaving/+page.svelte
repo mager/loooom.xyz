@@ -118,7 +118,7 @@
 	.logo-text {
 		font-family: var(--font-handwriting);
 		font-size: 1.25rem;
-		font-weight: 200;
+		font-weight: 100;
 		letter-spacing: -0.02em;
 	}
 
@@ -154,7 +154,7 @@
 	.handwriting {
 		font-family: var(--font-handwriting);
 		font-size: 3rem;
-		font-weight: 200;
+		font-weight: 100;
 		background: var(--gradient-hero);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;

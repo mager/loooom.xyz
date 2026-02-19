@@ -56,7 +56,7 @@
 	.logo-text {
 		font-family: var(--font-handwriting);
 		font-size: 1.25rem;
-		font-weight: 200;
+		font-weight: 100;
 	}
 	.login-card {
 		width: 100%;
