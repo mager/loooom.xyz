@@ -1,5 +1,6 @@
 <script lang="ts">
 	import YarnBall from '$lib/components/YarnBall.svelte';
+	import YarnLogo from '$lib/components/YarnLogo.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { enhance } from '$app/forms';
 
@@ -28,7 +29,7 @@
 <nav>
 	<div class="nav-inner">
 		<a href="/" class="logo">
-			<span class="logo-mark">◎</span>
+			<YarnLogo size={28} />
 			<span class="logo-text">loooom</span>
 		</a>
 		<div class="nav-links">
@@ -117,7 +118,7 @@
 <footer>
 	<div class="footer-inner">
 		<div class="footer-brand">
-			<span class="logo-mark">◎</span>
+			<YarnLogo size={28} />
 			<span class="logo-text">loooom</span>
 			<p class="footer-tagline">Where skills are woven.</p>
 		</div>

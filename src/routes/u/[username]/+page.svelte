@@ -1,5 +1,6 @@
 <script lang="ts">
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+	import YarnLogo from '$lib/components/YarnLogo.svelte';
 
 	let { data } = $props();
 
@@ -36,7 +37,7 @@
 <nav>
 	<div class="nav-inner">
 		<a href="/" class="logo">
-			<span class="logo-mark">◎</span>
+			<YarnLogo size={28} />
 			<span class="logo-text">loooom</span>
 		</a>
 		<div class="nav-right">

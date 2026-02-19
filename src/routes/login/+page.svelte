@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import YarnLogo from '$lib/components/YarnLogo.svelte';
 	let { form } = $props();
 </script>
 
@@ -9,7 +10,7 @@
 
 <div class="login-page">
 	<a href="/" class="logo">
-		<span class="logo-mark">◎</span>
+		<YarnLogo size={28} />
 		<span class="logo-text">loooom</span>
 	</a>
 
