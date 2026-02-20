@@ -1,5 +1,4 @@
 <script lang="ts">
-	import YarnBall from '$lib/components/YarnBall.svelte';
 	import YarnLogo from '$lib/components/YarnLogo.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { enhance } from '$app/forms';
@@ -19,6 +18,15 @@
 	const categories = [
 		'Writing', 'Music', 'Cooking', 'Engineering', 'Art',
 		'Research', 'Design', 'Education', 'Health', 'Business'
+	];
+
+	// Hero plugin preview data
+	const heroSkills = [
+		{ emoji: '🔤', title: 'Hiragana & Katakana', tag: 'Writing Systems' },
+		{ emoji: '📐', title: 'Radicals', tag: 'Building Blocks' },
+		{ emoji: '🈁', title: 'Easy Kanji', tag: 'First 50' },
+		{ emoji: '💬', title: 'Basic Conversation', tag: 'Survival Kit' },
+		{ emoji: '🔥', title: 'Level Up', tag: 'Go Deeper' },
 	];
 </script>
 
@@ -101,7 +109,28 @@
 			<p class="hero-note">Skills are always free. Open source. Open format.</p>
 		</div>
 		<div class="hero-visual">
-			<YarnBall size={320} animated={true} />
+			<a href={data.featuredPlugins?.[0] ? `/p/${data.featuredPlugins[0].author?.username}/${data.featuredPlugins[0].name}` : '/browse'} class="hero-plugin-card">
+				<div class="hero-plugin-header">
+					<span class="hero-plugin-badge">🧩 Featured Plugin</span>
+					<span class="hero-plugin-count">5 skills</span>
+				</div>
+				<h3 class="hero-plugin-title">Beginner Japanese</h3>
+				<p class="hero-plugin-desc">From zero to ordering ramen in Tokyo</p>
+				<div class="hero-plugin-skills">
+					{#each heroSkills as skill, i}
+						<div class="hero-skill-row" style="animation-delay: {i * 0.1}s">
+							<span class="hero-skill-num">{i + 1}</span>
+							<span class="hero-skill-emoji">{skill.emoji}</span>
+							<span class="hero-skill-title">{skill.title}</span>
+							<span class="hero-skill-tag">{skill.tag}</span>
+						</div>
+					{/each}
+				</div>
+				<div class="hero-plugin-footer">
+					<span class="hero-plugin-author">by @mager</span>
+					<span class="hero-plugin-cta">Explore →</span>
+				</div>
+			</a>
 		</div>
 	</div>
 </section>
@@ -496,6 +525,139 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+	}
+
+	/* Hero Plugin Card */
+	.hero-plugin-card {
+		display: block;
+		width: 100%;
+		max-width: 380px;
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-lg);
+		padding: 1.75rem;
+		box-shadow: 0 8px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(108,92,231,0.05);
+		transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+		text-decoration: none;
+		color: inherit;
+		position: relative;
+		overflow: hidden;
+	}
+	.hero-plugin-card::before {
+		content: '';
+		position: absolute;
+		top: 0; left: 0; right: 0;
+		height: 3px;
+		background: linear-gradient(90deg, var(--accent), var(--yarn-pink), var(--yarn-teal));
+	}
+	.hero-plugin-card:hover {
+		transform: translateY(-6px) rotate(-0.5deg);
+		box-shadow: 0 20px 60px rgba(0,0,0,0.12), 0 0 0 1px rgba(108,92,231,0.1);
+		border-color: var(--text-muted);
+		color: inherit;
+	}
+	.hero-plugin-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 0.75rem;
+	}
+	.hero-plugin-badge {
+		font-size: 0.65rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		color: var(--accent);
+		background: color-mix(in srgb, var(--accent) 10%, transparent);
+		padding: 0.2rem 0.6rem;
+		border-radius: 999px;
+	}
+	.hero-plugin-count {
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		color: var(--text-muted);
+	}
+	.hero-plugin-title {
+		font-family: var(--font-handwriting);
+		font-size: 1.6rem;
+		font-weight: 100;
+		color: var(--text-primary);
+		margin-bottom: 0.25rem;
+	}
+	.hero-plugin-desc {
+		font-size: 0.9rem;
+		color: var(--text-secondary);
+		margin-bottom: 1.25rem;
+	}
+	.hero-plugin-skills {
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+	}
+	.hero-skill-row {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		padding: 0.5rem 0.6rem;
+		border-radius: var(--radius-sm);
+		transition: background 0.2s;
+		animation: skillFadeIn 0.4s ease-out both;
+	}
+	@keyframes skillFadeIn {
+		from { opacity: 0; transform: translateX(-8px); }
+		to { opacity: 1; transform: translateX(0); }
+	}
+	.hero-plugin-card:hover .hero-skill-row:hover {
+		background: var(--bg-card-hover);
+	}
+	.hero-skill-num {
+		font-family: var(--font-mono);
+		font-size: 0.6rem;
+		font-weight: 700;
+		color: var(--text-muted);
+		width: 16px;
+		text-align: center;
+	}
+	.hero-skill-emoji {
+		font-size: 1rem;
+		width: 24px;
+		text-align: center;
+	}
+	.hero-skill-title {
+		font-family: var(--font-display);
+		font-size: 0.85rem;
+		font-weight: 600;
+		color: var(--text-primary);
+		flex: 1;
+	}
+	.hero-skill-tag {
+		font-family: var(--font-mono);
+		font-size: 0.6rem;
+		color: var(--text-muted);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+	.hero-plugin-footer {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-top: 1rem;
+		padding-top: 0.75rem;
+		border-top: 1px solid var(--border);
+	}
+	.hero-plugin-author {
+		font-family: var(--font-handwriting);
+		font-size: 0.85rem;
+		color: var(--text-muted);
+	}
+	.hero-plugin-cta {
+		font-size: 0.85rem;
+		font-weight: 600;
+		color: var(--accent-rose);
+		transition: transform 0.2s;
+	}
+	.hero-plugin-card:hover .hero-plugin-cta {
+		transform: translateX(4px);
 	}
 
 	/* ===== Vision ===== */
