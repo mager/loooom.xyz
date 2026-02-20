@@ -124,10 +124,10 @@
 			<div class="detail-header">
 				<h2 class="detail-title">{data.skills[activeSkill].title}</h2>
 				<div class="detail-actions">
-					<button class="install-btn">
-						Install
+					<a href="/s/{data.user.username}/{data.skills[activeSkill].name}" class="install-btn">
+						Use
 						<span class="install-arrow">→</span>
-					</button>
+					</a>
 				</div>
 			</div>
 
@@ -521,6 +521,7 @@
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.25s;
+		text-decoration: none;
 	}
 	.install-btn:hover {
 		background: var(--accent-bright);
