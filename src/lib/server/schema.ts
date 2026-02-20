@@ -12,6 +12,7 @@ export const users = pgTable('users', {
 	verified: boolean('verified').notNull().default(false),
 	topics: jsonb('topics').$type<string[]>().default([]),
 	createdAt: timestamp('created_at').notNull().defaultNow(),
+	firebaseUid: text('firebase_uid').unique(),
 	updatedAt: timestamp('updated_at').notNull().defaultNow()
 });
 

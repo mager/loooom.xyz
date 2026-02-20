@@ -243,8 +243,8 @@
 		transition: all 0.2s;
 	}
 	.btn-nav:hover {
-		border-color: var(--accent);
-		background: rgba(108, 92, 231, 0.1);
+		border-color: var(--text-secondary);
+		background: var(--bg-card-hover);
 	}
 
 	.profile-header {
@@ -277,7 +277,7 @@
 		font-size: 2.5rem;
 		font-weight: 400;
 		color: white;
-		box-shadow: 0 0 0 3px var(--bg-primary), 0 0 0 5px var(--accent);
+		box-shadow: 0 0 0 3px var(--bg-primary), 0 0 0 5px var(--border);
 		overflow: hidden;
 	}
 	.avatar img {
@@ -292,7 +292,7 @@
 		width: 28px;
 		height: 28px;
 		border-radius: 50%;
-		background: var(--accent);
+		background: var(--yarn-teal);
 		color: white;
 		font-size: 0.8rem;
 		font-weight: 700;
@@ -385,10 +385,13 @@
 		cursor: pointer;
 		transition: all 0.25s;
 	}
+	:global(html[data-theme="dark"]) .follow-btn {
+		color: var(--bg-primary);
+	}
 	.follow-btn:hover {
 		background: var(--accent-bright);
 		transform: translateY(-1px);
-		box-shadow: 0 4px 20px rgba(108, 92, 231, 0.4);
+		box-shadow: 0 4px 20px rgba(45, 42, 62, 0.2);
 	}
 	.tip-btn {
 		padding: 0.5rem 1.5rem;
@@ -447,12 +450,12 @@
 	}
 	.skill-card:hover {
 		background: var(--bg-card-hover);
-		border-color: rgba(108, 92, 231, 0.3);
+		border-color: var(--text-muted);
 	}
 	.skill-card.active {
 		border-color: var(--accent);
-		background: rgba(108, 92, 231, 0.08);
-		box-shadow: 0 0 0 1px var(--accent), 0 8px 30px rgba(108, 92, 231, 0.12);
+		background: var(--bg-card-hover);
+		box-shadow: 0 0 0 1px var(--accent), var(--card-shadow-hover);
 	}
 	.skill-card-top {
 		display: flex;
@@ -464,8 +467,8 @@
 		font-size: 0.7rem;
 		font-weight: 600;
 		text-transform: uppercase;
-		letter-spacing: 0.1em;
-		color: var(--accent);
+		letter-spacing: 0.15em;
+		color: var(--text-muted);
 	}
 	.skill-installs {
 		font-family: var(--font-mono);
@@ -522,7 +525,10 @@
 	.install-btn:hover {
 		background: var(--accent-bright);
 		transform: translateY(-1px);
-		box-shadow: 0 6px 24px rgba(108, 92, 231, 0.4);
+		box-shadow: 0 6px 24px rgba(45, 42, 62, 0.2);
+	}
+	:global(html[data-theme="dark"]) .install-btn {
+		color: var(--bg-primary);
 	}
 	.install-arrow { transition: transform 0.2s; }
 	.install-btn:hover .install-arrow { transform: translateX(3px); }
@@ -548,10 +554,10 @@
 	}
 	.file-tab:hover {
 		color: var(--text-primary);
-		background: rgba(108, 92, 231, 0.05);
+		background: var(--bg-card-hover);
 	}
 	.file-tab.active {
-		color: var(--accent-bright);
+		color: var(--text-primary);
 		border-bottom-color: var(--accent);
 	}
 	.file-icon { font-size: 0.9rem; }
@@ -569,7 +575,7 @@
 		align-items: center;
 		padding: 0.75rem 1.25rem;
 		border-bottom: 1px solid var(--border);
-		background: rgba(108, 92, 231, 0.03);
+		background: var(--bg-secondary);
 	}
 	.code-filename {
 		font-family: var(--font-mono);
@@ -588,13 +594,13 @@
 		transition: all 0.2s;
 	}
 	.code-copy:hover {
-		border-color: var(--accent);
-		color: var(--accent-bright);
+		border-color: var(--text-secondary);
+		color: var(--text-primary);
 	}
 	.code-content {
 		padding: 1.5rem;
 		font-family: var(--font-mono);
-		font-size: 0.82rem;
+		font-size: 0.9rem;
 		line-height: 1.5;
 		color: var(--text-secondary);
 		overflow-x: auto;

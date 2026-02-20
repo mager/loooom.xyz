@@ -324,7 +324,7 @@
 		transition: all 0.2s;
 	}
 	.btn-nav:hover {
-		border-color: var(--accent);
+		border-color: var(--text-secondary);
 	}
 
 	/* ===== Handwriting ===== */
@@ -337,7 +337,7 @@
 		text-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.08);
 	}
 	.handwriting.accent {
-		color: var(--accent);
+		color: var(--accent-rose);
 		font-weight: 200;
 	}
 	.sketch {
@@ -423,7 +423,7 @@
 	.btn-primary:hover {
 		background: var(--accent-bright);
 		transform: translateY(-1px);
-		box-shadow: 0 8px 30px rgba(108, 92, 231, 0.3);
+		box-shadow: 0 8px 30px rgba(45, 42, 62, 0.2);
 	}
 	.btn-arrow { transition: transform 0.2s; }
 	.btn-primary:hover .btn-arrow { transform: translateX(3px); }
@@ -446,7 +446,7 @@
 		transition: border-color 0.2s;
 	}
 	.waitlist-input::placeholder { color: var(--text-muted); }
-	.waitlist-input:focus { border-color: var(--accent); }
+	.waitlist-input:focus { border-color: var(--text-secondary); }
 	.waitlist-success {
 		display: flex;
 		align-items: center;
@@ -526,7 +526,7 @@
 		transition: all 0.25s;
 	}
 	.case-card:hover {
-		border-color: var(--accent);
+		border-color: var(--border);
 		box-shadow: var(--card-shadow-hover);
 	}
 	.case-who {
@@ -536,7 +536,7 @@
 		white-space: nowrap;
 	}
 	.case-arrow {
-		color: var(--accent);
+		color: var(--text-muted);
 		font-weight: 400;
 	}
 	.case-what {
@@ -580,8 +580,8 @@
 		text-decoration: none;
 	}
 	.cat-pill:hover {
-		border-color: var(--accent);
-		color: var(--accent);
+		border-color: var(--text-secondary);
+		color: var(--text-primary);
 		transform: translateY(-1px);
 	}
 	.principles {
@@ -614,8 +614,8 @@
 		position: relative;
 		z-index: 1;
 		border-top: 1px solid var(--border);
-		padding: 4rem 2rem 2rem;
-		margin-top: 2rem;
+		padding: 5rem 2rem 3rem;
+		margin-top: 4rem;
 	}
 	.footer-inner {
 		max-width: 1200px;
@@ -693,7 +693,7 @@
 		text-decoration: none;
 	}
 	.featured-card:hover {
-		border-color: var(--accent);
+		border-color: var(--border);
 		box-shadow: var(--card-shadow-hover);
 		transform: translateY(-3px);
 		color: inherit;
@@ -708,8 +708,8 @@
 		font-size: 0.7rem;
 		font-weight: 600;
 		text-transform: uppercase;
-		letter-spacing: 0.1em;
-		color: var(--accent);
+		letter-spacing: 0.15em;
+		color: var(--text-muted);
 	}
 	.featured-uses {
 		font-family: var(--font-mono);
@@ -743,7 +743,7 @@
 		align-items: center;
 		padding: 0.6rem 1rem;
 		border-bottom: 1px solid var(--border);
-		background: rgba(108, 92, 231, 0.03);
+		background: var(--bg-secondary);
 	}
 	.featured-filename {
 		font-family: var(--font-mono);
@@ -758,7 +758,7 @@
 	.featured-code {
 		padding: 1.25rem;
 		font-family: var(--font-mono);
-		font-size: 0.78rem;
+		font-size: 0.88rem;
 		line-height: 1.5;
 		color: var(--text-secondary);
 		margin: 0;
@@ -783,7 +783,7 @@
 	}
 	.featured-cta {
 		margin-left: auto;
-		color: var(--accent);
+		color: var(--accent-rose);
 		font-weight: 600;
 		font-size: 0.875rem;
 		transition: transform 0.2s;
@@ -810,7 +810,7 @@
 		.footer-links { gap: 2rem; }
 		.waitlist-form { flex-direction: column; }
 		.featured-card { padding: 1.5rem; }
-		.featured-code { max-height: 200px; font-size: 0.72rem; }
+		.featured-code { max-height: 200px; font-size: 0.78rem; }
 		.hero { padding: 6rem 1rem 3rem; overflow-x: hidden; }
 		.section-inner { padding: 0 1rem; }
 	}

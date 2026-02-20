@@ -140,7 +140,7 @@
 		padding: 0.35rem 1rem 0.35rem 0.35rem; border-radius: 100px;
 		color: var(--text-primary); text-decoration: none; transition: all 0.2s;
 	}
-	.user-chip:hover { border-color: var(--accent); color: var(--text-primary); }
+	.user-chip:hover { border-color: var(--text-secondary); color: var(--text-primary); }
 	.user-chip-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
 	.user-chip-initial {
 		width: 28px; height: 28px; border-radius: 50%;
@@ -164,7 +164,7 @@
 		padding: 1.25rem; display: flex; flex-direction: column; gap: 0.25rem;
 		transition: all 0.25s;
 	}
-	.stat-card:hover { border-color: rgba(108, 92, 231, 0.3); box-shadow: var(--card-shadow-hover); }
+	.stat-card:hover { border-color: var(--border); box-shadow: var(--card-shadow-hover); }
 	.stat-value { font-size: 1.75rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em; }
 	.stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; font-family: var(--font-mono); }
 
@@ -175,7 +175,9 @@
 		border: none; border-radius: var(--radius-md); font-family: var(--font-display);
 		font-size: 0.95rem; font-weight: 600; text-decoration: none; transition: all 0.25s;
 	}
-	.btn-primary:hover { background: var(--accent-bright); transform: translateY(-1px); box-shadow: 0 8px 30px rgba(108,92,231,0.3); color: white; }
+	.btn-primary:hover { background: var(--accent-bright); transform: translateY(-1px); box-shadow: 0 8px 30px rgba(45,42,62,0.2); color: white; }
+	:global(html[data-theme="dark"]) .btn-primary { color: var(--bg-primary); }
+	:global(html[data-theme="dark"]) .btn-primary:hover { color: var(--bg-primary); }
 	.btn-arrow { transition: transform 0.2s; }
 	.btn-primary:hover .btn-arrow { transform: translateX(3px); }
 	.btn-secondary {
@@ -184,7 +186,7 @@
 		border: 1px solid var(--border); border-radius: var(--radius-md); font-family: var(--font-display);
 		font-size: 0.95rem; font-weight: 500; text-decoration: none; transition: all 0.25s;
 	}
-	.btn-secondary:hover { border-color: var(--accent); color: var(--text-primary); }
+	.btn-secondary:hover { border-color: var(--text-secondary); color: var(--text-primary); }
 
 	.skills-section { margin-bottom: 3rem; }
 	.section-label {
@@ -204,9 +206,9 @@
 		background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md);
 		padding: 1.25rem; transition: all 0.25s; font-family: var(--font-display);
 	}
-	.skill-card:hover { background: var(--bg-card-hover); border-color: rgba(108,92,231,0.3); box-shadow: var(--card-shadow-hover); }
+	.skill-card:hover { background: var(--bg-card-hover); border-color: var(--border); box-shadow: var(--card-shadow-hover); }
 	.skill-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-	.skill-category { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); }
+	.skill-category { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); }
 	.skill-badge {
 		font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
 		padding: 0.2rem 0.6rem; border-radius: 100px;
@@ -217,8 +219,8 @@
 	.skill-desc { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.25; margin-bottom: 0.75rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 	.skill-meta { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.75rem; font-family: var(--font-mono); }
 	.skill-actions { display: flex; gap: 1rem; border-top: 1px solid var(--border); padding-top: 0.75rem; }
-	.action-link { font-size: 0.8rem; color: var(--accent); font-weight: 500; text-decoration: none; }
-	.action-link:hover { color: var(--accent-bright); }
+	.action-link { font-size: 0.8rem; color: var(--accent-rose); font-weight: 500; text-decoration: none; }
+	.action-link:hover { color: var(--yarn-pink); }
 
 	@media (max-width: 768px) {
 		.stats-row { grid-template-columns: repeat(2, 1fr); }

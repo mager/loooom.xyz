@@ -1,7 +1,65 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
+	import { goto } from '$app/navigation';
 	import YarnLogo from '$lib/components/YarnLogo.svelte';
-	let { form } = $props();
+	import { signInWithEmail, resetPassword } from '$lib/firebase';
+
+	let email = $state('');
+	let password = $state('');
+	let error = $state('');
+	let loading = $state(false);
+	let resetMode = $state(false);
+	let resetSent = $state(false);
+
+	async function handleLogin(e: Event) {
+		e.preventDefault();
+		error = '';
+		loading = true;
+
+		try {
+			const user = await signInWithEmail(email, password);
+			const idToken = await user.getIdToken();
+
+			const res = await fetch('/api/auth', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ idToken })
+			});
+
+			const data = await res.json();
+			if (!res.ok) {
+				error = data.error || 'Login failed';
+				loading = false;
+				return;
+			}
+
+			goto('/dashboard');
+		} catch (e: unknown) {
+			const msg = e instanceof Error ? e.message : 'Login failed';
+			if (msg.includes('user-not-found') || msg.includes('wrong-password') || msg.includes('invalid-credential')) {
+				error = 'Invalid email or password';
+			} else if (msg.includes('too-many-requests')) {
+				error = 'Too many attempts. Try again later.';
+			} else {
+				error = 'Login failed. Please try again.';
+			}
+			loading = false;
+		}
+	}
+
+	async function handleReset(e: Event) {
+		e.preventDefault();
+		error = '';
+		if (!email) {
+			error = 'Enter your email first';
+			return;
+		}
+		try {
+			await resetPassword(email);
+			resetSent = true;
+		} catch {
+			error = 'Could not send reset email. Check your address.';
+		}
+	}
 </script>
 
 <svelte:head>
@@ -15,23 +73,63 @@
 	</a>
 
 	<div class="login-card">
-		<h1>Welcome back</h1>
-		<p class="subtitle">Enter your username to continue</p>
+		{#if resetMode}
+			{#if resetSent}
+				<h1>Check your email</h1>
+				<p class="subtitle">We sent a password reset link to <strong>{email}</strong></p>
+				<button class="link-btn" onclick={() => { resetMode = false; resetSent = false; }}>← Back to login</button>
+			{:else}
+				<h1>Reset password</h1>
+				<p class="subtitle">Enter your email and we'll send a reset link</p>
 
-		{#if form?.error}
-			<div class="error">{form.error}</div>
+				{#if error}
+					<div class="error">{error}</div>
+				{/if}
+
+				<form onsubmit={handleReset}>
+					<input
+						type="email"
+						bind:value={email}
+						placeholder="you@example.com"
+						required
+						autocomplete="email"
+					/>
+					<button type="submit">Send Reset Link →</button>
+				</form>
+				<button class="link-btn" onclick={() => { resetMode = false; error = ''; }}>← Back to login</button>
+			{/if}
+		{:else}
+			<h1>Welcome back</h1>
+			<p class="subtitle">Sign in to your Loooom account</p>
+
+			{#if error}
+				<div class="error">{error}</div>
+			{/if}
+
+			<form onsubmit={handleLogin}>
+				<input
+					type="email"
+					bind:value={email}
+					placeholder="you@example.com"
+					required
+					autocomplete="email"
+				/>
+				<input
+					type="password"
+					bind:value={password}
+					placeholder="password"
+					required
+					autocomplete="current-password"
+				/>
+				<button type="submit" disabled={loading}>
+					{loading ? 'Signing in...' : 'Log In →'}
+				</button>
+			</form>
+			<div class="links">
+				<button class="link-btn" onclick={() => { resetMode = true; error = ''; }}>Forgot password?</button>
+				<a href="/startweaving">Create account</a>
+			</div>
 		{/if}
-
-		<form method="POST" use:enhance>
-			<input
-				type="text"
-				name="username"
-				placeholder="username"
-				required
-				autocomplete="username"
-			/>
-			<button type="submit">Log In →</button>
-		</form>
 	</div>
 </div>
 
@@ -52,7 +150,6 @@
 		color: var(--text-primary);
 		text-decoration: none;
 	}
-	.logo-mark { font-size: 1.5rem; color: var(--accent); }
 	.logo-text {
 		font-family: var(--font-handwriting);
 		font-size: 1.25rem;
@@ -101,9 +198,9 @@
 		outline: none;
 		transition: border-color 0.2s;
 	}
-	input:focus { border-color: var(--accent); }
+	input:focus { border-color: var(--text-secondary); }
 	input::placeholder { color: var(--text-muted); }
-	button {
+	button[type="submit"] {
 		padding: 0.875rem;
 		background: var(--accent);
 		color: white;
@@ -115,8 +212,36 @@
 		cursor: pointer;
 		transition: all 0.25s;
 	}
-	button:hover {
+	button[type="submit"]:hover:not(:disabled) {
 		background: var(--accent-bright);
 		transform: translateY(-1px);
+		box-shadow: 0 6px 24px rgba(45, 42, 62, 0.15);
+	}
+	:global(html[data-theme="dark"]) button[type="submit"] {
+		color: var(--bg-primary);
+	}
+	button[type="submit"]:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+	.links {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-top: 1.25rem;
+		font-size: 0.875rem;
+	}
+	.link-btn {
+		background: none;
+		border: none;
+		color: var(--accent-rose);
+		cursor: pointer;
+		font-family: var(--font-display);
+		font-size: 0.875rem;
+		padding: 0;
+		margin-top: 1rem;
+	}
+	.link-btn:hover {
+		color: var(--yarn-pink);
 	}
 </style>
