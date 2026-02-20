@@ -155,6 +155,38 @@
 </section>
 {/if}
 
+<!-- Featured Plugins -->
+{#if data.featuredPlugins && data.featuredPlugins.length > 0}
+<section class="plugins-section">
+	<div class="section-inner">
+		<h2 class="handwriting">Featured <span class="sketch">Plugins</span></h2>
+		<p class="plugins-subtitle">Curated learning paths — multiple skills bundled into one curriculum.</p>
+		<div class="plugins-grid">
+			{#each data.featuredPlugins as plugin}
+				<a href="/p/{plugin.author?.username}/{plugin.name}" class="plugin-card">
+					<div class="plugin-card-top">
+						{#if plugin.category}
+							<span class="plugin-category">{plugin.category}</span>
+						{/if}
+						<span class="plugin-skill-count">{plugin.skillCount} skills</span>
+					</div>
+					<h3 class="plugin-title">{plugin.title}</h3>
+					{#if plugin.description}
+						<p class="plugin-desc">{plugin.description}</p>
+					{/if}
+					{#if plugin.author}
+						<div class="plugin-author">
+							<span class="plugin-by">by</span>
+							<span class="plugin-author-name">@{plugin.author.username}</span>
+						</div>
+					{/if}
+				</a>
+			{/each}
+		</div>
+	</div>
+</section>
+{/if}
+
 <!-- Use Cases -->
 <section class="use-cases">
 	<div class="section-inner">
@@ -790,6 +822,88 @@
 		transition: transform 0.2s;
 	}
 	.featured-card:hover .featured-cta { transform: translateX(3px); }
+
+	/* ===== Featured Plugins ===== */
+	.plugins-section {
+		position: relative;
+		z-index: 1;
+		padding: 2rem 0 6rem;
+	}
+	.plugins-section h2 {
+		font-size: clamp(2rem, 4vw, 3rem);
+		margin-bottom: 0.75rem;
+	}
+	.plugins-subtitle {
+		color: var(--text-secondary);
+		font-size: 1.05rem;
+		margin-bottom: 2rem;
+	}
+	.plugins-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+		gap: 1.25rem;
+	}
+	.plugin-card {
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		padding: 1.5rem;
+		transition: all 0.25s;
+		text-decoration: none;
+		display: flex;
+		flex-direction: column;
+	}
+	.plugin-card:hover {
+		border-color: var(--border);
+		box-shadow: var(--card-shadow-hover);
+		transform: translateY(-2px);
+	}
+	.plugin-card-top {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 0.75rem;
+	}
+	.plugin-category {
+		font-size: 0.7rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.15em;
+		color: var(--text-muted);
+	}
+	.plugin-skill-count {
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		color: var(--text-muted);
+	}
+	.plugin-title {
+		font-size: 1.15rem;
+		font-weight: 700;
+		color: var(--text-primary);
+		margin-bottom: 0.5rem;
+	}
+	.plugin-desc {
+		font-size: 0.85rem;
+		color: var(--text-secondary);
+		line-height: 1.35;
+		margin-bottom: 1rem;
+		flex: 1;
+	}
+	.plugin-author {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		margin-top: auto;
+	}
+	.plugin-by {
+		font-size: 0.8rem;
+		color: var(--text-muted);
+	}
+	.plugin-author-name {
+		font-family: var(--font-handwriting);
+		font-size: 0.9rem;
+		color: var(--text-primary);
+	}
 
 	/* ===== Responsive ===== */
 	@media (max-width: 900px) {

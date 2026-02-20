@@ -1,8 +1,8 @@
 import type { Actions, PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
-import { waitlist, skills, skillVersions, users } from '$lib/server/schema';
+import { waitlist, skills, skillVersions, users, plugins, pluginSkills } from '$lib/server/schema';
 import { fail } from '@sveltejs/kit';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, count } from 'drizzle-orm';
 
 export const load: PageServerLoad = async () => {
 	// Load featured skill: Franklin's "How to Learn Anything" from loooom account
@@ -16,7 +16,42 @@ export const load: PageServerLoad = async () => {
 
 	const [version] = await db.select().from(skillVersions).where(eq(skillVersions.skillId, skill.id));
 
+	// Load featured plugins
+	const allPlugins = await db
+		.select({
+			id: plugins.id,
+			name: plugins.name,
+			title: plugins.title,
+			description: plugins.description,
+			category: plugins.category,
+			authorId: plugins.authorId
+		})
+		.from(plugins)
+		.where(eq(plugins.isPublished, true));
+
+	const featuredPlugins = await Promise.all(
+		allPlugins.map(async (p) => {
+			const [author] = await db
+				.select({ username: users.username, displayName: users.displayName })
+				.from(users)
+				.where(eq(users.id, p.authorId));
+			const [skillCount] = await db
+				.select({ count: count() })
+				.from(pluginSkills)
+				.where(eq(pluginSkills.pluginId, p.id));
+			return {
+				name: p.name,
+				title: p.title,
+				description: p.description,
+				category: p.category,
+				skillCount: skillCount?.count ?? 0,
+				author: author ? { username: author.username, displayName: author.displayName } : null
+			};
+		})
+	);
+
 	return {
+		featuredPlugins,
 		featuredSkill: {
 			title: skill.title,
 			description: skill.description,

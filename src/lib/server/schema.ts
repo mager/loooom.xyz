@@ -43,6 +43,32 @@ export const skillVersions = pgTable('skill_versions', {
 	createdAt: timestamp('created_at').notNull().defaultNow()
 });
 
+export const plugins = pgTable('plugins', {
+	id: uuid('id').primaryKey().defaultRandom(),
+	authorId: uuid('author_id')
+		.notNull()
+		.references(() => users.id),
+	name: text('name').notNull(),
+	title: text('title').notNull(),
+	description: text('description'),
+	category: text('category'),
+	isPublished: boolean('is_published').notNull().default(false),
+	createdAt: timestamp('created_at').notNull().defaultNow(),
+	updatedAt: timestamp('updated_at').notNull().defaultNow()
+});
+
+export const pluginSkills = pgTable('plugin_skills', {
+	id: uuid('id').primaryKey().defaultRandom(),
+	pluginId: uuid('plugin_id')
+		.notNull()
+		.references(() => plugins.id),
+	skillId: uuid('skill_id')
+		.notNull()
+		.references(() => skills.id),
+	position: integer('position').notNull().default(0),
+	createdAt: timestamp('created_at').notNull().defaultNow()
+});
+
 export const follows = pgTable('follows', {
 	id: uuid('id').primaryKey().defaultRandom(),
 	followerId: uuid('follower_id')

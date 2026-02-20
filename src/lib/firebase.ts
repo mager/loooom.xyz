@@ -4,7 +4,9 @@ import {
 	createUserWithEmailAndPassword,
 	signInWithEmailAndPassword,
 	signOut as firebaseSignOut,
-	sendPasswordResetEmail
+	sendPasswordResetEmail,
+	GithubAuthProvider,
+	signInWithPopup
 } from 'firebase/auth';
 
 const firebaseConfig = {
@@ -35,4 +37,18 @@ export async function signOut() {
 
 export async function resetPassword(email: string) {
 	await sendPasswordResetEmail(auth, email);
+}
+
+/**
+ * Sign in with GitHub via Firebase popup.
+ * REQUIRES: Enable GitHub provider in Firebase Console →
+ * Authentication → Sign-in method → GitHub → Enable.
+ * Add your GitHub OAuth app Client ID + Secret there.
+ */
+export async function signInWithGitHub() {
+	const provider = new GithubAuthProvider();
+	provider.addScope('read:user');
+	provider.addScope('user:email');
+	const cred = await signInWithPopup(auth, provider);
+	return cred.user;
 }

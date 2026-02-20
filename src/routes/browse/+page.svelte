@@ -3,6 +3,7 @@
 	import YarnLogo from '$lib/components/YarnLogo.svelte';
 
 	let { data } = $props();
+	let activeTab = $state<'skills' | 'plugins'>('skills');
 </script>
 
 <svelte:head>
@@ -42,6 +43,12 @@
 			{/if}
 		</h1>
 
+		<!-- Tabs -->
+		<div class="tabs">
+			<button class="tab" class:active={activeTab === 'skills'} onclick={() => activeTab = 'skills'}>Skills</button>
+			<button class="tab" class:active={activeTab === 'plugins'} onclick={() => activeTab = 'plugins'}>Plugins</button>
+		</div>
+
 		<div class="categories">
 			<a href="/browse" class="cat-pill" class:active={!data.activeCategory}>All</a>
 			{#each data.categories as cat}
@@ -49,43 +56,83 @@
 			{/each}
 		</div>
 
-		{#if data.skills.length === 0}
-			<div class="empty">
-				<p class="empty-text">No skills found{data.activeCategory ? ` in ${data.activeCategory}` : ''}.</p>
-				<p class="empty-hint">Be the first to <a href="/create">create one</a>!</p>
-			</div>
-		{:else}
-			<div class="skills-grid">
-				{#each data.skills as skill}
-					<a href="/s/{skill.author?.username}/{skill.name}" class="skill-card">
-						<div class="card-top">
-							{#if skill.category}
-								<span class="skill-category">{skill.category}</span>
+		{#if activeTab === 'skills'}
+			{#if data.skills.length === 0}
+				<div class="empty">
+					<p class="empty-text">No skills found{data.activeCategory ? ` in ${data.activeCategory}` : ''}.</p>
+					<p class="empty-hint">Be the first to <a href="/create">create one</a>!</p>
+				</div>
+			{:else}
+				<div class="skills-grid">
+					{#each data.skills as skill}
+						<a href="/s/{skill.author?.username}/{skill.name}" class="skill-card">
+							<div class="card-top">
+								{#if skill.category}
+									<span class="skill-category">{skill.category}</span>
+								{/if}
+								<span class="skill-uses">{skill.installs.toLocaleString()} uses</span>
+							</div>
+							<h3 class="skill-title">{skill.title}</h3>
+							{#if skill.description}
+								<p class="skill-desc">{skill.description}</p>
 							{/if}
-							<span class="skill-uses">{skill.installs.toLocaleString()} uses</span>
-						</div>
-						<h3 class="skill-title">{skill.title}</h3>
-						{#if skill.description}
-							<p class="skill-desc">{skill.description}</p>
-						{/if}
-						{#if skill.author}
-							<div class="card-author">
-								<div class="author-avatar-sm">
-									{#if skill.author.avatarUrl}
-										<img src={skill.author.avatarUrl} alt={skill.author.displayName} />
-									{:else}
-										{skill.author.displayName[0]}
+							{#if skill.author}
+								<div class="card-author">
+									<div class="author-avatar-sm">
+										{#if skill.author.avatarUrl}
+											<img src={skill.author.avatarUrl} alt={skill.author.displayName} />
+										{:else}
+											{skill.author.displayName[0]}
+										{/if}
+									</div>
+									<span class="author-name">{skill.author.displayName}</span>
+									{#if skill.author.verified}
+										<span class="verified">✓</span>
 									{/if}
 								</div>
-								<span class="author-name">{skill.author.displayName}</span>
-								{#if skill.author.verified}
-									<span class="verified">✓</span>
+							{/if}
+						</a>
+					{/each}
+				</div>
+			{/if}
+		{:else}
+			{#if data.plugins.length === 0}
+				<div class="empty">
+					<p class="empty-text">No plugins found{data.activeCategory ? ` in ${data.activeCategory}` : ''}.</p>
+				</div>
+			{:else}
+				<div class="skills-grid">
+					{#each data.plugins as plugin}
+						<a href="/p/{plugin.author?.username}/{plugin.name}" class="skill-card">
+							<div class="card-top">
+								{#if plugin.category}
+									<span class="skill-category">{plugin.category}</span>
 								{/if}
+								<span class="skill-uses">{plugin.skillCount} skills</span>
 							</div>
-						{/if}
-					</a>
-				{/each}
-			</div>
+							<h3 class="skill-title">{plugin.title}</h3>
+							{#if plugin.description}
+								<p class="skill-desc">{plugin.description}</p>
+							{/if}
+							{#if plugin.author}
+								<div class="card-author">
+									<div class="author-avatar-sm">
+										{#if plugin.author.avatarUrl}
+											<img src={plugin.author.avatarUrl} alt={plugin.author.displayName} />
+										{:else}
+											{plugin.author.displayName[0]}
+										{/if}
+									</div>
+									<span class="author-name">{plugin.author.displayName}</span>
+									{#if plugin.author.verified}
+										<span class="verified">✓</span>
+									{/if}
+								</div>
+							{/if}
+						</a>
+					{/each}
+				</div>
+			{/if}
 		{/if}
 	</div>
 </section>
@@ -116,6 +163,11 @@
 	.browse-page { position: relative; z-index: 1; min-height: 100vh; padding: 7rem 2rem 4rem; }
 	.browse-inner { max-width: 1200px; margin: 0 auto; }
 	.browse-inner h1 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 2rem; color: var(--text-primary); }
+
+	.tabs { display: flex; gap: 0; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+	.tab { background: none; border: none; border-bottom: 2px solid transparent; padding: 0.75rem 1.5rem; font-family: var(--font-display); font-size: 0.95rem; font-weight: 600; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; }
+	.tab:hover { color: var(--text-primary); }
+	.tab.active { color: var(--text-primary); border-bottom-color: var(--accent); }
 
 	.categories { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 3rem; }
 	.cat-pill {
