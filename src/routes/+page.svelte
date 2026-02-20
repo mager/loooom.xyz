@@ -1,10 +1,7 @@
 <script lang="ts">
 	import YarnLogo from '$lib/components/YarnLogo.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
-	import { enhance } from '$app/forms';
-
-	let { form, data } = $props();
-	let submitted = $state(false);
+	let { data } = $props();
 
 	const useCases = [
 		{ who: 'A pastry chef', what: 'sourdough starters & lamination' },
@@ -80,30 +77,18 @@
 				<strong>Real expertise, from real people.</strong>
 			</p>
 			<div class="hero-actions">
-				{#if submitted || form?.success}
-					<div class="waitlist-success">
-						<span class="success-check">✓</span>
-						You're on the list. We'll be in touch.
-					</div>
+				{#if data?.user}
+					<a href="/create" class="btn-primary">
+						Create a Skill
+						<span class="btn-arrow">→</span>
+					</a>
+					<a href="/browse" class="btn-secondary">Browse</a>
 				{:else}
-					<form method="POST" action="?/waitlist" use:enhance={() => {
-						return async ({ update }) => {
-							await update();
-							submitted = true;
-						};
-					}} class="waitlist-form">
-						<input
-							type="email"
-							name="email"
-							placeholder="your@email.com"
-							required
-							class="waitlist-input"
-						/>
-						<button type="submit" class="btn-primary">
-							Join Waitlist
-							<span class="btn-arrow">→</span>
-						</button>
-					</form>
+					<a href="/startweaving" class="btn-primary">
+						Get Started
+						<span class="btn-arrow">→</span>
+					</a>
+					<a href="/login" class="btn-secondary">Sign In</a>
 				{/if}
 			</div>
 			<p class="hero-note">Skills are always free. Open source. Open format.</p>
@@ -489,38 +474,25 @@
 	}
 	.btn-arrow { transition: transform 0.2s; }
 	.btn-primary:hover .btn-arrow { transform: translateX(3px); }
-	.waitlist-form {
-		display: flex;
-		gap: 0.5rem;
-		width: 100%;
-		max-width: 480px;
-	}
-	.waitlist-input {
-		flex: 1;
-		padding: 0.875rem 1.25rem;
+	.btn-secondary {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.875rem 2rem;
 		background: var(--bg-card);
+		color: var(--text-primary);
 		border: 1px solid var(--border);
 		border-radius: var(--radius-md);
-		color: var(--text-primary);
 		font-family: var(--font-display);
 		font-size: 1rem;
-		outline: none;
-		transition: border-color 0.2s;
+		font-weight: 600;
+		text-decoration: none;
+		transition: all 0.25s;
 	}
-	.waitlist-input::placeholder { color: var(--text-muted); }
-	.waitlist-input:focus { border-color: var(--text-secondary); }
-	.waitlist-success {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		padding: 1rem 1.5rem;
-		background: rgba(39, 174, 96, 0.1);
-		border: 1px solid rgba(39, 174, 96, 0.3);
-		border-radius: var(--radius-md);
-		color: var(--yarn-green);
-		font-weight: 500;
+	.btn-secondary:hover {
+		border-color: var(--text-secondary);
+		color: var(--text-primary);
+		transform: translateY(-1px);
 	}
-	.success-check { font-size: 1.2rem; font-weight: 400; }
 	.hero-visual {
 		display: flex;
 		align-items: center;
