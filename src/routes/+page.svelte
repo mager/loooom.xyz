@@ -43,6 +43,7 @@
 		<div class="nav-links">
 			<a href="#vision">About</a>
 			<a href="#explore">Explore</a>
+			<a href="/docs">Docs</a>
 			{#if data?.user}
 				<a href="/create">Create</a>
 			{/if}
