@@ -21,6 +21,11 @@ export const GET: RequestHandler = async ({ params }) => {
 
 	const latestVersion = versions.find((v) => v.version === skill.currentVersion) ?? versions[0];
 
+	const files = (latestVersion?.files ?? []) as { name: string; content: string }[];
+
+	// ?format=plugin returns Claude Code plugin-compatible structure
+	const format = new URL(params.skill, 'http://x').searchParams.get('format');
+
 	return json({
 		skill: {
 			name: skill.name,
@@ -34,7 +39,19 @@ export const GET: RequestHandler = async ({ params }) => {
 				displayName: author.displayName,
 				verified: author.verified
 			},
-			files: (latestVersion?.files ?? []) as { name: string; content: string }[]
+			files
+		},
+		// Claude Code plugin manifest (for CLI tooling)
+		plugin: {
+			name: `${author.username}-${skill.name}`,
+			description: skill.description,
+			version: skill.currentVersion ?? '1.0.0',
+			author: { name: author.displayName },
+			skills: {
+				[skill.name]: {
+					files: files.map(f => f.name)
+				}
+			}
 		}
 	});
 };
