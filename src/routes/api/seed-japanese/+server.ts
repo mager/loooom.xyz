@@ -8,7 +8,7 @@ const SKILL_MD = `---
 name: beginner-japanese
 description: Learn conversational Japanese for traveling in Japan
 author: mager
-version: 1.0.0
+version: 1.1.0
 ---
 
 # Learn Beginner Japanese
@@ -17,9 +17,45 @@ A conversational Japanese skill for anyone visiting Japan. Practice with your AI
 
 ## How This Works
 
-You're not studying for a test. You're preparing for real life — ordering ramen, asking for directions, making small talk at an izakaya. This skill teaches through conversation, not textbooks.
+You're not studying for a test. You're preparing for real life — ordering ramen, asking for directions, making small talk at an izakaya.
+
+This skill follows the **Genki method** — the gold standard for learning Japanese. Instead of memorizing word lists, you learn through short dialogues, building grammar patterns naturally the way a child picks up language. Each conversation adds one new building block.
 
 **Talk to your agent in English. It will weave in Japanese naturally, correct you gently, and celebrate your wins.**
+
+## Teaching Approach (Genki-Inspired)
+
+### Dialogue First, Grammar Second
+Every new concept starts with a short, natural conversation. The grammar explanation comes AFTER the user has seen it in context. Don't front-load rules — let the pattern click first.
+
+### Build with Particles
+Japanese grammar lives in its particles. Introduce them one at a time through real use:
+- **は (wa)** — topic marker: "私は (watashi wa) = As for me..."
+- **を (o)** — object marker: "ラーメンを (raamen o) = ramen [as the thing I want]"  
+- **に (ni)** — direction/time: "駅に (eki ni) = to the station"
+- **で (de)** — location of action: "レストランで (resutoran de) = at the restaurant"
+- **の (no)** — possession/connection: "私の名前 (watashi no namae) = my name"
+
+Don't teach all five at once. One per conversation. Let them stack naturally.
+
+### The Pattern: [Topic] は [Object] を [Verb] です
+Build sentences like Lego blocks:
+1. Start with just: ＿＿です (__ desu) — "It's __"
+2. Add topics: ＿＿は＿＿です — "As for __, it's __"
+3. Add verbs: ＿＿を＿＿ます — "I [verb] __"
+4. Add context: ＿＿で＿＿を＿＿ます — "At __, I [verb] __"
+
+Each conversation should push the user one block further.
+
+### Verb Conjugation (Keep It Simple)
+Start with ます-form only (polite). Casual forms come later.
+- 食べます (tabemasu) — I eat
+- 飲みます (nomimasu) — I drink  
+- 行きます (ikimasu) — I go
+- 見ます (mimasu) — I see/watch
+- 買います (kaimasu) — I buy
+
+Negative: swap ます → ません (masen). Past: ます → ました (mashita). That's it for now.
 
 ## Core Phrases — Survival Kit
 
@@ -134,23 +170,41 @@ export async function POST() {
 	const [existing] = await db.select().from(skills).where(
 		and(eq(skills.authorId, magerUser.id), eq(skills.name, 'beginner-japanese'))
 	);
-	if (existing) return json({ message: 'beginner-japanese already exists', skillId: existing.id });
+
+	const hash = 'sha256:' + createHash('sha256').update(SKILL_MD).digest('hex').slice(0, 12);
+
+	if (existing) {
+		// Update: new version
+		await db.update(skills).set({
+			currentVersion: '1.1.0',
+			description: 'Conversational Japanese for visiting Japan. Genki-inspired method — learn through dialogues, not word lists. Practice ordering ramen, asking directions, and making friends.',
+			updatedAt: new Date()
+		}).where(eq(skills.id, existing.id));
+
+		await db.insert(skillVersions).values({
+			skillId: existing.id,
+			version: '1.1.0',
+			contentHash: hash,
+			files: [{ name: 'SKILL.md', content: SKILL_MD }]
+		});
+
+		return json({ message: 'updated beginner-japanese to v1.1.0', skillId: existing.id });
+	}
 
 	const [skill] = await db.insert(skills).values({
 		authorId: magerUser.id,
 		name: 'beginner-japanese',
 		title: 'Learn Beginner Japanese',
-		description: 'Conversational Japanese for visiting Japan. Practice ordering ramen, asking directions, and making friends — with your AI agent as your patient Tokyo friend.',
+		description: 'Conversational Japanese for visiting Japan. Genki-inspired method — learn through dialogues, not word lists. Practice ordering ramen, asking directions, and making friends.',
 		category: 'Education',
-		currentVersion: '1.0.0',
+		currentVersion: '1.1.0',
 		isPublished: true,
 		installs: 0
 	}).returning();
 
-	const hash = 'sha256:' + createHash('sha256').update(SKILL_MD).digest('hex').slice(0, 12);
 	await db.insert(skillVersions).values({
 		skillId: skill.id,
-		version: '1.0.0',
+		version: '1.1.0',
 		contentHash: hash,
 		files: [{ name: 'SKILL.md', content: SKILL_MD }]
 	});
