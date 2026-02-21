@@ -136,6 +136,23 @@
 
 					{#if showUsePanel}
 						<div class="use-panel">
+							<!-- Quick Start -->
+							<div class="use-section-title">Quick Start</div>
+							<div class="use-steps">
+								<div class="use-step">
+									<span class="step-num">1</span>
+									<span class="step-text">Copy the skill content below</span>
+								</div>
+								<div class="use-step">
+									<span class="step-num">2</span>
+									<span class="step-text">In Claude, open a project → Project knowledge → Add content</span>
+								</div>
+								<div class="use-step">
+									<span class="step-num">3</span>
+									<span class="step-text">Paste it in and start chatting — Claude will use the skill automatically</span>
+								</div>
+							</div>
+
 							<div class="use-option">
 								<div class="use-option-row">
 									<button class="use-btn" onclick={copySkillContent}>
@@ -148,6 +165,9 @@
 							</div>
 
 							<div class="use-divider"></div>
+
+							<!-- Advanced -->
+							<div class="use-section-title">For Developers</div>
 
 							<div class="use-option">
 								<span class="use-label">CLI</span>
@@ -316,6 +336,22 @@
 	}
 	:global(html[data-theme="dark"]) .use-btn-secondary { color: var(--text-primary); }
 	.use-btn-secondary:hover { border-color: var(--text-secondary); background: var(--bg-card-hover); }
+
+	.use-section-title {
+		font-family: var(--font-mono); font-size: 0.65rem; font-weight: 700;
+		text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-muted);
+		margin-bottom: 0.5rem;
+	}
+	.use-steps { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 0.75rem; }
+	.use-step { display: flex; align-items: flex-start; gap: 0.6rem; }
+	.step-num {
+		width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+		background: var(--accent); color: white; font-size: 0.65rem; font-weight: 700;
+		display: flex; align-items: center; justify-content: center;
+		font-family: var(--font-mono); margin-top: 1px;
+	}
+	:global(html[data-theme="dark"]) .step-num { color: var(--bg-primary); }
+	.step-text { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; }
 
 	.use-divider { height: 1px; background: var(--border); margin: 0.5rem 0; }
 
