@@ -1,27 +1,21 @@
 <script lang="ts">
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import YarnLogo from '$lib/components/YarnLogo.svelte';
-
+	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	let { data } = $props();
 
-	const totalUses = data.skills.reduce((sum, s) => sum + s.installs, 0);
-
-	function relativeTime(iso: string): string {
-		const diff = Date.now() - new Date(iso).getTime();
-		const days = Math.floor(diff / 86400000);
-		if (days < 1) return 'today';
-		if (days === 1) return 'yesterday';
-		if (days < 7) return `${days} days ago`;
-		if (days < 30) return `${Math.floor(days / 7)} week${Math.floor(days / 7) > 1 ? 's' : ''} ago`;
-		return `${Math.floor(days / 30)} month${Math.floor(days / 30) > 1 ? 's' : ''} ago`;
+	let copiedStep = $state(0);
+	function copy(text: string, step: number) {
+		navigator.clipboard.writeText(text);
+		copiedStep = step;
+		setTimeout(() => {
+			copiedStep = 0;
+		}, 2000);
 	}
-
-	const skillEmojis = ['🔤', '📐', '🈁', '💬', '🔥'];
 </script>
 
 <svelte:head>
-	<title>{data.plugin.title} by {data.author.displayName} — Loooom</title>
-	<meta name="description" content={data.plugin.description || `A plugin by ${data.author.displayName} on Loooom`} />
+	<title>{data.plugin.title} — Loooom</title>
+	<meta name="description" content={data.plugin.description} />
 </svelte:head>
 
 <div class="ambient">
@@ -35,207 +29,467 @@
 			<YarnLogo size={28} />
 			<span class="logo-text">loooom</span>
 		</a>
-		<div class="nav-right">
+		<div class="nav-links">
 			<a href="/browse">Browse</a>
 			<ThemeToggle />
-			{#if data.user}
-				<a href="/u/{data.user.username}" class="btn-nav">{data.user.displayName}</a>
-			{:else}
-				<a href="/login" class="btn-nav">Sign In</a>
-			{/if}
 		</div>
 	</div>
 </nav>
 
-<section class="plugin-page">
-	<div class="plugin-inner">
-		<a href="/u/{data.author.username}" class="back-link">← {data.author.displayName}'s profile</a>
+<main class="plugin-page">
+	<div class="page-inner">
+		<a href="/browse" class="breadcrumb">← Back to browse</a>
 
-		<!-- Header -->
-		<div class="plugin-header">
-			<div class="header-left">
-				{#if data.plugin.category}
-					<span class="plugin-badge">🧩 Plugin</span>
-					<span class="plugin-category">{data.plugin.category}</span>
-				{/if}
-				<h1 class="handwriting">{data.plugin.title}</h1>
-				{#if data.plugin.description}
-					<p class="plugin-desc">{data.plugin.description}</p>
-				{/if}
-				<div class="plugin-meta">
-					<span class="meta-item">{data.skills.length} skills</span>
-					<span class="meta-dot">·</span>
-					<span class="meta-item">{totalUses.toLocaleString()} total uses</span>
-					<span class="meta-dot">·</span>
-					<span class="meta-item">Updated {relativeTime(data.plugin.updatedAt)}</span>
+		<div class="plugin-hero">
+			<div class="plugin-meta">
+				<span class="plugin-emoji">{data.plugin.emoji}</span>
+				<span class="plugin-category-badge">{data.plugin.category}</span>
+				<span class="plugin-version">v{data.plugin.version}</span>
+			</div>
+			<h1 class="plugin-title handwriting">{data.plugin.title}</h1>
+			<p class="plugin-description">{data.plugin.description}</p>
+			<div class="plugin-by-line">
+				<span class="by-label">by</span>
+				<a href="/u/{data.plugin.author}" class="author-link">@{data.plugin.author}</a>
+			</div>
+		</div>
+
+		<div class="install-section">
+			<h2 class="section-title handwriting">Install in 2 steps</h2>
+
+			<div class="install-step">
+				<div class="step-num">1</div>
+				<div class="step-body">
+					<div class="step-label">Add the Loooom marketplace</div>
+					<div class="step-desc">
+						Run this once — it registers the full catalog with Claude Code.
+					</div>
+					<div class="code-block">
+						<code>{data.marketplaceCommand}</code>
+						<button
+							class="copy-btn"
+							onclick={() => copy(data.marketplaceCommand, 1)}
+							title="Copy"
+						>
+							{copiedStep === 1 ? '✓' : '📋'}
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="install-step">
+				<div class="step-num">2</div>
+				<div class="step-body">
+					<div class="step-label">Install this plugin</div>
+					<div class="step-desc">
+						Installs to your user scope — available across all projects.
+					</div>
+					<div class="code-block">
+						<code>{data.plugin.installCommand}</code>
+						<button
+							class="copy-btn"
+							onclick={() => copy(data.plugin.installCommand, 2)}
+							title="Copy"
+						>
+							{copiedStep === 2 ? '✓' : '📋'}
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
 
-		<!-- Author card -->
-		<a href="/u/{data.author.username}" class="author-card">
-			<div class="author-avatar">
-				{#if data.author.avatarUrl}
-					<img src={data.author.avatarUrl} alt={data.author.displayName} />
-				{:else}
-					{data.author.displayName[0]}
-				{/if}
-			</div>
-			<div class="author-info">
-				<span class="author-name">
-					{data.author.displayName}
-					{#if data.author.verified}
-						<span class="verified" title="Verified">✓</span>
-					{/if}
-				</span>
-				<span class="author-handle">@{data.author.username}</span>
-			</div>
-		</a>
-
-		<!-- Skills Path -->
-		<div class="skills-path">
-			<h2 class="path-title">Learning Path</h2>
-			<div class="path-list">
-				{#each data.skills as skill, i}
-					<a href="/s/{data.author.username}/{skill.name}" class="path-card">
-						<div class="path-number">
-							<span class="number-emoji">{skillEmojis[i] ?? '📄'}</span>
-							<span class="number-text">{i + 1}</span>
-						</div>
-						{#if i < data.skills.length - 1}
-							<div class="path-connector"></div>
-						{/if}
-						<div class="path-content">
-							<h3>{skill.title}</h3>
-							{#if skill.description}
-								<p>{skill.description}</p>
-							{/if}
-							<div class="path-skill-meta">
-								<span>{skill.installs.toLocaleString()} uses</span>
+		{#if data.plugin.skills.length > 0}
+			<div class="skills-section">
+				<h2 class="section-title handwriting">What's included</h2>
+				<div class="skills-list">
+					{#each data.plugin.skills as skill, i}
+						<div class="skill-item">
+							<div class="skill-num">{i + 1}</div>
+							<div class="skill-body">
+								<div class="skill-name">{skill.name}</div>
+								<div class="skill-desc">{skill.description}</div>
 							</div>
 						</div>
-						<div class="path-arrow">→</div>
-					</a>
+					{/each}
+				</div>
+			</div>
+		{/if}
+
+		{#if data.plugin.keywords.length > 0}
+			<div class="keywords-section">
+				{#each data.plugin.keywords as kw}
+					<span class="keyword-pill">{kw}</span>
 				{/each}
 			</div>
+		{/if}
+
+		<div class="footer-actions">
+			<a
+				href="{data.githubBase}/{data.plugin.repoPath}"
+				target="_blank"
+				rel="noopener"
+				class="btn-github"
+			>
+				View on GitHub →
+			</a>
+			<a href="/browse" class="btn-browse">Browse more plugins</a>
 		</div>
 	</div>
-</section>
+</main>
 
 <style>
-	.ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-	.orb { position: absolute; border-radius: 50%; filter: blur(140px); opacity: 0.06; }
-	:global(html[data-theme="dark"]) .orb { opacity: 0.12; }
-	.orb-1 { width: 500px; height: 500px; background: var(--accent); top: -100px; right: -100px; animation: drift 25s ease-in-out infinite; }
-	.orb-2 { width: 400px; height: 400px; background: var(--yarn-pink); bottom: 10%; left: -100px; animation: drift 30s ease-in-out infinite reverse; }
-	@keyframes drift { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(30px, -20px); } }
-
-	nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; backdrop-filter: blur(20px); background: var(--nav-bg); border-bottom: 1px solid var(--border); }
-	.nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 2rem; height: 64px; display: flex; align-items: center; justify-content: space-between; }
-	.logo { display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary); }
-	.logo:hover { color: var(--text-primary); }
-	.logo-text { font-family: var(--font-handwriting); font-size: 1.3rem; font-weight: 100; letter-spacing: 0.02em; }
-	.nav-right { display: flex; align-items: center; gap: 1.5rem; }
-	.nav-right a { color: var(--text-secondary); font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
-	.nav-right a:hover { color: var(--text-primary); }
-	.btn-nav { background: var(--bg-card); color: var(--text-primary) !important; border: 1px solid var(--border); padding: 0.5rem 1.25rem; border-radius: var(--radius-sm); font-size: 0.875rem; font-weight: 500; transition: all 0.2s; text-decoration: none; }
-	.btn-nav:hover { border-color: var(--text-secondary); }
-
-	.handwriting { font-family: var(--font-handwriting); font-weight: 100; text-shadow: 0 0.5px 0 rgba(0,0,0,0.06); }
-	:global(html[data-theme="dark"]) .handwriting { text-shadow: 0 0.5px 0 rgba(255,255,255,0.08); }
-
-	.plugin-page { position: relative; z-index: 1; min-height: 100vh; padding: 7rem 2rem 4rem; }
-	.plugin-inner { max-width: 900px; margin: 0 auto; }
-
-	.back-link { display: inline-block; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 2rem; transition: color 0.2s; }
-	.back-link:hover { color: var(--accent-rose); }
-
-	.plugin-header { margin-bottom: 2rem; }
-	.header-left { flex: 1; }
-	.plugin-badge {
-		display: inline-block; font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
-		letter-spacing: 0.12em; color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent);
-		padding: 0.25rem 0.75rem; border-radius: 999px; margin-right: 0.5rem;
+	:global(body) {
+		overflow-x: hidden;
 	}
-	.plugin-category { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); }
-	.plugin-header h1 { font-size: clamp(2rem, 4vw, 3rem); margin: 0.5rem 0 0.75rem; color: var(--text-primary); }
-	.plugin-desc { font-size: 1.1rem; color: var(--text-secondary); line-height: 1.45; margin-bottom: 1rem; }
-	.plugin-meta { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
-	.meta-item { font-size: 0.85rem; color: var(--text-muted); font-family: var(--font-mono); }
-	.meta-dot { color: var(--text-muted); }
 
-	.author-card {
-		display: flex; align-items: center; gap: 1rem;
-		padding: 1rem 1.25rem; background: var(--bg-card); border: 1px solid var(--border);
-		border-radius: var(--radius-md); margin-bottom: 2.5rem; transition: all 0.25s; text-decoration: none;
+	.ambient {
+		position: fixed;
+		inset: 0;
+		pointer-events: none;
+		z-index: 0;
+		overflow: hidden;
 	}
-	.author-card:hover { border-color: var(--text-muted); box-shadow: var(--card-shadow-hover); }
-	.author-avatar {
-		width: 48px; height: 48px; border-radius: 50%;
-		background: linear-gradient(135deg, var(--accent), var(--yarn-pink));
-		display: flex; align-items: center; justify-content: center;
-		font-size: 1.2rem; color: white; font-weight: 500; overflow: hidden; flex-shrink: 0;
+	.orb {
+		position: absolute;
+		border-radius: 50%;
+		filter: blur(140px);
+		opacity: 0.06;
 	}
-	.author-avatar img { width: 100%; height: 100%; object-fit: cover; }
-	.author-info { display: flex; flex-direction: column; gap: 0.15rem; }
-	.author-name { font-weight: 600; color: var(--text-primary); font-size: 0.95rem; }
-	.verified { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: var(--yarn-teal); color: white; font-size: 0.6rem; font-weight: 700; margin-left: 0.3rem; vertical-align: middle; }
-	.author-handle { font-size: 0.8rem; color: var(--text-muted); }
+	:global(html[data-theme='dark']) .orb {
+		opacity: 0.12;
+	}
+	.orb-1 {
+		width: 600px;
+		height: 600px;
+		background: var(--yarn-pink);
+		top: -200px;
+		left: -200px;
+	}
+	.orb-2 {
+		width: 500px;
+		height: 500px;
+		background: var(--yarn-blue);
+		bottom: -150px;
+		right: -100px;
+	}
 
-	/* Skills Path */
-	.skills-path { margin-bottom: 3rem; }
-	.path-title {
-		font-family: var(--font-display); font-size: 1.1rem; font-weight: 600;
-		color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.08em;
-		margin-bottom: 1.5rem;
+	nav {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 100;
+		background: rgba(250, 246, 240, 0.9);
+		backdrop-filter: blur(12px);
+		border-bottom: 1px solid var(--border);
 	}
-	.path-list { display: flex; flex-direction: column; gap: 0; }
+	:global(html[data-theme='dark']) nav {
+		background: rgba(18, 18, 20, 0.9);
+	}
+	.nav-inner {
+		max-width: 900px;
+		margin: 0 auto;
+		padding: 0 2rem;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		height: 60px;
+	}
+	.logo {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		text-decoration: none;
+	}
+	.logo-text {
+		font-family: var(--font-handwriting);
+		font-size: 1.4rem;
+		font-weight: 200;
+		color: var(--text-primary);
+	}
+	.nav-links {
+		display: flex;
+		align-items: center;
+		gap: 1.5rem;
+	}
+	.nav-links a {
+		color: var(--text-secondary);
+		text-decoration: none;
+		font-size: 0.95rem;
+	}
+	.nav-links a:hover {
+		color: var(--text-primary);
+	}
 
-	.path-card {
-		display: flex; align-items: center; gap: 1.5rem;
-		padding: 1.25rem 1.5rem; background: var(--bg-card);
-		border: 1px solid var(--border); border-radius: var(--radius-md);
-		margin-bottom: 0; transition: all 0.25s; text-decoration: none;
+	.plugin-page {
 		position: relative;
+		z-index: 1;
+		padding: 100px 2rem 4rem;
+		min-height: 100vh;
 	}
-	.path-card:not(:last-child) { border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom: none; }
-	.path-card:not(:first-child) { border-top-left-radius: 0; border-top-right-radius: 0; }
-	.path-card:hover { background: var(--bg-card-hover); border-color: var(--text-muted); z-index: 1; border-radius: var(--radius-md); border: 1px solid var(--text-muted); }
-
-	.path-number {
-		display: flex; flex-direction: column; align-items: center; gap: 0.25rem;
-		flex-shrink: 0; width: 48px;
-	}
-	.number-emoji { font-size: 1.5rem; }
-	.number-text {
-		font-family: var(--font-mono); font-size: 0.65rem; font-weight: 700;
-		color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em;
+	.page-inner {
+		max-width: 720px;
+		margin: 0 auto;
 	}
 
-	.path-connector { display: none; }
-
-	.path-content { flex: 1; min-width: 0; }
-	.path-content h3 {
-		font-family: var(--font-display); font-size: 1.05rem; font-weight: 600;
-		color: var(--text-primary); margin-bottom: 0.35rem;
+	.breadcrumb {
+		display: inline-block;
+		margin-bottom: 2rem;
+		color: var(--text-muted);
+		font-size: 0.9rem;
+		text-decoration: none;
+		transition: color 0.2s;
 	}
-	.path-content p {
-		font-size: 0.875rem; color: var(--text-secondary); line-height: 1.4;
-		display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+	.breadcrumb:hover {
+		color: var(--text-secondary);
 	}
-	.path-skill-meta { margin-top: 0.4rem; }
-	.path-skill-meta span { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); }
 
-	.path-arrow {
-		font-size: 1.2rem; color: var(--text-muted); flex-shrink: 0;
-		transition: transform 0.2s, color 0.2s;
+	.plugin-hero {
+		margin-bottom: 3rem;
 	}
-	.path-card:hover .path-arrow { transform: translateX(4px); color: var(--accent); }
+	.plugin-meta {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		margin-bottom: 1rem;
+	}
+	.plugin-emoji {
+		font-size: 2rem;
+		line-height: 1;
+	}
+	.plugin-category-badge {
+		display: inline-block;
+		padding: 0.25rem 0.75rem;
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: 100px;
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: var(--text-muted);
+	}
+	.plugin-version {
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		color: var(--text-muted);
+	}
+	.plugin-title {
+		font-size: clamp(2rem, 5vw, 3rem);
+		font-weight: 200;
+		margin-bottom: 1rem;
+		color: var(--text-primary);
+		line-height: 1.1;
+	}
+	.plugin-description {
+		font-size: 1.1rem;
+		color: var(--text-secondary);
+		line-height: 1.55;
+		margin-bottom: 1rem;
+	}
+	.plugin-by-line {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+	}
+	.by-label {
+		color: var(--text-muted);
+		font-size: 0.9rem;
+	}
+	.author-link {
+		font-family: var(--font-handwriting);
+		font-size: 1rem;
+		color: var(--text-primary);
+		text-decoration: none;
+	}
+	.author-link:hover {
+		text-decoration: underline;
+	}
 
-	@media (max-width: 768px) {
-		.path-card { gap: 1rem; padding: 1rem; }
-		.path-number { width: 40px; }
-		.number-emoji { font-size: 1.2rem; }
-		.nav-right a:not(.btn-nav):not(:global(.theme-toggle)) { display: none; }
+	.install-section {
+		margin-bottom: 3rem;
+	}
+	.skills-section {
+		margin-bottom: 2rem;
+	}
+	.section-title {
+		font-size: 1.75rem;
+		font-weight: 200;
+		margin-bottom: 1.5rem;
+		color: var(--text-primary);
+	}
+
+	.install-step {
+		display: flex;
+		gap: 1.25rem;
+		margin-bottom: 1.25rem;
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		padding: 1.5rem;
+		box-shadow: var(--card-shadow);
+	}
+	.step-num {
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		background: var(--accent-rose, #e84a5f);
+		color: white;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-weight: 700;
+		font-size: 0.9rem;
+		flex-shrink: 0;
+	}
+	.step-body {
+		flex: 1;
+	}
+	.step-label {
+		font-weight: 600;
+		margin-bottom: 0.25rem;
+		color: var(--text-primary);
+	}
+	.step-desc {
+		font-size: 0.875rem;
+		color: var(--text-muted);
+		margin-bottom: 0.75rem;
+	}
+	.code-block {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		background: var(--bg-secondary);
+		border: 1px solid var(--border);
+		border-radius: 6px;
+		padding: 0.75rem 1rem;
+	}
+	.code-block code {
+		font-family: var(--font-mono);
+		font-size: 0.875rem;
+		color: var(--accent-rose, #e84a5f);
+		flex: 1;
+	}
+	.copy-btn {
+		background: none;
+		border: none;
+		cursor: pointer;
+		font-size: 1rem;
+		opacity: 0.6;
+		transition: opacity 0.2s;
+		padding: 0;
+	}
+	.copy-btn:hover {
+		opacity: 1;
+	}
+
+	.skills-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+	.skill-item {
+		display: flex;
+		gap: 1rem;
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		padding: 1rem 1.25rem;
+		box-shadow: var(--card-shadow);
+	}
+	.skill-num {
+		width: 24px;
+		height: 24px;
+		border-radius: 50%;
+		background: var(--bg-secondary);
+		border: 1px solid var(--border);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 0.75rem;
+		color: var(--text-muted);
+		flex-shrink: 0;
+		font-family: var(--font-mono);
+	}
+	.skill-body {
+		flex: 1;
+	}
+	.skill-name {
+		font-weight: 600;
+		color: var(--text-primary);
+		margin-bottom: 0.25rem;
+	}
+	.skill-desc {
+		font-size: 0.875rem;
+		color: var(--text-secondary);
+	}
+
+	.keywords-section {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-bottom: 2.5rem;
+	}
+	.keyword-pill {
+		padding: 0.25rem 0.75rem;
+		background: var(--bg-secondary);
+		border: 1px solid var(--border);
+		border-radius: 100px;
+		font-size: 0.75rem;
+		color: var(--text-muted);
+		font-family: var(--font-mono);
+	}
+
+	.footer-actions {
+		display: flex;
+		gap: 1rem;
+		flex-wrap: wrap;
+		padding-top: 1rem;
+		border-top: 1px solid var(--border);
+	}
+	.btn-github {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.75rem 1.5rem;
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		color: var(--text-primary);
+		font-size: 0.9rem;
+		text-decoration: none;
+		transition: all 0.2s;
+		box-shadow: var(--card-shadow);
+	}
+	.btn-github:hover {
+		border-color: var(--text-secondary);
+		transform: translateY(-1px);
+	}
+	.btn-browse {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.75rem 1.5rem;
+		background: transparent;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		color: var(--text-secondary);
+		font-size: 0.9rem;
+		text-decoration: none;
+		transition: all 0.2s;
+	}
+	.btn-browse:hover {
+		color: var(--text-primary);
+		border-color: var(--text-secondary);
+	}
+
+	@media (max-width: 600px) {
+		.plugin-page {
+			padding: 90px 1rem 3rem;
+		}
+		.install-step {
+			padding: 1.25rem;
+		}
+		.code-block code {
+			font-size: 0.78rem;
+			word-break: break-all;
+		}
 	}
 </style>

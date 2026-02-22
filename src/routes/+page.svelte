@@ -1,6 +1,7 @@
 <script lang="ts">
 	import YarnLogo from '$lib/components/YarnLogo.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+	import { MARKETPLACE_COMMAND } from '$lib/plugins';
 	let { data } = $props();
 
 	const useCases = [
@@ -17,14 +18,12 @@
 		'Research', 'Design', 'Education', 'Health', 'Business'
 	];
 
-	// Hero plugin preview data
-	const heroSkills = [
-		{ emoji: '🔤', title: 'Hiragana & Katakana', tag: 'Writing Systems' },
-		{ emoji: '📐', title: 'Radicals', tag: 'Building Blocks' },
-		{ emoji: '🈁', title: 'Easy Kanji', tag: 'First 50' },
-		{ emoji: '💬', title: 'Basic Conversation', tag: 'Survival Kit' },
-		{ emoji: '🔥', title: 'Level Up', tag: 'Go Deeper' },
-	];
+	let copied = $state(false);
+	function copyInstall() {
+		navigator.clipboard.writeText(MARKETPLACE_COMMAND);
+		copied = true;
+		setTimeout(() => { copied = false; }, 2000);
+	}
 </script>
 
 <svelte:head>
@@ -76,43 +75,43 @@
 				so AI agents can learn from the best. Not templates. Not prompts.
 				<strong>Real expertise, from real people.</strong>
 			</p>
+			<div class="install-snippet">
+				<div class="install-label">Add to Claude Code — works today:</div>
+				<div class="install-code">
+					<code>{MARKETPLACE_COMMAND}</code>
+					<button class="copy-btn" onclick={copyInstall} title="Copy to clipboard">
+						{copied ? '✓' : '📋'}
+					</button>
+				</div>
+			</div>
 			<div class="hero-actions">
-				{#if data?.user}
-					<a href="/create" class="btn-primary">
-						Create a Skill
-						<span class="btn-arrow">→</span>
-					</a>
-					<a href="/browse" class="btn-secondary">Browse</a>
-				{:else}
-					<a href="/startweaving" class="btn-primary">
-						Get Started
-						<span class="btn-arrow">→</span>
-					</a>
-					<a href="/login" class="btn-secondary">Sign In</a>
-				{/if}
+				<a href="/browse" class="btn-primary">
+					Browse Plugins
+					<span class="btn-arrow">→</span>
+				</a>
+				<a href="https://github.com/mager/loooom" target="_blank" rel="noopener" class="btn-secondary">GitHub</a>
 			</div>
 			<p class="hero-note">Skills are always free. Open source. Open format.</p>
 		</div>
 		<div class="hero-visual">
-			<a href={data.featuredPlugins?.[0] ? `/p/${data.featuredPlugins[0].author?.username}/${data.featuredPlugins[0].name}` : '/browse'} class="hero-plugin-card">
+			<a href="/p/mager/beginner-japanese" class="hero-plugin-card">
 				<div class="hero-plugin-header">
 					<span class="hero-plugin-badge">🧩 Featured Plugin</span>
-					<span class="hero-plugin-count">5 skills</span>
+					<span class="hero-plugin-count">{data.plugins[0].skills.length} skills</span>
 				</div>
-				<h3 class="hero-plugin-title">Beginner Japanese</h3>
+				<h3 class="hero-plugin-title">{data.plugins[0].emoji} {data.plugins[0].title}</h3>
 				<p class="hero-plugin-desc">From zero to ordering ramen in Tokyo</p>
 				<div class="hero-plugin-skills">
-					{#each heroSkills as skill, i}
+					{#each data.plugins[0].skills as skill, i}
 						<div class="hero-skill-row" style="animation-delay: {i * 0.1}s">
 							<span class="hero-skill-num">{i + 1}</span>
-							<span class="hero-skill-emoji">{skill.emoji}</span>
-							<span class="hero-skill-title">{skill.title}</span>
-							<span class="hero-skill-tag">{skill.tag}</span>
+							<span class="hero-skill-title">{skill.name}</span>
+							<span class="hero-skill-tag">{skill.description}</span>
 						</div>
 					{/each}
 				</div>
 				<div class="hero-plugin-footer">
-					<span class="hero-plugin-author">by @mager</span>
+					<span class="hero-plugin-author">by @{data.plugins[0].author}</span>
 					<span class="hero-plugin-cta">Explore →</span>
 				</div>
 			</a>
@@ -138,68 +137,32 @@
 	</div>
 </section>
 
-<!-- Featured Skill -->
-{#if data.featuredSkill}
-<section class="featured">
-	<div class="section-inner">
-		<h2 class="handwriting">See a skill in action<span class="sketch">.</span></h2>
-		<a href="/s/{data.featuredSkill.author.username}/{data.featuredSkill.name}" class="featured-card">
-			<div class="featured-meta">
-				<span class="featured-category">{data.featuredSkill.category}</span>
-				<span class="featured-uses">{data.featuredSkill.installs.toLocaleString()} uses</span>
-			</div>
-			<h3 class="featured-title">{data.featuredSkill.title}</h3>
-			<p class="featured-desc">{data.featuredSkill.description}</p>
-			<div class="featured-preview">
-				{#if data.featuredSkill.files[0]}
-					<div class="featured-code-header">
-						<span class="featured-filename">📄 {data.featuredSkill.files[0].name}</span>
-						<span class="featured-version">v{data.featuredSkill.version}</span>
-					</div>
-					<pre class="featured-code"><code>{data.featuredSkill.files[0].content.slice(0, 600)}{data.featuredSkill.files[0].content.length > 600 ? '\n...' : ''}</code></pre>
-				{/if}
-			</div>
-			<div class="featured-author">
-				<span class="featured-by">by</span>
-				<span class="featured-author-name">@{data.featuredSkill.author.username}</span>
-				<span class="featured-cta">View full skill →</span>
-			</div>
-		</a>
-	</div>
-</section>
-{/if}
-
-<!-- Featured Plugins -->
-{#if data.featuredPlugins && data.featuredPlugins.length > 0}
+<!-- Plugin Marketplace Section -->
 <section class="plugins-section">
 	<div class="section-inner">
-		<h2 class="handwriting">Featured <span class="sketch">Plugins</span></h2>
-		<p class="plugins-subtitle">Curated learning paths — multiple skills bundled into one curriculum.</p>
+		<h2 class="handwriting">The <span class="sketch">Marketplace</span></h2>
+		<p class="plugins-subtitle">6 plugins. Ready to install. No signup required.</p>
 		<div class="plugins-grid">
-			{#each data.featuredPlugins as plugin}
-				<a href="/p/{plugin.author?.username}/{plugin.name}" class="plugin-card">
+			{#each data.plugins as plugin}
+				<a href="/p/{plugin.author}/{plugin.name}" class="plugin-card">
 					<div class="plugin-card-top">
-						{#if plugin.category}
-							<span class="plugin-category">{plugin.category}</span>
-						{/if}
-						<span class="plugin-skill-count">{plugin.skillCount} skills</span>
+						<span class="plugin-emoji">{plugin.emoji}</span>
+						<span class="plugin-category">{plugin.category}</span>
 					</div>
 					<h3 class="plugin-title">{plugin.title}</h3>
-					{#if plugin.description}
-						<p class="plugin-desc">{plugin.description}</p>
-					{/if}
-					{#if plugin.author}
-						<div class="plugin-author">
-							<span class="plugin-by">by</span>
-							<span class="plugin-author-name">@{plugin.author.username}</span>
-						</div>
-					{/if}
+					<p class="plugin-desc">{plugin.description}</p>
+					<div class="plugin-install-cmd">
+						<code>{plugin.installCommand}</code>
+					</div>
+					<div class="plugin-author">
+						<span class="plugin-by">by</span>
+						<span class="plugin-author-name">@{plugin.author}</span>
+					</div>
 				</a>
 			{/each}
 		</div>
 	</div>
 </section>
-{/if}
 
 <!-- Use Cases -->
 <section class="use-cases">
@@ -1037,6 +1000,62 @@
 		font-family: var(--font-handwriting);
 		font-size: 0.9rem;
 		color: var(--text-primary);
+	}
+
+	/* ===== Install Snippet ===== */
+	.install-snippet {
+		margin: 1.5rem 0;
+		background: var(--bg-secondary);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		padding: 1rem 1.25rem;
+		max-width: 520px;
+	}
+	.install-label {
+		font-size: 0.75rem;
+		color: var(--text-muted);
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		margin-bottom: 0.5rem;
+	}
+	.install-code {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+	.install-code code {
+		font-family: var(--font-mono);
+		font-size: 0.85rem;
+		color: var(--accent-rose);
+		flex: 1;
+	}
+	.copy-btn {
+		background: none;
+		border: none;
+		cursor: pointer;
+		font-size: 1rem;
+		opacity: 0.6;
+		transition: opacity 0.2s;
+		padding: 0;
+	}
+	.copy-btn:hover { opacity: 1; }
+
+	/* ===== Plugin Card Extras ===== */
+	.plugin-emoji {
+		font-size: 1.5rem;
+		line-height: 1;
+	}
+	.plugin-install-cmd {
+		background: var(--bg-secondary);
+		border: 1px solid var(--border);
+		border-radius: 6px;
+		padding: 0.4rem 0.75rem;
+		margin: 0.75rem 0;
+	}
+	.plugin-install-cmd code {
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		color: var(--text-secondary);
 	}
 
 	/* ===== Responsive ===== */

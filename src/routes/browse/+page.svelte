@@ -103,32 +103,24 @@
 			{:else}
 				<div class="skills-grid">
 					{#each data.plugins as plugin}
-						<a href="/p/{plugin.author?.username}/{plugin.name}" class="skill-card">
+						<a href="/p/{plugin.author}/{plugin.name}" class="skill-card">
 							<div class="card-top">
+								<span class="plugin-emoji-sm">{plugin.emoji}</span>
 								{#if plugin.category}
 									<span class="skill-category">{plugin.category}</span>
 								{/if}
-								<span class="skill-uses">{plugin.skillCount} skills</span>
+								<span class="skill-uses">{plugin.skills.length} skills</span>
 							</div>
 							<h3 class="skill-title">{plugin.title}</h3>
 							{#if plugin.description}
 								<p class="skill-desc">{plugin.description}</p>
 							{/if}
-							{#if plugin.author}
-								<div class="card-author">
-									<div class="author-avatar-sm">
-										{#if plugin.author.avatarUrl}
-											<img src={plugin.author.avatarUrl} alt={plugin.author.displayName} />
-										{:else}
-											{plugin.author.displayName[0]}
-										{/if}
-									</div>
-									<span class="author-name">{plugin.author.displayName}</span>
-									{#if plugin.author.verified}
-										<span class="verified">✓</span>
-									{/if}
-								</div>
-							{/if}
+							<div class="plugin-install-preview">
+								<code>{plugin.installCommand}</code>
+							</div>
+							<div class="card-author">
+								<span class="author-name">@{plugin.author}</span>
+							</div>
 						</a>
 					{/each}
 				</div>
@@ -205,6 +197,9 @@
 	.author-avatar-sm img { width: 100%; height: 100%; object-fit: cover; }
 	.author-name { font-size: 0.8rem; color: var(--text-secondary); }
 	.verified { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: var(--yarn-teal); color: white; font-size: 0.55rem; font-weight: 700; }
+	.plugin-emoji-sm { font-size: 1.1rem; line-height: 1; }
+	.plugin-install-preview { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 4px; padding: 0.3rem 0.6rem; margin: 0.5rem 0 0.75rem; }
+	.plugin-install-preview code { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); }
 
 	@media (max-width: 768px) {
 		.skills-grid { grid-template-columns: 1fr; }
