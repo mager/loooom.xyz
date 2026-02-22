@@ -6,34 +6,56 @@ import { createHash } from 'crypto';
 
 const SKILL_MD = `---
 name: beginner-japanese
-description: Learn conversational Japanese for traveling in Japan. Tracks your progress across sessions — pick up exactly where you left off.
+description: Learn conversational Japanese for traveling in Japan. Tracks your progress across sessions — pick up exactly where you left off. Supports local file or mem0 cloud memory.
 author: mager
-version: 2.0.0
+version: 2.1.0
 ---
 
 # Learn Beginner Japanese
 
 A conversational Japanese tutor for anyone visiting Japan. Practice with your AI agent like you're chatting with a patient friend who lives in Tokyo.
 
-**This skill saves your progress.** Every session ends with a written checkpoint. Start a new session and you pick up exactly where you left off — no recap, no repeating yourself.
+**This skill saves your progress.** Every session ends with a checkpoint. Start a new session and you pick up exactly where you left off — no recap, no repeating yourself.
+
+Two memory modes — use whichever fits your setup:
+- **Local file** (default, zero deps): \`.claude/japanese-progress.md\`
+- **mem0 cloud** (optional, cross-device): works from any machine, including your phone in Japan
 
 ---
 
 ## Session Start Protocol
 
-**Before saying anything else, check for a progress file:**
+**Step 1: Detect memory mode**
 
+Check if mem0 is configured:
+\`\`\`bash
+echo $MEM0_API_KEY
 \`\`\`
+
+**If MEM0_API_KEY is set → use mem0:**
+\`\`\`bash
+curl -s -X POST https://api.mem0.ai/v1/memories/search \\
+  -H "Authorization: Token $MEM0_API_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{"query": "japanese learning progress kana vocab session", "filters": {"user_id": "japanese-learner"}}'
+\`\`\`
+
+Read the returned memories and resume from that context.
+
+**If no MEM0_API_KEY → use local file:**
+\`\`\`bash
 cat .claude/japanese-progress.md
 \`\`\`
 
-If it **exists** — read it, then open with something like:
-> "Welcome back! Last time you covered [X]. Today we're picking up with [next thing]. Ready?"
+**Step 2: Resume or onboard**
 
-If it **doesn't exist** — this is session 1. Ask:
-1. Current level? (complete beginner / picked up a few words / some basics)
+If memories/file **exist** — read them, then open with:
+> "Welcome back! Last time you covered [X]. Today we're picking up with [Y]. Ready?"
+
+If **nothing exists** — this is session 1. Ask:
+1. Current level? (complete beginner / a few words / some basics)
 2. Most excited/nervous about? (food, trains, shopping, conversation)
-3. Where in Japan? (Tokyo, Kyoto, Osaka, rural — matters for dialect/signage)
+3. Where in Japan? (Tokyo, Kyoto, Osaka, rural)
 
 Then teach the first survival phrase: **すみません (sumimasen)** and start Module 1.
 
@@ -41,37 +63,48 @@ Then teach the first survival phrase: **すみません (sumimasen)** and start 
 
 ## Session End Protocol
 
-**When the user wraps up, says goodbye, or ends the lesson — write the progress file:**
+**When the user wraps up or ends the lesson:**
 
-\`\`\`
-.claude/japanese-progress.md
+**If MEM0_API_KEY is set → add to mem0:**
+\`\`\`bash
+curl -s -X POST https://api.mem0.ai/v1/memories/add \\
+  -H "Authorization: Token $MEM0_API_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "messages": [
+      {"role": "user", "content": "Ending my Japanese lesson for today."},
+      {"role": "assistant", "content": "Session summary: [fill in what was covered, confidence levels, what is next]"}
+    ],
+    "user_id": "japanese-learner"
+  }'
 \`\`\`
 
-Format (copy exactly, fill in the blanks):
+mem0 automatically extracts and stores what matters. Next session it retrieves it semantically.
+
+**If no MEM0_API_KEY → write local file:**
+
+Write to \`.claude/japanese-progress.md\`:
 
 \`\`\`markdown
 # Japanese Learning Progress
 
 **Last session:** [YYYY-MM-DD]
 **Total sessions:** [N]
-**Trip date:** [if known, e.g. "~2 months from 2026-02-22"]
-**Destination:** [city/region if known]
+**Trip date:** [e.g. "~2 months from 2026-02-22"]
+**Destination:** [city/region]
 
 ## Current Module
-[Module number and name, e.g. "Module 1: Kana Foundations — in progress"]
+[e.g. "Module 1: Kana Foundations — in progress"]
 
 ## Kana Covered
 ### Hiragana
-- [list each char with confidence: ✓ confident / ~ learning / ○ introduced]
+- [char] ([romaji]) — ✓ confident / ~ learning / ○ introduced
 
 ### Katakana
 - [same format]
 
 ## Vocab Bank
-- [phrase in Japanese] — [meaning] [✓ if solid]
-
-## Grammar Covered
-- [pattern name] — [one-line description] [✓ if solid]
+- [Japanese phrase] — [meaning] ✓
 
 ## Next Session
 - Review: [things to revisit]
@@ -79,10 +112,27 @@ Format (copy exactly, fill in the blanks):
 - New target: [phrase or grammar goal]
 
 ## Notes
-[Anything useful: learning style, goals, jokes that landed, struggles]
+[Learning style, goals, what landed, struggles]
 \`\`\`
 
-Say to the user: *"Progress saved to \`.claude/japanese-progress.md\` — next session we'll pick up right here."*
+Either way, tell the user: *"Progress saved — next session we pick up right here."*
+If mem0: *"Saved to mem0 — works from any device, including your phone in Japan."*
+
+---
+
+## mem0 Setup (optional, 2 minutes)
+
+mem0's free tier: 10,000 memories, 1,000 retrieval calls/month. A 2-month Japanese journey won't get close to either limit.
+
+1. Sign up at [app.mem0.ai](https://app.mem0.ai)
+2. Grab your API key from the dashboard
+3. Add to your shell:
+   \`\`\`bash
+   export MEM0_API_KEY=your-key-here
+   \`\`\`
+   Or add to \`~/.zshrc\` / \`~/.bashrc\` to persist across sessions.
+
+Once set, the skill automatically switches to cloud mode. Your progress syncs across every device where you've set \`MEM0_API_KEY\` — laptop at home, phone in Japan, anywhere.
 
 ---
 
@@ -189,8 +239,8 @@ export async function POST() {
 	);
 
 	const hash = 'sha256:' + createHash('sha256').update(SKILL_MD).digest('hex').slice(0, 12);
-	const version = '2.0.0';
-	const description = 'Learn conversational Japanese for traveling in Japan. Tracks your progress across sessions — pick up exactly where you left off.';
+	const version = '2.1.0';
+	const description = 'Learn conversational Japanese for traveling in Japan. Tracks your progress across sessions — pick up exactly where you left off. Supports local file or mem0 cloud memory.';
 
 	if (existing) {
 		await db.update(skills).set({ currentVersion: version, description, updatedAt: new Date() })
