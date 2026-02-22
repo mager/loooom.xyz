@@ -34,10 +34,10 @@ echo $MEM0_API_KEY
 
 **If MEM0_API_KEY is set → use mem0:**
 \`\`\`bash
-curl -s -X POST https://api.mem0.ai/v1/memories/search \\
-  -H "Authorization: Token $MEM0_API_KEY" \\
-  -H "Content-Type: application/json" \\
-  -d '{"query": "japanese learning progress kana vocab session", "filters": {"user_id": "japanese-learner"}}'
+curl -sL -X POST https://api.mem0.ai/v1/memories/search/ \
+  -H "Authorization: Token $MEM0_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "japanese learning progress kana vocab session", "user_id": "japanese-learner"}'
 \`\`\`
 
 Read the returned memories and resume from that context.
@@ -67,13 +67,13 @@ Then teach the first survival phrase: **すみません (sumimasen)** and start 
 
 **If MEM0_API_KEY is set → add to mem0:**
 \`\`\`bash
-curl -s -X POST https://api.mem0.ai/v1/memories/add \\
-  -H "Authorization: Token $MEM0_API_KEY" \\
-  -H "Content-Type: application/json" \\
+curl -sL -X POST https://api.mem0.ai/v1/memories/ \
+  -H "Authorization: Token $MEM0_API_KEY" \
+  -H "Content-Type: application/json" \
   -d '{
     "messages": [
       {"role": "user", "content": "Ending my Japanese lesson for today."},
-      {"role": "assistant", "content": "Session summary: [fill in what was covered, confidence levels, what is next]"}
+      {"role": "assistant", "content": "Session summary: [kana covered + confidence, phrases learned, next session goals]"}
     ],
     "user_id": "japanese-learner"
   }'
@@ -239,7 +239,7 @@ export async function POST() {
 	);
 
 	const hash = 'sha256:' + createHash('sha256').update(SKILL_MD).digest('hex').slice(0, 12);
-	const version = '2.1.0';
+	const version = '2.1.1';
 	const description = 'Learn conversational Japanese for traveling in Japan. Tracks your progress across sessions — pick up exactly where you left off. Supports local file or mem0 cloud memory.';
 
 	if (existing) {
