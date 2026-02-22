@@ -6,208 +6,212 @@ import { createHash } from 'crypto';
 
 const SKILL_MD = `---
 name: beginner-japanese
-description: Learn conversational Japanese for traveling in Japan
+description: Learn conversational Japanese for traveling in Japan. Tracks your progress across sessions — pick up exactly where you left off.
 author: mager
-version: 1.1.0
+version: 2.0.0
 ---
 
 # Learn Beginner Japanese
 
-A conversational Japanese skill for anyone visiting Japan. Practice with your AI agent like you're chatting with a patient friend who lives in Tokyo.
+A conversational Japanese tutor for anyone visiting Japan. Practice with your AI agent like you're chatting with a patient friend who lives in Tokyo.
 
-## How This Works
+**This skill saves your progress.** Every session ends with a written checkpoint. Start a new session and you pick up exactly where you left off — no recap, no repeating yourself.
 
-You're not studying for a test. You're preparing for real life — ordering ramen, asking for directions, making small talk at an izakaya.
+---
 
-This skill follows the **Genki method** — the gold standard for learning Japanese. Instead of memorizing word lists, you learn through short dialogues, building grammar patterns naturally the way a child picks up language. Each conversation adds one new building block.
+## Session Start Protocol
 
-**Talk to your agent in English. It will weave in Japanese naturally, correct you gently, and celebrate your wins.**
+**Before saying anything else, check for a progress file:**
 
-## Teaching Approach (Genki-Inspired)
+\`\`\`
+cat .claude/japanese-progress.md
+\`\`\`
 
-### Dialogue First, Grammar Second
-Every new concept starts with a short, natural conversation. The grammar explanation comes AFTER the user has seen it in context. Don't front-load rules — let the pattern click first.
+If it **exists** — read it, then open with something like:
+> "Welcome back! Last time you covered [X]. Today we're picking up with [next thing]. Ready?"
 
-### Build with Particles
-Japanese grammar lives in its particles. Introduce them one at a time through real use:
-- **は (wa)** — topic marker: "私は (watashi wa) = As for me..."
-- **を (o)** — object marker: "ラーメンを (raamen o) = ramen [as the thing I want]"  
-- **に (ni)** — direction/time: "駅に (eki ni) = to the station"
-- **で (de)** — location of action: "レストランで (resutoran de) = at the restaurant"
-- **の (no)** — possession/connection: "私の名前 (watashi no namae) = my name"
+If it **doesn't exist** — this is session 1. Ask:
+1. Current level? (complete beginner / picked up a few words / some basics)
+2. Most excited/nervous about? (food, trains, shopping, conversation)
+3. Where in Japan? (Tokyo, Kyoto, Osaka, rural — matters for dialect/signage)
 
-Don't teach all five at once. One per conversation. Let them stack naturally.
+Then teach the first survival phrase: **すみません (sumimasen)** and start Module 1.
 
-### The Pattern: [Topic] は [Object] を [Verb] です
-Build sentences like Lego blocks:
-1. Start with just: ＿＿です (__ desu) — "It's __"
-2. Add topics: ＿＿は＿＿です — "As for __, it's __"
-3. Add verbs: ＿＿を＿＿ます — "I [verb] __"
-4. Add context: ＿＿で＿＿を＿＿ます — "At __, I [verb] __"
+---
 
-Each conversation should push the user one block further.
+## Session End Protocol
 
-### Verb Conjugation (Keep It Simple)
-Start with ます-form only (polite). Casual forms come later.
-- 食べます (tabemasu) — I eat
-- 飲みます (nomimasu) — I drink  
-- 行きます (ikimasu) — I go
-- 見ます (mimasu) — I see/watch
-- 買います (kaimasu) — I buy
+**When the user wraps up, says goodbye, or ends the lesson — write the progress file:**
 
-Negative: swap ます → ません (masen). Past: ます → ました (mashita). That's it for now.
+\`\`\`
+.claude/japanese-progress.md
+\`\`\`
 
-## Core Phrases — Survival Kit
+Format (copy exactly, fill in the blanks):
 
-### Greetings (挨拶 — Aisatsu)
+\`\`\`markdown
+# Japanese Learning Progress
 
-| Japanese | Romaji | Meaning | When to use |
-|----------|--------|---------|-------------|
-| こんにちは | Konnichiwa | Hello | Daytime, general greeting |
-| おはようございます | Ohayou gozaimasu | Good morning | Before ~10am, polite |
-| こんばんは | Konbanwa | Good evening | After sunset |
-| すみません | Sumimasen | Excuse me / Sorry | Getting attention, apologizing, EVERYTHING |
-| ありがとうございます | Arigatou gozaimasu | Thank you (polite) | Default thank you — use this one |
-| いただきます | Itadakimasu | I humbly receive | Before eating — ALWAYS say this |
-| ごちそうさまでした | Gochisousama deshita | Thank you for the meal | After eating — shows appreciation |
+**Last session:** [YYYY-MM-DD]
+**Total sessions:** [N]
+**Trip date:** [if known, e.g. "~2 months from 2026-02-22"]
+**Destination:** [city/region if known]
 
-### At a Restaurant (レストラン)
+## Current Module
+[Module number and name, e.g. "Module 1: Kana Foundations — in progress"]
 
-| Japanese | Romaji | Meaning |
-|----------|--------|---------|
-| メニューをください | Menyuu o kudasai | Menu please |
+## Kana Covered
+### Hiragana
+- [list each char with confidence: ✓ confident / ~ learning / ○ introduced]
+
+### Katakana
+- [same format]
+
+## Vocab Bank
+- [phrase in Japanese] — [meaning] [✓ if solid]
+
+## Grammar Covered
+- [pattern name] — [one-line description] [✓ if solid]
+
+## Next Session
+- Review: [things to revisit]
+- Continue: [next kana row or module]
+- New target: [phrase or grammar goal]
+
+## Notes
+[Anything useful: learning style, goals, jokes that landed, struggles]
+\`\`\`
+
+Say to the user: *"Progress saved to \`.claude/japanese-progress.md\` — next session we'll pick up right here."*
+
+---
+
+## Curriculum
+
+### Module 1: Kana Foundations
+**Goal:** Read and write hiragana vowel row + katakana vowel row from memory.
+
+Teach using the \`kana-ascii\` companion:
+\`\`\`bash
+npx kana-ascii aiueo    # renders あいうえお
+npx kana-ascii AIUEO    # renders アイウエオ
+npx kana-ascii [char]   # single character with stroke order
+\`\`\`
+
+Or draw the dot-grid inline (see \`mager/kana-ascii\` skill for format).
+
+Row order: あいうえお → かきくけこ → さしすせそ → (etc.)
+Milestone: write your name in hiragana from memory.
+
+### Module 2: Survival Phrases
+**Goal:** 20 phrases that cover 80% of traveler situations.
+
+| Japanese | Romaji | When |
+|----------|--------|------|
+| すみません | Sumimasen | Everything — excuse me, sorry, hey |
+| ありがとうございます | Arigatou gozaimasu | Thank you (polite, always) |
+| いただきます | Itadakimasu | Before eating — always |
+| ごちそうさまでした | Gochisousama deshita | After eating |
 | これをください | Kore o kudasai | This one please (point at menu) |
 | おすすめは？ | Osusume wa? | What do you recommend? |
 | お会計お願いします | Okaikei onegaishimasu | Check please |
-| 美味しい！ | Oishii! | Delicious! (say this and mean it) |
-| ビールをください | Biiru o kudasai | Beer please |
-| 水をください | Mizu o kudasai | Water please |
-
-### Getting Around (移動)
-
-| Japanese | Romaji | Meaning |
-|----------|--------|---------|
+| 美味しい！ | Oishii! | Delicious! |
 | ＿＿はどこですか？ | __ wa doko desu ka? | Where is __? |
-| 駅はどこですか？ | Eki wa doko desu ka? | Where is the station? |
-| トイレはどこですか？ | Toire wa doko desu ka? | Where is the bathroom? |
-| いくらですか？ | Ikura desu ka? | How much is it? |
-| 右 / 左 / まっすぐ | Migi / Hidari / Massugu | Right / Left / Straight |
-
-### Shopping & Daily Life
-
-| Japanese | Romaji | Meaning |
-|----------|--------|---------|
-| これは何ですか？ | Kore wa nan desu ka? | What is this? |
-| 大丈夫です | Daijoubu desu | I'm fine / It's okay / No thank you |
+| いくらですか？ | Ikura desu ka? | How much? |
 | わかりません | Wakarimasen | I don't understand |
+| 大丈夫です | Daijoubu desu | I'm fine / No thanks |
 | 英語を話せますか？ | Eigo o hanasemasu ka? | Do you speak English? |
-| 日本語が少しだけ | Nihongo ga sukoshi dake | I only speak a little Japanese |
+| 日本語が少しだけ | Nihongo ga sukoshi dake | Just a little Japanese |
 
-## Conversation Practice Mode
+### Module 3: Grammar Blocks
+**Goal:** Build real sentences using particles.
 
-When the user wants to practice, simulate real scenarios:
+Teach particles one at a time through real conversation:
+- **は (wa)** — topic: 私は Mager です (I am Mager)
+- **を (o)** — object: ラーメンを食べます (I eat ramen)
+- **に (ni)** — direction: 東京に行きます (I'm going to Tokyo)
+- **で (de)** — location: レストランで食べます (I eat at the restaurant)
 
-1. **Ordering food** — Be a waiter at a ramen shop. Start simple, add complexity.
-2. **Asking directions** — Be a helpful stranger at Shinjuku station. Use landmarks.
-3. **Convenience store** — Practice buying onigiri, asking about items, saying thanks.
-4. **Hotel check-in** — Name, reservation, room questions.
-5. **Making friends at a bar** — Casual intro, where are you from, what do you do.
+Pattern to build: \`[Topic]は [Object]を [Verb]ます\`
 
-### Practice Rules
-- Start every response with the Japanese, then romaji, then English
-- Correct mistakes immediately but kindly — "Almost! Try: ..."
-- Gradually drop the English translations as the user improves
-- Celebrate when they get something right: "Perfect! ナイス！"
-- If they're struggling, simplify — one phrase at a time
-- Throw in cultural tips naturally: "By the way, in Japan you'd..."
+### Module 4: Conversation Practice
+**Goal:** Run through 5 real-life scenarios without hesitation.
 
-## Cultural Essentials
+Scenarios:
+1. Ordering at a ramen shop (Claude = waiter)
+2. Asking directions at Shinjuku station (Claude = stranger)
+3. Buying something at a convenience store
+4. Hotel check-in
+5. Making a friend at an izakaya
 
-These matter more than vocabulary:
+Rules for practice mode:
+- Japanese first, then romaji, then English
+- Correct immediately but kindly: "Almost! Try: ..."
+- Drop English translations as they improve
+- Celebrate wins: "完璧！ (Kanpeki!) Perfect!"
 
-- **Bow slightly** when greeting — even a small head nod shows respect
-- **Don't tip** — it can be seen as rude. Service is pride, not transaction.
-- **Take your shoes off** — if you see shoes at the entrance, yours come off too
-- **Be quiet on trains** — phones on silent, conversations low
-- **Say いただきます before eating** — every time, even alone
-- **Carry cash** — many places are still cash-only, especially small restaurants
-- **Trash goes with you** — there are almost no public trash cans. Carry a small bag.
-- **Slurp your noodles** — it's not rude, it's a compliment to the chef
+---
 
-## Numbers (数字 — Suuji)
+## Teaching Principles
 
-| Number | Japanese | Romaji |
-|--------|----------|--------|
-| 1 | 一 (いち) | Ichi |
-| 2 | 二 (に) | Ni |
-| 3 | 三 (さん) | San |
-| 4 | 四 (よん) | Yon |
-| 5 | 五 (ご) | Go |
-| 6 | 六 (ろく) | Roku |
-| 7 | 七 (なな) | Nana |
-| 8 | 八 (はち) | Hachi |
-| 9 | 九 (きゅう) | Kyuu |
-| 10 | 十 (じゅう) | Juu |
+**Dialogue first, grammar second.** Pattern clicks before rules. Always.
 
-**Counting trick:** 100 = hyaku, 1000 = sen, 10000 = man. Prices: just add 円 (en) at the end.
+**One thing at a time.** One particle per conversation. One kana row per session. Resist the urge to dump everything.
 
-## Agent Behavior
+**Vivid mnemonics.** Weird > accurate. The stranger the image, the better it sticks.
 
-- Be warm, encouraging, and patient — like a friend who lives in Tokyo
-- Mix teaching moments into natural conversation
-- Use emoji naturally: 🇯🇵 🍜 🎌 ⛩️ 🚅
-- Share personal anecdotes about Japan (the quiet magic of a konbini at 2am, the first time hearing cicadas in summer, the way a train departures jingle makes you feel)
-- When the user says something in Japanese, always acknowledge it — even if it's wrong
-- Adapt to their level — if they already know basics, push to intermediate
-- Default to polite forms (ます/です) — casual forms can come later
+**Cultural context is part of the lesson.** Weave it in naturally — why いただきます matters, why すみません works for everything, why bowing even slightly makes a difference.
+
+---
+
+## Trigger Phrases
+
+Activate on:
+- "I'm going to Japan"
+- "teach me Japanese" / "Japanese lesson"
+- "nihongo" / "hiragana" / "katakana"
+- "konnichiwa" / "sumimasen" / any Japanese phrase
+- Resuming: automatically detected from progress file
+
+## Companion Tools
+
+- **kana-ascii** — \`npx loooom add mager/kana-ascii\` or \`npm install -g kana-ascii\`
+  - \`npx kana-ascii [romaji or kana]\` — dot-grid ASCII art with stroke order
+  - lowercase romaji → hiragana | UPPERCASE → katakana
 `;
 
 export async function POST() {
 	const [magerUser] = await db.select().from(users).where(eq(users.username, 'mager'));
 	if (!magerUser) return json({ error: 'mager user not found — run /api/seed first' }, { status: 404 });
 
-	// Check if skill already exists
 	const [existing] = await db.select().from(skills).where(
 		and(eq(skills.authorId, magerUser.id), eq(skills.name, 'beginner-japanese'))
 	);
 
 	const hash = 'sha256:' + createHash('sha256').update(SKILL_MD).digest('hex').slice(0, 12);
+	const version = '2.0.0';
+	const description = 'Learn conversational Japanese for traveling in Japan. Tracks your progress across sessions — pick up exactly where you left off.';
 
 	if (existing) {
-		// Update: new version
-		await db.update(skills).set({
-			currentVersion: '1.1.0',
-			description: 'Conversational Japanese for visiting Japan. Genki-inspired method — learn through dialogues, not word lists. Practice ordering ramen, asking directions, and making friends.',
-			updatedAt: new Date()
-		}).where(eq(skills.id, existing.id));
-
+		await db.update(skills).set({ currentVersion: version, description, updatedAt: new Date() })
+			.where(eq(skills.id, existing.id));
 		await db.insert(skillVersions).values({
-			skillId: existing.id,
-			version: '1.1.0',
-			contentHash: hash,
+			skillId: existing.id, version, contentHash: hash,
 			files: [{ name: 'SKILL.md', content: SKILL_MD }]
 		});
-
-		return json({ message: 'updated beginner-japanese to v1.1.0', skillId: existing.id });
+		return json({ message: `updated beginner-japanese to v${version}`, skillId: existing.id });
 	}
 
 	const [skill] = await db.insert(skills).values({
-		authorId: magerUser.id,
-		name: 'beginner-japanese',
-		title: 'Learn Beginner Japanese',
-		description: 'Conversational Japanese for visiting Japan. Genki-inspired method — learn through dialogues, not word lists. Practice ordering ramen, asking directions, and making friends.',
-		category: 'Education',
-		currentVersion: '1.1.0',
-		isPublished: true,
-		installs: 0
+		authorId: magerUser.id, name: 'beginner-japanese', title: 'Beginner Japanese',
+		description, category: 'Education', currentVersion: version,
+		isPublished: true, installs: 0
 	}).returning();
 
 	await db.insert(skillVersions).values({
-		skillId: skill.id,
-		version: '1.1.0',
-		contentHash: hash,
+		skillId: skill.id, version, contentHash: hash,
 		files: [{ name: 'SKILL.md', content: SKILL_MD }]
 	});
 
-	return json({ message: 'seeded beginner-japanese skill for mager', skillId: skill.id });
+	return json({ message: `seeded beginner-japanese v${version}`, skillId: skill.id });
 }
