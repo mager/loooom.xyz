@@ -3,6 +3,7 @@ import { db } from '$lib/server/db';
 import { users, skills } from '$lib/server/schema';
 import { eq } from 'drizzle-orm';
 import { PLUGINS, CATEGORIES as CATALOG_CATEGORIES } from '$lib/plugins';
+import { fetchEvalScores } from '$lib/eval-scores';
 
 export const load: PageServerLoad = async ({ url }) => {
 	const category = url.searchParams.get('category') || null;
@@ -71,11 +72,14 @@ export const load: PageServerLoad = async ({ url }) => {
 		? PLUGINS.filter((p) => p.category === category)
 		: PLUGINS;
 
+	const evalScores = await fetchEvalScores();
+
 	return {
 		skills: skillsWithAuthors,
 		plugins: catalogPlugins,
 		categories,
 		catalogCategories: CATALOG_CATEGORIES,
-		activeCategory: category
+		activeCategory: category,
+		evalScores
 	};
 };

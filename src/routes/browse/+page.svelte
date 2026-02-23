@@ -110,6 +110,15 @@
 									<span class="skill-category">{plugin.category}</span>
 								{/if}
 								<span class="skill-uses">{plugin.skills.length} skills</span>
+								{#if data.evalScores?.plugins[`${plugin.author}/${plugin.name}`]?.status === 'passing'}
+									<span class="eval-pill score-passing" title="Quality eval: {data.evalScores.plugins[`${plugin.author}/${plugin.name}`].passed}/{data.evalScores.plugins[`${plugin.author}/${plugin.name}`].total} tests passing">
+										✓ {data.evalScores.plugins[`${plugin.author}/${plugin.name}`].score}%
+									</span>
+								{:else if data.evalScores?.plugins[`${plugin.author}/${plugin.name}`]?.status === 'failing'}
+									<span class="eval-pill score-failing" title="Quality eval: {data.evalScores.plugins[`${plugin.author}/${plugin.name}`].passed}/{data.evalScores.plugins[`${plugin.author}/${plugin.name}`].total} tests passing">
+										⚠ {data.evalScores.plugins[`${plugin.author}/${plugin.name}`].score}%
+									</span>
+								{/if}
 							</div>
 							<h3 class="skill-title">{plugin.title}</h3>
 							{#if plugin.description}
@@ -185,6 +194,36 @@
 	.card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
 	.skill-category { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); }
 	.skill-uses { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); }
+	.eval-pill {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.1rem 0.45rem;
+		border-radius: 100px;
+		font-size: 0.65rem;
+		font-weight: 500;
+		cursor: default;
+		margin-left: auto;
+	}
+	.eval-pill.score-passing {
+		background: rgba(34, 197, 94, 0.12);
+		color: #16a34a;
+		border: 1px solid rgba(34, 197, 94, 0.3);
+	}
+	.eval-pill.score-failing {
+		background: rgba(234, 179, 8, 0.12);
+		color: #ca8a04;
+		border: 1px solid rgba(234, 179, 8, 0.3);
+	}
+	:global(html[data-theme='dark']) .eval-pill.score-passing {
+		background: rgba(34, 197, 94, 0.15);
+		color: #4ade80;
+		border-color: rgba(34, 197, 94, 0.25);
+	}
+	:global(html[data-theme='dark']) .eval-pill.score-failing {
+		background: rgba(234, 179, 8, 0.15);
+		color: #facc15;
+		border-color: rgba(234, 179, 8, 0.25);
+	}
 	.skill-title { font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem; }
 	.skill-desc { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.35; margin-bottom: 1rem; flex: 1; }
 	.card-author { display: flex; align-items: center; gap: 0.5rem; margin-top: auto; }

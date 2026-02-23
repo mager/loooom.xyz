@@ -45,6 +45,14 @@
 				<span class="plugin-emoji">{data.plugin.emoji}</span>
 				<span class="plugin-category-badge">{data.plugin.category}</span>
 				<span class="plugin-version">v{data.plugin.version}</span>
+				{#if data.evalScore && data.evalScore.status !== 'pending'}
+					<span
+						class="eval-score-badge score-{data.evalScore.status}"
+						title="{data.evalScore.passed}/{data.evalScore.total} tests passing"
+					>
+						{data.evalScore.status === 'passing' ? '✓' : '⚠'} {data.evalScore.score}% quality
+					</span>
+				{/if}
 			</div>
 			<h1 class="plugin-title handwriting">{data.plugin.title}</h1>
 			<p class="plugin-description">{data.plugin.description}</p>
@@ -272,6 +280,36 @@
 		font-family: var(--font-mono);
 		font-size: 0.75rem;
 		color: var(--text-muted);
+	}
+	.eval-score-badge {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.2rem 0.6rem;
+		border-radius: 100px;
+		font-size: 0.7rem;
+		font-weight: 500;
+		letter-spacing: 0.02em;
+		cursor: default;
+	}
+	.score-passing {
+		background: rgba(34, 197, 94, 0.12);
+		color: #16a34a;
+		border: 1px solid rgba(34, 197, 94, 0.3);
+	}
+	.score-failing {
+		background: rgba(234, 179, 8, 0.12);
+		color: #ca8a04;
+		border: 1px solid rgba(234, 179, 8, 0.3);
+	}
+	:global(html[data-theme='dark']) .score-passing {
+		background: rgba(34, 197, 94, 0.15);
+		color: #4ade80;
+		border-color: rgba(34, 197, 94, 0.25);
+	}
+	:global(html[data-theme='dark']) .score-failing {
+		background: rgba(234, 179, 8, 0.15);
+		color: #facc15;
+		border-color: rgba(234, 179, 8, 0.25);
 	}
 	.plugin-title {
 		font-size: clamp(2rem, 5vw, 3rem);
