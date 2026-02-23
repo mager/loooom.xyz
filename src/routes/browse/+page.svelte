@@ -1,9 +1,82 @@
 <script lang="ts">
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import YarnLogo from '$lib/components/YarnLogo.svelte';
+	import { getPluginScore } from '$lib/eval-scores';
 
 	let { data } = $props();
-	let activeTab = $state<'skills' | 'plugins'>('skills');
+	let activeTab = $state<'skills' | 'plugins'>('plugins');
+
+	// --- Sorting ---
+	type PluginSortKey = 'score' | 'name' | 'skills' | 'category' | 'author';
+	type SkillSortKey = 'installs' | 'name' | 'category' | 'author';
+
+	let pluginSort = $state<{ key: PluginSortKey; dir: 1 | -1 }>({ key: 'score', dir: -1 });
+	let skillSort = $state<{ key: SkillSortKey; dir: 1 | -1 }>({ key: 'installs', dir: -1 });
+
+	function togglePluginSort(key: PluginSortKey) {
+		if (pluginSort.key === key) {
+			pluginSort = { key, dir: pluginSort.dir === 1 ? -1 : 1 };
+		} else {
+			pluginSort = { key, dir: -1 };
+		}
+	}
+
+	function toggleSkillSort(key: SkillSortKey) {
+		if (skillSort.key === key) {
+			skillSort = { key, dir: skillSort.dir === 1 ? -1 : 1 };
+		} else {
+			skillSort = { key, dir: -1 };
+		}
+	}
+
+	const sortedPlugins = $derived(() => {
+		const plugins = [...data.plugins];
+		return plugins.sort((a, b) => {
+			const dir = pluginSort.dir;
+			if (pluginSort.key === 'score') {
+				const sa = getPluginScore(data.evalScores, a.author, a.name)?.score ?? -1;
+				const sb = getPluginScore(data.evalScores, b.author, b.name)?.score ?? -1;
+				return (sa - sb) * dir;
+			}
+			if (pluginSort.key === 'skills') {
+				return (a.skills.length - b.skills.length) * dir;
+			}
+			if (pluginSort.key === 'name') {
+				return a.title.localeCompare(b.title) * dir;
+			}
+			if (pluginSort.key === 'category') {
+				return a.category.localeCompare(b.category) * dir;
+			}
+			if (pluginSort.key === 'author') {
+				return a.author.localeCompare(b.author) * dir;
+			}
+			return 0;
+		});
+	});
+
+	const sortedSkills = $derived(() => {
+		const skills = [...data.skills];
+		return skills.sort((a, b) => {
+			const dir = skillSort.dir;
+			if (skillSort.key === 'installs') return (a.installs - b.installs) * dir;
+			if (skillSort.key === 'name') return a.title.localeCompare(b.title) * dir;
+			if (skillSort.key === 'category') return (a.category ?? '').localeCompare(b.category ?? '') * dir;
+			if (skillSort.key === 'author') return (a.author?.displayName ?? '').localeCompare(b.author?.displayName ?? '') * dir;
+			return 0;
+		});
+	});
+
+	function sortIcon(key: string, current: { key: string; dir: number }) {
+		if (current.key !== key) return '↕';
+		return current.dir === -1 ? '↓' : '↑';
+	}
+
+	function scoreColor(score: number | null) {
+		if (score === null) return 'score-none';
+		if (score >= 80) return 'score-green';
+		if (score >= 50) return 'score-yellow';
+		return 'score-red';
+	}
 </script>
 
 <svelte:head>
@@ -35,103 +108,202 @@
 
 <section class="browse-page">
 	<div class="browse-inner">
-		<h1 class="handwriting">
-			{#if data.activeCategory}
-				{data.activeCategory} <span class="sketch">skills</span>
-			{:else}
-				Browse <span class="sketch">skills</span>
-			{/if}
-		</h1>
+		<div class="page-header">
+			<h1 class="handwriting">
+				{#if data.activeCategory}
+					{data.activeCategory} <span class="sketch">skills</span>
+				{:else}
+					Browse <span class="sketch">skills</span>
+				{/if}
+			</h1>
+			<p class="page-subtitle">
+				{data.plugins.length + data.skills.length} skills · sorted by quality
+			</p>
+		</div>
 
 		<!-- Tabs -->
 		<div class="tabs">
-			<button class="tab" class:active={activeTab === 'skills'} onclick={() => activeTab = 'skills'}>Skills</button>
-			<button class="tab" class:active={activeTab === 'plugins'} onclick={() => activeTab = 'plugins'}>Plugins</button>
+			<button class="tab" class:active={activeTab === 'plugins'} onclick={() => activeTab = 'plugins'}>
+				Plugins <span class="tab-count">{data.plugins.length}</span>
+			</button>
+			<button class="tab" class:active={activeTab === 'skills'} onclick={() => activeTab = 'skills'}>
+				Skills <span class="tab-count">{data.skills.length}</span>
+			</button>
 		</div>
 
+		<!-- Category Filter -->
 		<div class="categories">
 			<a href="/browse" class="cat-pill" class:active={!data.activeCategory}>All</a>
-			{#each data.categories as cat}
-				<a href="/browse?category={cat}" class="cat-pill" class:active={data.activeCategory === cat}>{cat}</a>
-			{/each}
+			{#if activeTab === 'plugins'}
+				{#each data.catalogCategories as cat}
+					<a href="/browse?category={cat}" class="cat-pill" class:active={data.activeCategory === cat}>{cat}</a>
+				{/each}
+			{:else}
+				{#each data.categories as cat}
+					<a href="/browse?category={cat}" class="cat-pill" class:active={data.activeCategory === cat}>{cat}</a>
+				{/each}
+			{/if}
 		</div>
 
-		{#if activeTab === 'skills'}
+		<!-- Plugins Table -->
+		{#if activeTab === 'plugins'}
+			{#if data.plugins.length === 0}
+				<div class="empty">
+					<p class="empty-text">No plugins found.</p>
+				</div>
+			{:else}
+				<div class="table-wrap">
+					<table class="data-table">
+						<thead>
+							<tr>
+								<th class="col-name">
+									<button class="sort-btn" onclick={() => togglePluginSort('name')}>
+										Plugin <span class="sort-icon">{sortIcon('name', pluginSort)}</span>
+									</button>
+								</th>
+								<th class="col-author">
+									<button class="sort-btn" onclick={() => togglePluginSort('author')}>
+										Author <span class="sort-icon">{sortIcon('author', pluginSort)}</span>
+									</button>
+								</th>
+								<th class="col-category">
+									<button class="sort-btn" onclick={() => togglePluginSort('category')}>
+										Category <span class="sort-icon">{sortIcon('category', pluginSort)}</span>
+									</button>
+								</th>
+								<th class="col-skills">
+									<button class="sort-btn" onclick={() => togglePluginSort('skills')}>
+										Skills <span class="sort-icon">{sortIcon('skills', pluginSort)}</span>
+									</button>
+								</th>
+								<th class="col-score">
+									<button class="sort-btn" onclick={() => togglePluginSort('score')}>
+										Quality <span class="sort-icon">{sortIcon('score', pluginSort)}</span>
+									</button>
+								</th>
+								<th class="col-install">Install</th>
+							</tr>
+						</thead>
+						<tbody>
+							{#each sortedPlugins() as plugin}
+								{@const score = getPluginScore(data.evalScores, plugin.author, plugin.name)}
+								<tr class="table-row" onclick={() => window.location.href = `/p/${plugin.author}/${plugin.name}`} role="link" tabindex="0" onkeydown={(e) => e.key === 'Enter' && (window.location.href = `/p/${plugin.author}/${plugin.name}`)}>
+									<td class="col-name">
+										<div class="plugin-name-cell">
+											<span class="plugin-emoji">{plugin.emoji}</span>
+											<div>
+												<div class="plugin-title">{plugin.title}</div>
+												<div class="plugin-desc-short">{plugin.description.slice(0, 72)}{plugin.description.length > 72 ? '…' : ''}</div>
+											</div>
+										</div>
+									</td>
+									<td class="col-author">
+										<span class="cell-author">@{plugin.author}</span>
+									</td>
+									<td class="col-category">
+										<span class="cat-badge">{plugin.category}</span>
+									</td>
+									<td class="col-skills">
+										<span class="cell-num">{plugin.skills.length}</span>
+									</td>
+									<td class="col-score">
+										{#if score}
+											<span class="score-badge {scoreColor(score.score)}" title="{score.passed}/{score.total} tests passing">
+												{score.score}%
+											</span>
+										{:else}
+											<span class="score-badge score-none">—</span>
+										{/if}
+									</td>
+									<td class="col-install" onclick={(e) => e.stopPropagation()}>
+										<code class="install-code">{plugin.installCommand}</code>
+									</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
+			{/if}
+		{:else}
+			<!-- Skills Table -->
 			{#if data.skills.length === 0}
 				<div class="empty">
 					<p class="empty-text">No skills found{data.activeCategory ? ` in ${data.activeCategory}` : ''}.</p>
 					<p class="empty-hint">Be the first to <a href="/create">create one</a>!</p>
 				</div>
 			{:else}
-				<div class="skills-grid">
-					{#each data.skills as skill}
-						<a href="/s/{skill.author?.username}/{skill.name}" class="skill-card">
-							<div class="card-top">
-								{#if skill.category}
-									<span class="skill-category">{skill.category}</span>
-								{/if}
-								<span class="skill-uses">{skill.installs.toLocaleString()} uses</span>
-							</div>
-							<h3 class="skill-title">{skill.title}</h3>
-							{#if skill.description}
-								<p class="skill-desc">{skill.description}</p>
-							{/if}
-							{#if skill.author}
-								<div class="card-author">
-									<div class="author-avatar-sm">
-										{#if skill.author.avatarUrl}
-											<img src={skill.author.avatarUrl} alt={skill.author.displayName} />
+				<div class="table-wrap">
+					<table class="data-table">
+						<thead>
+							<tr>
+								<th class="col-name">
+									<button class="sort-btn" onclick={() => toggleSkillSort('name')}>
+										Skill <span class="sort-icon">{sortIcon('name', skillSort)}</span>
+									</button>
+								</th>
+								<th class="col-author">
+									<button class="sort-btn" onclick={() => toggleSkillSort('author')}>
+										Author <span class="sort-icon">{sortIcon('author', skillSort)}</span>
+									</button>
+								</th>
+								<th class="col-category">
+									<button class="sort-btn" onclick={() => toggleSkillSort('category')}>
+										Category <span class="sort-icon">{sortIcon('category', skillSort)}</span>
+									</button>
+								</th>
+								<th class="col-installs">
+									<button class="sort-btn" onclick={() => toggleSkillSort('installs')}>
+										Uses <span class="sort-icon">{sortIcon('installs', skillSort)}</span>
+									</button>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							{#each sortedSkills() as skill}
+								<tr class="table-row" onclick={() => window.location.href = `/s/${skill.author?.username}/${skill.name}`} role="link" tabindex="0" onkeydown={(e) => e.key === 'Enter' && (window.location.href = `/s/${skill.author?.username}/${skill.name}`)}>
+									<td class="col-name">
+										<div class="plugin-name-cell">
+											<div>
+												<div class="plugin-title">{skill.title}</div>
+												{#if skill.description}
+													<div class="plugin-desc-short">{skill.description.slice(0, 72)}{skill.description.length > 72 ? '…' : ''}</div>
+												{/if}
+											</div>
+										</div>
+									</td>
+									<td class="col-author">
+										<div class="author-cell">
+											{#if skill.author}
+												<div class="author-avatar-sm">
+													{#if skill.author.avatarUrl}
+														<img src={skill.author.avatarUrl} alt={skill.author.displayName} />
+													{:else}
+														{skill.author.displayName[0]}
+													{/if}
+												</div>
+												<span class="cell-author">{skill.author.displayName}</span>
+												{#if skill.author.verified}
+													<span class="verified">✓</span>
+												{/if}
+											{:else}
+												<span class="cell-author text-muted">—</span>
+											{/if}
+										</div>
+									</td>
+									<td class="col-category">
+										{#if skill.category}
+											<span class="cat-badge">{skill.category}</span>
 										{:else}
-											{skill.author.displayName[0]}
+											<span class="text-muted">—</span>
 										{/if}
-									</div>
-									<span class="author-name">{skill.author.displayName}</span>
-									{#if skill.author.verified}
-										<span class="verified">✓</span>
-									{/if}
-								</div>
-							{/if}
-						</a>
-					{/each}
-				</div>
-			{/if}
-		{:else}
-			{#if data.plugins.length === 0}
-				<div class="empty">
-					<p class="empty-text">No plugins found{data.activeCategory ? ` in ${data.activeCategory}` : ''}.</p>
-				</div>
-			{:else}
-				<div class="skills-grid">
-					{#each data.plugins as plugin}
-						<a href="/p/{plugin.author}/{plugin.name}" class="skill-card">
-							<div class="card-top">
-								<span class="plugin-emoji-sm">{plugin.emoji}</span>
-								{#if plugin.category}
-									<span class="skill-category">{plugin.category}</span>
-								{/if}
-								<span class="skill-uses">{plugin.skills.length} skills</span>
-								{#if data.evalScores?.plugins[`${plugin.author}/${plugin.name}`]?.status === 'passing'}
-									<span class="eval-pill score-passing" title="Quality eval: {data.evalScores.plugins[`${plugin.author}/${plugin.name}`].passed}/{data.evalScores.plugins[`${plugin.author}/${plugin.name}`].total} tests passing">
-										✓ {data.evalScores.plugins[`${plugin.author}/${plugin.name}`].score}%
-									</span>
-								{:else if data.evalScores?.plugins[`${plugin.author}/${plugin.name}`]?.status === 'failing'}
-									<span class="eval-pill score-failing" title="Quality eval: {data.evalScores.plugins[`${plugin.author}/${plugin.name}`].passed}/{data.evalScores.plugins[`${plugin.author}/${plugin.name}`].total} tests passing">
-										⚠ {data.evalScores.plugins[`${plugin.author}/${plugin.name}`].score}%
-									</span>
-								{/if}
-							</div>
-							<h3 class="skill-title">{plugin.title}</h3>
-							{#if plugin.description}
-								<p class="skill-desc">{plugin.description}</p>
-							{/if}
-							<div class="plugin-install-preview">
-								<code>{plugin.installCommand}</code>
-							</div>
-							<div class="card-author">
-								<span class="author-name">@{plugin.author}</span>
-							</div>
-						</a>
-					{/each}
+									</td>
+									<td class="col-installs">
+										<span class="cell-num">{skill.installs.toLocaleString()}</span>
+									</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
 				</div>
 			{/if}
 		{/if}
@@ -139,6 +311,7 @@
 </section>
 
 <style>
+	/* ---- Ambient ---- */
 	.ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
 	.orb { position: absolute; border-radius: 50%; filter: blur(140px); opacity: 0.06; }
 	:global(html[data-theme="dark"]) .orb { opacity: 0.12; }
@@ -146,6 +319,7 @@
 	.orb-2 { width: 400px; height: 400px; background: var(--yarn-pink); bottom: 10%; right: -100px; animation: drift 30s ease-in-out infinite reverse; }
 	@keyframes drift { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(30px, -20px); } }
 
+	/* ---- Nav ---- */
 	nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; backdrop-filter: blur(20px); background: var(--nav-bg); border-bottom: 1px solid var(--border); }
 	.nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 2rem; height: 64px; display: flex; align-items: center; justify-content: space-between; }
 	.logo { display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary); }
@@ -157,91 +331,218 @@
 	.btn-nav { background: var(--bg-card); color: var(--text-primary) !important; border: 1px solid var(--border); padding: 0.5rem 1.25rem; border-radius: var(--radius-sm); font-size: 0.875rem; font-weight: 500; transition: all 0.2s; text-decoration: none; }
 	.btn-nav:hover { border-color: var(--text-secondary); }
 
+	/* ---- Typography ---- */
 	.handwriting { font-family: var(--font-handwriting); font-weight: 100; text-shadow: 0 0.5px 0 rgba(0,0,0,0.06); }
 	:global(html[data-theme="dark"]) .handwriting { text-shadow: 0 0.5px 0 rgba(255,255,255,0.08); }
 	.sketch { font-family: var(--font-sketch); font-weight: 400; color: var(--yarn-pink); }
 
+	/* ---- Page Layout ---- */
 	.browse-page { position: relative; z-index: 1; min-height: 100vh; padding: 7rem 2rem 4rem; }
 	.browse-inner { max-width: 1200px; margin: 0 auto; }
-	.browse-inner h1 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 2rem; color: var(--text-primary); }
 
-	.tabs { display: flex; gap: 0; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
-	.tab { background: none; border: none; border-bottom: 2px solid transparent; padding: 0.75rem 1.5rem; font-family: var(--font-display); font-size: 0.95rem; font-weight: 600; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; }
+	.page-header { margin-bottom: 1.5rem; }
+	.page-header h1 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 0.25rem; color: var(--text-primary); }
+	.page-subtitle { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted); }
+
+	/* ---- Tabs ---- */
+	.tabs { display: flex; gap: 0; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+	.tab { background: none; border: none; border-bottom: 2px solid transparent; padding: 0.75rem 1.5rem; font-family: var(--font-display); font-size: 0.95rem; font-weight: 600; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem; }
 	.tab:hover { color: var(--text-primary); }
 	.tab.active { color: var(--text-primary); border-bottom-color: var(--accent); }
+	.tab-count { background: var(--bg-secondary); color: var(--text-muted); border-radius: 100px; padding: 0.1rem 0.5rem; font-size: 0.72rem; font-family: var(--font-mono); }
+	.tab.active .tab-count { background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent); }
 
-	.categories { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 3rem; }
+	/* ---- Category Pills ---- */
+	.categories { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem; }
 	.cat-pill {
-		padding: 0.625rem 1.5rem; border-radius: 100px; background: var(--bg-card);
+		padding: 0.4rem 1rem; border-radius: 100px; background: var(--bg-card);
 		border: 1px solid var(--border); color: var(--text-secondary);
-		font-family: var(--font-handwriting); font-size: 1.05rem; cursor: pointer;
-		transition: all 0.25s; box-shadow: var(--card-shadow); text-decoration: none;
+		font-family: var(--font-handwriting); font-size: 0.95rem; cursor: pointer;
+		transition: all 0.2s; text-decoration: none;
 	}
-	.cat-pill:hover { border-color: var(--text-secondary); color: var(--text-primary); transform: translateY(-1px); }
+	.cat-pill:hover { border-color: var(--text-secondary); color: var(--text-primary); }
 	.cat-pill.active { background: var(--accent); color: white; border-color: var(--accent); }
 	:global(html[data-theme="dark"]) .cat-pill.active { color: var(--bg-primary); }
 
+	/* ---- Empty ---- */
 	.empty { text-align: center; padding: 4rem 0; }
 	.empty-text { font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
 	.empty-hint { color: var(--text-muted); }
 
-	.skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; }
-	.skill-card {
-		background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md);
-		padding: 1.5rem; transition: all 0.25s; text-decoration: none; display: flex; flex-direction: column;
+	/* ---- Data Table ---- */
+	.table-wrap {
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		overflow: hidden;
+		background: var(--bg-card);
 	}
-	.skill-card:hover { border-color: var(--border); box-shadow: var(--card-shadow-hover); transform: translateY(-2px); }
-	.card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
-	.skill-category { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); }
-	.skill-uses { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); }
-	.eval-pill {
+
+	.data-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.875rem;
+	}
+
+	.data-table thead {
+		background: var(--bg-secondary);
+		border-bottom: 1px solid var(--border);
+	}
+
+	.data-table th {
+		padding: 0;
+		text-align: left;
+		font-weight: 600;
+		color: var(--text-muted);
+		font-size: 0.72rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		white-space: nowrap;
+	}
+
+	.sort-btn {
+		background: none;
+		border: none;
+		padding: 0.75rem 1rem;
+		width: 100%;
+		text-align: left;
+		cursor: pointer;
+		color: var(--text-muted);
+		font-size: 0.72rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		font-family: var(--font-display);
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+		transition: color 0.15s;
+	}
+	.sort-btn:hover { color: var(--text-primary); }
+
+	.sort-icon {
+		font-size: 0.65rem;
+		opacity: 0.5;
+		font-style: normal;
+	}
+
+	.data-table th:last-child .sort-btn,
+	.data-table th:last-child {
+		padding-right: 1.25rem;
+	}
+
+	.data-table tbody tr {
+		border-bottom: 1px solid var(--border);
+		transition: background 0.15s;
+	}
+	.data-table tbody tr:last-child { border-bottom: none; }
+
+	.table-row {
+		cursor: pointer;
+	}
+	.table-row:hover { background: color-mix(in srgb, var(--accent) 4%, var(--bg-card)); }
+	.table-row:focus { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+	.data-table td {
+		padding: 0.875rem 1rem;
+		vertical-align: middle;
+		color: var(--text-secondary);
+	}
+
+	/* ---- Column Widths ---- */
+	.col-name { width: 35%; min-width: 220px; }
+	.col-author { width: 12%; white-space: nowrap; }
+	.col-category { width: 12%; }
+	.col-skills, .col-installs { width: 8%; text-align: center; }
+	.col-score { width: 10%; text-align: center; }
+	.col-install { width: 23%; }
+
+	/* ---- Cell Content ---- */
+	.plugin-name-cell { display: flex; align-items: flex-start; gap: 0.75rem; }
+	.plugin-emoji { font-size: 1.5rem; line-height: 1; flex-shrink: 0; margin-top: 0.1rem; }
+	.plugin-title { font-weight: 700; color: var(--text-primary); font-size: 0.9rem; margin-bottom: 0.2rem; }
+	.plugin-desc-short { font-size: 0.75rem; color: var(--text-muted); line-height: 1.35; }
+
+	.cell-author { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-secondary); }
+	.text-muted { color: var(--text-muted); }
+
+	.cat-badge {
+		display: inline-block;
+		padding: 0.2rem 0.6rem;
+		border-radius: 100px;
+		background: var(--bg-secondary);
+		border: 1px solid var(--border);
+		font-size: 0.68rem;
+		font-weight: 500;
+		color: var(--text-muted);
+		text-transform: capitalize;
+		white-space: nowrap;
+	}
+
+	.cell-num {
+		font-family: var(--font-mono);
+		font-size: 0.82rem;
+		color: var(--text-secondary);
+		display: block;
+		text-align: center;
+	}
+
+	/* ---- Score Badge ---- */
+	.score-badge {
 		display: inline-flex;
 		align-items: center;
-		padding: 0.1rem 0.45rem;
+		justify-content: center;
+		padding: 0.2rem 0.55rem;
 		border-radius: 100px;
-		font-size: 0.65rem;
-		font-weight: 500;
-		cursor: default;
-		margin-left: auto;
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		font-weight: 600;
+		min-width: 44px;
 	}
-	.eval-pill.score-passing {
-		background: rgba(34, 197, 94, 0.12);
-		color: #16a34a;
-		border: 1px solid rgba(34, 197, 94, 0.3);
+	.score-green { background: rgba(34, 197, 94, 0.12); color: #16a34a; border: 1px solid rgba(34, 197, 94, 0.3); }
+	.score-yellow { background: rgba(234, 179, 8, 0.12); color: #ca8a04; border: 1px solid rgba(234, 179, 8, 0.3); }
+	.score-red { background: rgba(239, 68, 68, 0.12); color: #dc2626; border: 1px solid rgba(239, 68, 68, 0.3); }
+	.score-none { background: var(--bg-secondary); color: var(--text-muted); border: 1px solid var(--border); }
+
+	:global(html[data-theme="dark"]) .score-green { background: rgba(34, 197, 94, 0.15); color: #4ade80; border-color: rgba(34, 197, 94, 0.25); }
+	:global(html[data-theme="dark"]) .score-yellow { background: rgba(234, 179, 8, 0.15); color: #facc15; border-color: rgba(234, 179, 8, 0.25); }
+	:global(html[data-theme="dark"]) .score-red { background: rgba(239, 68, 68, 0.15); color: #f87171; border-color: rgba(239, 68, 68, 0.25); }
+
+	/* ---- Install Code ---- */
+	.install-code {
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		color: var(--text-muted);
+		background: var(--bg-secondary);
+		border: 1px solid var(--border);
+		border-radius: 4px;
+		padding: 0.25rem 0.5rem;
+		white-space: nowrap;
+		display: inline-block;
+		max-width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
-	.eval-pill.score-failing {
-		background: rgba(234, 179, 8, 0.12);
-		color: #ca8a04;
-		border: 1px solid rgba(234, 179, 8, 0.3);
-	}
-	:global(html[data-theme='dark']) .eval-pill.score-passing {
-		background: rgba(34, 197, 94, 0.15);
-		color: #4ade80;
-		border-color: rgba(34, 197, 94, 0.25);
-	}
-	:global(html[data-theme='dark']) .eval-pill.score-failing {
-		background: rgba(234, 179, 8, 0.15);
-		color: #facc15;
-		border-color: rgba(234, 179, 8, 0.25);
-	}
-	.skill-title { font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem; }
-	.skill-desc { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.35; margin-bottom: 1rem; flex: 1; }
-	.card-author { display: flex; align-items: center; gap: 0.5rem; margin-top: auto; }
+
+	/* ---- Author Cell (Skills) ---- */
+	.author-cell { display: flex; align-items: center; gap: 0.4rem; }
 	.author-avatar-sm {
-		width: 24px; height: 24px; border-radius: 50%;
+		width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
 		background: linear-gradient(135deg, var(--accent), var(--yarn-pink));
 		display: flex; align-items: center; justify-content: center;
-		font-size: 0.65rem; color: white; overflow: hidden; flex-shrink: 0;
+		font-size: 0.6rem; color: white; overflow: hidden;
 	}
 	.author-avatar-sm img { width: 100%; height: 100%; object-fit: cover; }
-	.author-name { font-size: 0.8rem; color: var(--text-secondary); }
-	.verified { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: var(--yarn-teal); color: white; font-size: 0.55rem; font-weight: 700; }
-	.plugin-emoji-sm { font-size: 1.1rem; line-height: 1; }
-	.plugin-install-preview { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 4px; padding: 0.3rem 0.6rem; margin: 0.5rem 0 0.75rem; }
-	.plugin-install-preview code { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); }
+	.verified { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; background: var(--yarn-teal); color: white; font-size: 0.5rem; font-weight: 700; }
 
+	/* ---- Mobile ---- */
 	@media (max-width: 768px) {
-		.skills-grid { grid-template-columns: 1fr; }
+		.col-install { display: none; }
+		.col-score { display: none; }
+		.plugin-desc-short { display: none; }
 		.nav-right a:not(.btn-nav):not(:global(.theme-toggle)) { display: none; }
+	}
+	@media (max-width: 500px) {
+		.col-author { display: none; }
+		.col-category { display: none; }
 	}
 </style>
