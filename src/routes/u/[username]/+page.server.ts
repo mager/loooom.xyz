@@ -5,6 +5,33 @@ import { eq } from 'drizzle-orm';
 import { error } from '@sveltejs/kit';
 import { PLUGINS } from '$lib/plugins';
 
+// Map skill categories → human-readable topic labels
+const CATEGORY_TOPICS: Record<string, string> = {
+	languages: 'language learning',
+	learning: 'learning methods',
+	thinking: 'critical thinking',
+	writing: 'writing',
+	design: 'UI design',
+	productivity: 'productivity',
+	marketing: 'marketing',
+	automation: 'AI automation',
+	documents: 'document tools',
+	memory: 'agent memory',
+	music: 'music',
+	coding: 'coding',
+	cooking: 'cooking'
+};
+
+function topicsFromSkills(skillList: { category: string; keywords?: string[] }[]): string[] {
+	const seen = new Set<string>();
+	const topics: string[] = [];
+	for (const s of skillList) {
+		const label = CATEGORY_TOPICS[s.category] ?? s.category;
+		if (!seen.has(label)) { seen.add(label); topics.push(label); }
+	}
+	return topics;
+}
+
 // External marketplace metadata for skills.sh authors
 const EXTERNAL_MARKETPLACES: Record<string, { url: string; description: string }> = {
 	anthropics: {
@@ -72,7 +99,9 @@ export const load: PageServerLoad = async ({ params }) => {
 				bio: dbUser.bio,
 				avatarUrl: dbUser.avatarUrl,
 				verified: dbUser.verified,
-				topics: (dbUser.topics ?? []) as string[],
+				topics: skillsWithFiles.length > 0
+					? topicsFromSkills(skillsWithFiles)
+					: (dbUser.topics ?? []) as string[],
 				source: 'loooom' as const
 			},
 			skills: skillsWithFiles,
@@ -85,20 +114,7 @@ export const load: PageServerLoad = async ({ params }) => {
 
 	if (authorSkills.length > 0) {
 		const authorDisplay = authorSkills[0].authorDisplay;
-		const totalInstalls = authorSkills.reduce((sum, s) => sum + (s.installs ?? 0), 0);
-		const categories = [...new Set(authorSkills.map((s) => s.category))];
-
-		// Generate topics from categories
-		const topics = categories.map((cat) => {
-			const map: Record<string, string> = {
-				productivity: 'getting things done',
-				marketing: 'growth & marketing',
-				automation: 'AI automation',
-				documents: 'document tools',
-				memory: 'context & memory'
-			};
-			return map[cat] || cat;
-		});
+		const topics = topicsFromSkills(authorSkills);
 
 		const marketplace = EXTERNAL_MARKETPLACES[params.username];
 
