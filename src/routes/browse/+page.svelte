@@ -5,6 +5,7 @@
 
 	let { data } = $props();
 	let activeTab = $state<'skills' | 'plugins'>('plugins');
+	let sourceFilter = $state<'all' | 'loooom' | 'skills.sh'>('all');
 
 	// --- Sorting ---
 	type PluginSortKey = 'score' | 'name' | 'skills' | 'category' | 'author';
@@ -30,7 +31,9 @@
 	}
 
 	const sortedPlugins = $derived(() => {
-		const plugins = [...data.plugins];
+		const plugins = [...data.plugins].filter(p =>
+			sourceFilter === 'all' || p.source === sourceFilter
+		);
 		return plugins.sort((a, b) => {
 			const dir = pluginSort.dir;
 			if (pluginSort.key === 'score') {
@@ -131,6 +134,15 @@
 			</button>
 		</div>
 
+		<!-- Source Filter (plugins only) -->
+		{#if activeTab === 'plugins'}
+			<div class="source-filters">
+				<button class="source-pill" class:active={sourceFilter === 'all'} onclick={() => sourceFilter = 'all'}>All sources</button>
+				<button class="source-pill source-loooom" class:active={sourceFilter === 'loooom'} onclick={() => sourceFilter = 'loooom'}>🧶 Loooom</button>
+				<button class="source-pill source-skillssh" class:active={sourceFilter === 'skills.sh'} onclick={() => sourceFilter = 'skills.sh'}>skills.sh</button>
+			</div>
+		{/if}
+
 		<!-- Category Filter -->
 		<div class="categories">
 			<a href="/browse" class="cat-pill" class:active={!data.activeCategory}>All</a>
@@ -192,7 +204,12 @@
 										<div class="plugin-name-cell">
 											<span class="plugin-emoji">{plugin.emoji}</span>
 											<div>
-												<div class="plugin-title">{plugin.title}</div>
+												<div class="plugin-title-row">
+													<span class="plugin-title">{plugin.title}</span>
+													{#if plugin.source === 'skills.sh'}
+														<span class="source-badge-sm">skills.sh</span>
+													{/if}
+												</div>
 												<div class="plugin-desc-short">{plugin.description.slice(0, 72)}{plugin.description.length > 72 ? '…' : ''}</div>
 											</div>
 										</div>
@@ -216,7 +233,14 @@
 										{/if}
 									</td>
 									<td class="col-install" onclick={(e) => e.stopPropagation()}>
-										<code class="install-code">{plugin.installCommand}</code>
+										{#if plugin.source === 'skills.sh'}
+											<div class="dual-install">
+												<code class="install-code">{plugin.installCommand}</code>
+												<a href={plugin.homepage} target="_blank" rel="noopener" class="source-link">View on skills.sh ↗</a>
+											</div>
+										{:else}
+											<code class="install-code">{plugin.installCommand}</code>
+										{/if}
 									</td>
 								</tr>
 							{/each}
@@ -506,6 +530,54 @@
 	:global(html[data-theme="dark"]) .score-green { background: rgba(34, 197, 94, 0.15); color: #4ade80; border-color: rgba(34, 197, 94, 0.25); }
 	:global(html[data-theme="dark"]) .score-yellow { background: rgba(234, 179, 8, 0.15); color: #facc15; border-color: rgba(234, 179, 8, 0.25); }
 	:global(html[data-theme="dark"]) .score-red { background: rgba(239, 68, 68, 0.15); color: #f87171; border-color: rgba(239, 68, 68, 0.25); }
+
+	/* ---- Source Filters ---- */
+	.source-filters {
+		display: flex;
+		gap: 0.5rem;
+		margin-bottom: 0.75rem;
+	}
+	.source-pill {
+		background: none;
+		border: 1px solid var(--border);
+		border-radius: 999px;
+		padding: 0.3rem 0.85rem;
+		font-size: 0.78rem;
+		font-weight: 500;
+		color: var(--text-secondary);
+		cursor: pointer;
+		transition: all 0.2s;
+		font-family: var(--font-display);
+	}
+	.source-pill:hover { border-color: var(--text-secondary); color: var(--text-primary); }
+	.source-pill.active { background: var(--accent); color: white; border-color: var(--accent); }
+	:global(html[data-theme="dark"]) .source-pill.active { color: var(--bg-primary); }
+
+	/* ---- Source badge in name cell ---- */
+	.plugin-title-row { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.2rem; }
+	.source-badge-sm {
+		font-size: 0.58rem;
+		font-weight: 600;
+		padding: 0.1rem 0.4rem;
+		border-radius: 999px;
+		background: rgba(108, 92, 231, 0.08);
+		border: 1px solid rgba(108, 92, 231, 0.2);
+		color: var(--accent);
+		white-space: nowrap;
+		letter-spacing: 0.04em;
+	}
+
+	/* ---- Dual install ---- */
+	.dual-install { display: flex; flex-direction: column; gap: 0.3rem; }
+	.source-link {
+		font-size: 0.65rem;
+		color: var(--accent);
+		text-decoration: none;
+		font-weight: 500;
+		opacity: 0.75;
+		transition: opacity 0.15s;
+	}
+	.source-link:hover { opacity: 1; }
 
 	/* ---- Install Code ---- */
 	.install-code {

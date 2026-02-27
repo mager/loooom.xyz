@@ -63,6 +63,46 @@
 		</div>
 
 		<div class="install-section">
+		{#if data.plugin.source === 'skills.sh'}
+			<!-- skills.sh single-step install -->
+			<h2 class="section-title handwriting">Install</h2>
+
+			{#if data.plugin.installs}
+				<div class="installs-badge">
+					<span class="installs-num">{data.plugin.installs.toLocaleString()}</span>
+					<span class="installs-label">installs on skills.sh</span>
+				</div>
+			{/if}
+
+			<div class="install-step">
+				<div class="step-num">1</div>
+				<div class="step-body">
+					<div class="step-label">Install with npx</div>
+					<div class="step-desc">
+						Works with Claude Code, Cursor, Windsurf, and any agent that supports skills.
+					</div>
+					<div class="code-block">
+						<code>{data.plugin.installCommand}</code>
+						<button
+							class="copy-btn"
+							onclick={() => copy(data.plugin.installCommand, 1)}
+							title="Copy"
+						>
+							{copiedStep === 1 ? '✓' : '📋'}
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="source-attribution">
+				<span class="source-attr-label">Source</span>
+				<a href={data.plugin.homepage} target="_blank" rel="noopener" class="source-attr-link">
+					skills.sh — {data.plugin.skillsShPath}
+				</a>
+				<span class="source-attr-arrow">↗</span>
+			</div>
+		{:else}
+			<!-- Loooom 2-step install -->
 			<h2 class="section-title handwriting">Install in 2 steps</h2>
 
 			<div class="install-step">
@@ -104,6 +144,7 @@
 					</div>
 				</div>
 			</div>
+		{/if}
 		</div>
 
 		{#if data.plugin.skills.length > 0}
@@ -346,6 +387,54 @@
 	.install-section {
 		margin-bottom: 3rem;
 	}
+
+	/* skills.sh install extras */
+	.installs-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		margin-bottom: 1.25rem;
+		background: color-mix(in srgb, var(--accent) 8%, transparent);
+		border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+		border-radius: 999px;
+		padding: 0.3rem 0.85rem;
+	}
+	.installs-num {
+		font-family: var(--font-mono);
+		font-size: 0.88rem;
+		font-weight: 700;
+		color: var(--accent);
+	}
+	.installs-label {
+		font-size: 0.78rem;
+		color: var(--text-muted);
+	}
+	.source-attribution {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-top: 1rem;
+		padding: 0.75rem 1rem;
+		background: var(--bg-secondary);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-sm);
+	}
+	.source-attr-label {
+		font-size: 0.72rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: var(--text-muted);
+	}
+	.source-attr-link {
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+		color: var(--accent);
+		text-decoration: none;
+		flex: 1;
+	}
+	.source-attr-link:hover { text-decoration: underline; }
+	.source-attr-arrow { color: var(--text-muted); font-size: 0.8rem; }
 	.skills-section {
 		margin-bottom: 2rem;
 	}

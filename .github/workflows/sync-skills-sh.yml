@@ -1,0 +1,34 @@
+name: Sync skills.sh data
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # daily at 6am UTC
+  workflow_dispatch:       # allow manual trigger from GitHub UI
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write      # needed to push updated JSON files
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run sync script
+        run: node scripts/sync-skills-sh.js
+
+      - name: Commit updated data if changed
+        run: |
+          git config user.name "magerbot"
+          git config user.email "magerbot@loooom.xyz"
+          git add src/lib/skills-sh-installs.json src/lib/skills-sh-trending.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit — installs unchanged"
+          else
+            git commit -m "🔄 sync skills.sh install counts $(date -u +%Y-%m-%d)"
+            git push
+          fi

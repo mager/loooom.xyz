@@ -141,13 +141,18 @@
 <section class="plugins-section">
 	<div class="section-inner">
 		<h2 class="handwriting">The <span class="sketch">Marketplace</span></h2>
-		<p class="plugins-subtitle">6 plugins. Ready to install. No signup required.</p>
+		<p class="plugins-subtitle">{data.plugins.length} plugins. Ready to install. No signup required.</p>
 		<div class="plugins-grid">
 			{#each data.plugins as plugin}
 				<a href="/p/{plugin.author}/{plugin.name}" class="plugin-card">
 					<div class="plugin-card-top">
 						<span class="plugin-emoji">{plugin.emoji}</span>
-						<span class="plugin-category">{plugin.category}</span>
+						<div class="plugin-card-badges">
+							<span class="plugin-category">{plugin.category}</span>
+							{#if plugin.source === 'skills.sh'}
+								<span class="source-badge">skills.sh</span>
+							{/if}
+						</div>
 					</div>
 					<h3 class="plugin-title">{plugin.title}</h3>
 					<p class="plugin-desc">{plugin.description}</p>
@@ -157,6 +162,9 @@
 					<div class="plugin-author">
 						<span class="plugin-by">by</span>
 						<span class="plugin-author-name">@{plugin.author}</span>
+						{#if plugin.installs}
+							<span class="plugin-installs">{(plugin.installs / 1000).toFixed(0)}K installs</span>
+						{/if}
 					</div>
 				</a>
 			{/each}
@@ -1041,6 +1049,27 @@
 	.copy-btn:hover { opacity: 1; }
 
 	/* ===== Plugin Card Extras ===== */
+	.plugin-card-badges {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+	}
+	.source-badge {
+		font-size: 0.58rem;
+		font-weight: 600;
+		padding: 0.15rem 0.45rem;
+		border-radius: 999px;
+		background: rgba(108, 92, 231, 0.08);
+		border: 1px solid rgba(108, 92, 231, 0.2);
+		color: var(--accent);
+		letter-spacing: 0.04em;
+	}
+	.plugin-installs {
+		margin-left: auto;
+		font-family: var(--font-mono);
+		font-size: 0.65rem;
+		color: var(--text-muted);
+	}
 	.plugin-emoji {
 		font-size: 1.5rem;
 		line-height: 1;
