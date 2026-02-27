@@ -26,6 +26,7 @@ function topicsFromSkills(skillList: { category: string; keywords?: string[] }[]
 	const seen = new Set<string>();
 	const topics: string[] = [];
 	for (const s of skillList) {
+		if (topics.length >= 4) break;
 		const label = CATEGORY_TOPICS[s.category] ?? s.category;
 		if (!seen.has(label)) { seen.add(label); topics.push(label); }
 	}

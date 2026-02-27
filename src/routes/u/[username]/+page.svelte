@@ -411,6 +411,8 @@
 		font-size: clamp(2rem, 4vw, 3rem);
 		font-weight: 200;
 		line-height: 1.25;
+		overflow-wrap: break-word;
+		word-break: break-word;
 	}
 	.topic {
 		color: var(--text-primary);
