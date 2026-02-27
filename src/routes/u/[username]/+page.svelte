@@ -6,6 +6,7 @@
 
 	let activeSkill = $state(0);
 	let activeFile = $state(0);
+	let copiedCommand = $state<string | null>(null);
 
 	function selectSkill(i: number) {
 		activeSkill = i;
@@ -20,6 +21,18 @@
 		if (days < 7) return `${days} days ago`;
 		if (days < 30) return `${Math.floor(days / 7)} week${Math.floor(days / 7) > 1 ? 's' : ''} ago`;
 		return `${Math.floor(days / 30)} month${Math.floor(days / 30) > 1 ? 's' : ''} ago`;
+	}
+
+	function copyCommand(cmd: string) {
+		navigator.clipboard.writeText(cmd);
+		copiedCommand = cmd;
+		setTimeout(() => copiedCommand = null, 2000);
+	}
+
+	function formatNumber(n: number): string {
+		if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+		if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
+		return n.toString();
 	}
 </script>
 
@@ -86,12 +99,37 @@
 			<span class="meta-item">
 				<strong>{data.skills.length}</strong> skill{data.skills.length !== 1 ? 's' : ''}
 			</span>
-			<span class="meta-dot">·</span>
-			<button class="follow-btn">Follow</button>
-			<button class="tip-btn">💜 Tip</button>
+			{#if data.user.source === 'skills.sh'}
+				{@const totalInstalls = data.skills.reduce((sum, s) => sum + (s.installs || 0), 0)}
+				<span class="meta-dot">·</span>
+				<span class="meta-item">
+					<strong>{formatNumber(totalInstalls)}</strong> installs
+				</span>
+			{/if}
+			{#if data.user.source === 'loooom'}
+				<span class="meta-dot">·</span>
+				<button class="follow-btn">Follow</button>
+				<button class="tip-btn">💜 Tip</button>
+			{/if}
 		</div>
 	</div>
 </section>
+
+<!-- External Marketplace Banner -->
+{#if data.externalMarketplace}
+<section class="marketplace-banner">
+	<div class="marketplace-inner">
+		<div class="marketplace-badge">🔗 External</div>
+		<p class="marketplace-text">
+			These skills are hosted on <strong>skills.sh</strong> — the open marketplace for Claude Code.
+		</p>
+		<a href={data.externalMarketplace.url} target="_blank" rel="noopener" class="marketplace-link">
+			Visit {data.user.displayName} on skills.sh
+			<span class="link-arrow">→</span>
+		</a>
+	</div>
+</section>
+{/if}
 
 <!-- Skills Section -->
 {#if data.skills.length > 0}
@@ -119,48 +157,86 @@
 			{/each}
 		</div>
 
-		{#if data.skills[activeSkill]?.files?.length}
+		{#if data.skills[activeSkill]}
 		<div class="skill-detail">
 			<div class="detail-header">
-				<h2 class="detail-title">{data.skills[activeSkill].title}</h2>
+				<div class="detail-title-wrap">
+					{#if data.skills[activeSkill].emoji}
+						<span class="detail-emoji">{data.skills[activeSkill].emoji}</span>
+					{/if}
+					<h2 class="detail-title">{data.skills[activeSkill].title}</h2>
+				</div>
 				<div class="detail-actions">
-					<a href="/s/{data.user.username}/{data.skills[activeSkill].name}" class="install-btn">
-						Use
-						<span class="install-arrow">→</span>
-					</a>
+					{#if data.skills[activeSkill].source === 'skills.sh'}
+						<a href={data.skills[activeSkill].externalUrl} target="_blank" rel="noopener" class="install-btn external">
+							View on skills.sh
+							<span class="install-arrow">→</span>
+						</a>
+					{:else}
+						<a href="/s/{data.user.username}/{data.skills[activeSkill].name}" class="install-btn">
+							Use
+							<span class="install-arrow">→</span>
+						</a>
+					{/if}
 				</div>
 			</div>
 
-			<div class="file-tabs">
-				{#each data.skills[activeSkill].files as file, i}
-					<button
-						class="file-tab"
-						class:active={activeFile === i}
-						onclick={() => activeFile = i}
-					>
-						<span class="file-icon">{file.name.endsWith('.md') ? '📄' : file.name.endsWith('.sh') ? '⚡' : '🐍'}</span>
-						{file.name}
-					</button>
-				{/each}
-			</div>
-
-			<div class="code-viewer">
-				<div class="code-header">
-					<span class="code-filename">{data.skills[activeSkill].files[activeFile].name}</span>
-					<button class="code-copy" onclick={() => navigator.clipboard.writeText(data.skills[activeSkill].files[activeFile].content)}>
-						Copy
-					</button>
+			{#if data.skills[activeSkill].source === 'skills.sh'}
+				<!-- External skill: show install command -->
+				<div class="install-command-box">
+					<div class="install-command-header">
+						<span class="install-label">Install in Claude Code</span>
+					</div>
+					<div class="install-command">
+						<code>{data.skills[activeSkill].installCommand}</code>
+						<button 
+							class="copy-btn"
+							onclick={() => copyCommand(data.skills[activeSkill].installCommand)}
+						>
+							{copiedCommand === data.skills[activeSkill].installCommand ? '✓ Copied' : 'Copy'}
+						</button>
+					</div>
 				</div>
-				<pre class="code-content"><code>{data.skills[activeSkill].files[activeFile].content}</code></pre>
-			</div>
 
-			<div class="version-hash">
-				<span class="hash-label">Content Hash</span>
-				<span class="hash-value">{data.skills[activeSkill].contentHash || 'sha256:...'}</span>
-				<span class="hash-sep">·</span>
-				<span class="hash-label">Version</span>
-				<span class="hash-value">v{data.skills[activeSkill].version}</span>
-			</div>
+				<div class="external-note">
+					<p>
+						This skill is hosted externally on <a href="https://skills.sh" target="_blank" rel="noopener">skills.sh</a>.
+						Install counts and documentation are synced from the source repository.
+					</p>
+				</div>
+			{:else if data.skills[activeSkill].files?.length}
+				<!-- Native skill: show file viewer -->
+				<div class="file-tabs">
+					{#each data.skills[activeSkill].files as file, i}
+						<button
+							class="file-tab"
+							class:active={activeFile === i}
+							onclick={() => activeFile = i}
+						>
+							<span class="file-icon">{file.name.endsWith('.md') ? '📄' : file.name.endsWith('.sh') ? '⚡' : '🐍'}</span>
+							{file.name}
+						</button>
+					{/each}
+				</div>
+
+				<div class="code-viewer">
+					<div class="code-header">
+						<span class="code-filename">{data.skills[activeSkill].files[activeFile].name}</span>
+						<button class="code-copy" onclick={() => navigator.clipboard.writeText(data.skills[activeSkill].files[activeFile].content)}>
+							Copy
+						</button>
+					</div>
+					<pre class="code-content"><code>{data.skills[activeSkill].files[activeFile].content}</code></pre>
+				</div>
+
+				<div class="version-hash">
+					<span class="hash-label">Content Hash</span>
+					<span class="hash-value">{data.skills[activeSkill].contentHash || 'sha256:...'}</span>
+					<span class="hash-sep">·</span>
+					<span class="hash-label">Version</span>
+					<span class="hash-value">v{data.skills[activeSkill].version}</span>
+				</div>
+			{/if}
 		</div>
 		{/if}
 	</div>
@@ -638,6 +714,162 @@
 		border: 1px solid var(--border);
 	}
 	.hash-sep { color: var(--text-muted); }
+
+	/* Marketplace Banner */
+	.marketplace-banner {
+		position: relative;
+		z-index: 1;
+		padding: 0 2rem 2rem;
+	}
+	.marketplace-inner {
+		max-width: 800px;
+		margin: 0 auto;
+		background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));
+		border: 1px solid var(--border);
+		border-radius: var(--radius-lg);
+		padding: 1.5rem 2rem;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1.5rem;
+		flex-wrap: wrap;
+	}
+	.marketplace-badge {
+		background: var(--accent);
+		color: white;
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		padding: 0.35rem 0.75rem;
+		border-radius: 100px;
+		white-space: nowrap;
+	}
+	:global(html[data-theme="dark"]) .marketplace-badge {
+		color: var(--bg-primary);
+	}
+	.marketplace-text {
+		flex: 1;
+		font-size: 0.95rem;
+		color: var(--text-secondary);
+		margin: 0;
+		min-width: 200px;
+	}
+	.marketplace-text strong {
+		color: var(--text-primary);
+	}
+	.marketplace-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		color: var(--accent);
+		font-family: var(--font-display);
+		font-size: 0.9rem;
+		font-weight: 600;
+		text-decoration: none;
+		white-space: nowrap;
+	}
+	.marketplace-link:hover .link-arrow {
+		transform: translateX(3px);
+	}
+	.link-arrow {
+		transition: transform 0.2s;
+	}
+
+	/* Install Command Box */
+	.install-command-box {
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		overflow: hidden;
+		margin-bottom: 1.5rem;
+	}
+	.install-command-header {
+		padding: 0.75rem 1.25rem;
+		background: var(--bg-secondary);
+		border-bottom: 1px solid var(--border);
+	}
+	.install-label {
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: var(--text-muted);
+	}
+	.install-command {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		padding: 1rem 1.25rem;
+		background: #1a1a2e;
+	}
+	.install-command code {
+		font-family: var(--font-mono);
+		font-size: 0.9rem;
+		color: #a5b4fc;
+		background: none;
+	}
+	.copy-btn {
+		background: var(--accent);
+		color: white;
+		border: none;
+		padding: 0.4rem 0.9rem;
+		border-radius: var(--radius-sm);
+		font-family: var(--font-display);
+		font-size: 0.8rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+	:global(html[data-theme="dark"]) .copy-btn {
+		color: var(--bg-primary);
+	}
+	.copy-btn:hover {
+		background: var(--accent-bright);
+	}
+
+	/* External Note */
+	.external-note {
+		padding: 1rem;
+		background: var(--bg-secondary);
+		border-radius: var(--radius-md);
+		font-size: 0.85rem;
+		color: var(--text-muted);
+		line-height: 1.5;
+	}
+	.external-note a {
+		color: var(--accent);
+		text-decoration: none;
+	}
+	.external-note a:hover {
+		text-decoration: underline;
+	}
+
+	/* Detail Title with Emoji */
+	.detail-title-wrap {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+	.detail-emoji {
+		font-size: 1.5rem;
+	}
+
+	/* External Install Button */
+	.install-btn.external {
+		background: transparent;
+		border: 2px solid var(--accent);
+		color: var(--accent);
+	}
+	.install-btn.external:hover {
+		background: var(--accent);
+		color: white;
+	}
+	:global(html[data-theme="dark"]) .install-btn.external:hover {
+		color: var(--bg-primary);
+	}
 
 	@media (max-width: 900px) {
 		.skills-inner {

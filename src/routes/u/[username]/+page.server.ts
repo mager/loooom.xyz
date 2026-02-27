@@ -3,49 +3,133 @@ import { db } from '$lib/server/db';
 import { users, skills, skillVersions } from '$lib/server/schema';
 import { eq } from 'drizzle-orm';
 import { error } from '@sveltejs/kit';
+import { PLUGINS } from '$lib/plugins';
+
+// External marketplace metadata for skills.sh authors
+const EXTERNAL_MARKETPLACES: Record<string, { url: string; description: string }> = {
+	anthropics: {
+		url: 'https://skills.sh/anthropics/skills',
+		description: "Official Anthropic skills for Claude Code — document tools, testing utilities, and MCP builders from the team that built Claude."
+	},
+	obra: {
+		url: 'https://skills.sh/obra',
+		description: "Productivity superpowers for developers — systematic debugging, TDD, git workflows, and agent orchestration."
+	},
+	'inference-sh-9': {
+		url: 'https://skills.sh/inference-sh-9',
+		description: 'AI-powered automation skills — image/video generation, browser control, web scraping, and social automation.'
+	},
+	coreyhaines31: {
+		url: 'https://skills.sh/coreyhaines31',
+		description: 'Marketing skills for growth — SEO, copywriting, content strategy, and launch playbooks.'
+	},
+	'browser-use': {
+		url: 'https://skills.sh/browser-use',
+		description: 'Browser automation skills — full web control for AI agents.'
+	},
+	firecrawl: {
+		url: 'https://skills.sh/firecrawl',
+		description: 'Web scraping and extraction skills — turn messy web pages into clean data.'
+	}
+};
 
 export const load: PageServerLoad = async ({ params }) => {
-	const [user] = await db.select().from(users).where(eq(users.username, params.username));
+	// First try database (Loooom native users)
+	const [dbUser] = await db.select().from(users).where(eq(users.username, params.username));
 
-	if (!user) {
-		throw error(404, 'User not found');
+	if (dbUser) {
+		const userSkills = await db.select().from(skills).where(eq(skills.authorId, dbUser.id));
+
+		const skillsWithFiles = await Promise.all(
+			userSkills.map(async (skill) => {
+				const versions = await db
+					.select()
+					.from(skillVersions)
+					.where(eq(skillVersions.skillId, skill.id));
+
+				const latestVersion = versions.find((v) => v.version === skill.currentVersion) ?? versions[0];
+
+				return {
+					name: skill.name,
+					title: skill.title,
+					description: skill.description,
+					category: skill.category,
+					installs: skill.installs,
+					version: skill.currentVersion ?? '0.0.0',
+					updatedAt: skill.updatedAt.toISOString(),
+					contentHash: latestVersion?.contentHash ?? '',
+					files: (latestVersion?.files ?? []) as { name: string; content: string }[],
+					source: 'loooom' as const,
+					externalUrl: null as string | null
+				};
+			})
+		);
+
+		return {
+			user: {
+				username: dbUser.username,
+				displayName: dbUser.displayName,
+				bio: dbUser.bio,
+				avatarUrl: dbUser.avatarUrl,
+				verified: dbUser.verified,
+				topics: (dbUser.topics ?? []) as string[],
+				source: 'loooom' as const
+			},
+			skills: skillsWithFiles,
+			externalMarketplace: null
+		};
 	}
 
-	const userSkills = await db.select().from(skills).where(eq(skills.authorId, user.id));
+	// Fallback: check if this is an external skills.sh author
+	const authorSkills = PLUGINS.filter((p) => p.author === params.username && p.source === 'skills.sh');
 
-	// Load versions for each skill
-	const skillsWithFiles = await Promise.all(
-		userSkills.map(async (skill) => {
-			const versions = await db
-				.select()
-				.from(skillVersions)
-				.where(eq(skillVersions.skillId, skill.id));
+	if (authorSkills.length > 0) {
+		const authorDisplay = authorSkills[0].authorDisplay;
+		const totalInstalls = authorSkills.reduce((sum, s) => sum + (s.installs ?? 0), 0);
+		const categories = [...new Set(authorSkills.map((s) => s.category))];
 
-			const latestVersion = versions.find((v) => v.version === skill.currentVersion) ?? versions[0];
-
-			return {
-				name: skill.name,
-				title: skill.title,
-				description: skill.description,
-				category: skill.category,
-				installs: skill.installs,
-				version: skill.currentVersion ?? '0.0.0',
-				updatedAt: skill.updatedAt.toISOString(),
-				contentHash: latestVersion?.contentHash ?? '',
-				files: (latestVersion?.files ?? []) as { name: string; content: string }[]
+		// Generate topics from categories
+		const topics = categories.map((cat) => {
+			const map: Record<string, string> = {
+				productivity: 'getting things done',
+				marketing: 'growth & marketing',
+				automation: 'AI automation',
+				documents: 'document tools',
+				memory: 'context & memory'
 			};
-		})
-	);
+			return map[cat] || cat;
+		});
 
-	return {
-		user: {
-			username: user.username,
-			displayName: user.displayName,
-			bio: user.bio,
-			avatarUrl: user.avatarUrl,
-			verified: user.verified,
-			topics: (user.topics ?? []) as string[]
-		},
-		skills: skillsWithFiles
-	};
+		const marketplace = EXTERNAL_MARKETPLACES[params.username];
+
+		return {
+			user: {
+				username: params.username,
+				displayName: authorDisplay,
+				bio: marketplace?.description || `${authorDisplay} skills for Claude Code`,
+				avatarUrl: null,
+				verified: true,
+				topics,
+				source: 'skills.sh' as const
+			},
+			skills: authorSkills.map((s) => ({
+				name: s.name,
+				title: s.title,
+				description: s.description,
+				category: s.category,
+				installs: s.installs ?? 0,
+				version: s.version,
+				updatedAt: new Date().toISOString(), // skills.sh doesn't expose this
+				contentHash: '',
+				files: [] as { name: string; content: string }[],
+				source: 'skills.sh' as const,
+				externalUrl: s.homepage,
+				installCommand: s.installCommandSkillsSh || s.installCommand,
+				emoji: s.emoji
+			})),
+			externalMarketplace: marketplace || null
+		};
+	}
+
+	throw error(404, 'User not found');
 };
