@@ -1,31 +1,31 @@
 <script lang="ts">
-	import { fade } from 'svelte/transition';
 	import YarnLogo from '$lib/components/YarnLogo.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { MARKETPLACE_COMMAND } from '$lib/plugins';
 	let { data } = $props();
 
-	// Carousel — native loooom plugins only (clean set, not 40+ skills.sh entries)
+	// Carousel — native loooom plugins only
 	const featuredPlugins = data.plugins.filter((p: { source: string }) => p.source === 'loooom');
 	let currentPluginIndex = $state(0);
-	let carouselTimer: ReturnType<typeof setInterval> | null = null;
-
-	function startTimer() {
-		carouselTimer = setInterval(() => {
-			currentPluginIndex = (currentPluginIndex + 1) % featuredPlugins.length;
-		}, 4000);
-	}
+	let trackEl: HTMLDivElement;
 
 	function goTo(i: number) {
 		currentPluginIndex = i;
-		if (carouselTimer) clearInterval(carouselTimer);
-		startTimer();
+		const card = trackEl?.children[i] as HTMLElement;
+		trackEl?.scrollTo({ left: card?.offsetLeft ?? 0, behavior: 'smooth' });
 	}
 
-	$effect(() => {
-		startTimer();
-		return () => { if (carouselTimer) clearInterval(carouselTimer); };
-	});
+	function onTrackScroll() {
+		if (!trackEl) return;
+		const children = Array.from(trackEl.children) as HTMLElement[];
+		let closest = 0;
+		let minDist = Infinity;
+		children.forEach((child, i) => {
+			const dist = Math.abs(child.offsetLeft - trackEl.scrollLeft);
+			if (dist < minDist) { minDist = dist; closest = i; }
+		});
+		currentPluginIndex = closest;
+	}
 
 	const useCases = [
 		{ who: 'A pastry chef', what: 'sourdough starters & lamination' },
@@ -117,34 +117,34 @@
 			<p class="hero-note">Skills are always free. Open source. Open format.</p>
 		</div>
 		<div class="hero-visual">
-			{#key currentPluginIndex}
-				{@const plugin = featuredPlugins[currentPluginIndex]}
-				<a
-					href="/p/{plugin.author}/{plugin.name}"
-					class="hero-plugin-card"
-					in:fade={{ duration: 300 }}
-				>
-					<div class="hero-plugin-header">
-						<span class="hero-plugin-badge">🧩 Featured Plugin</span>
-						<span class="hero-plugin-count">{plugin.skills.length} skills</span>
-					</div>
-					<h3 class="hero-plugin-title">{plugin.emoji} {plugin.title}</h3>
-					<p class="hero-plugin-desc">{plugin.description}</p>
-					<div class="hero-plugin-skills">
-						{#each plugin.skills.slice(0, 4) as skill, i}
-							<div class="hero-skill-row" style="animation-delay: {i * 0.1}s">
-								<span class="hero-skill-num">{i + 1}</span>
-								<span class="hero-skill-title">{skill.name}</span>
-								<span class="hero-skill-tag">{skill.description}</span>
-							</div>
-						{/each}
-					</div>
-					<div class="hero-plugin-footer">
-						<span class="hero-plugin-author">by @{plugin.author}</span>
-						<span class="hero-plugin-cta">Explore →</span>
-					</div>
-				</a>
-			{/key}
+			<div class="carousel-track" bind:this={trackEl} onscroll={onTrackScroll}>
+				{#each featuredPlugins as plugin, i}
+					<a
+						href="/p/{plugin.author}/{plugin.name}"
+						class="hero-plugin-card"
+					>
+						<div class="hero-plugin-header">
+							<span class="hero-plugin-badge">🧩 Featured Plugin</span>
+							<span class="hero-plugin-count">{plugin.skills.length} skills</span>
+						</div>
+						<h3 class="hero-plugin-title">{plugin.emoji} {plugin.title}</h3>
+						<p class="hero-plugin-desc">{plugin.description}</p>
+						<div class="hero-plugin-skills">
+							{#each plugin.skills.slice(0, 4) as skill, i}
+								<div class="hero-skill-row" style="animation-delay: {i * 0.1}s">
+									<span class="hero-skill-num">{i + 1}</span>
+									<span class="hero-skill-title">{skill.name}</span>
+									<span class="hero-skill-tag">{skill.description}</span>
+								</div>
+							{/each}
+						</div>
+						<div class="hero-plugin-footer">
+							<span class="hero-plugin-author">by @{plugin.author}</span>
+							<span class="hero-plugin-cta">Explore →</span>
+						</div>
+					</a>
+				{/each}
+			</div>
 			<div class="carousel-dots">
 				{#each featuredPlugins as _, i}
 					<button
@@ -506,16 +506,31 @@
 	}
 	.hero-visual {
 		display: flex;
+		flex-direction: column;
 		align-items: center;
-		justify-content: center;
+		gap: 1rem;
 	}
+
+	/* Scroll-snap track */
+	.carousel-track {
+		width: 380px;
+		max-width: 100%;
+		display: flex;
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		scroll-behavior: smooth;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: none;
+		border-radius: var(--radius-lg);
+	}
+	.carousel-track::-webkit-scrollbar { display: none; }
 
 	/* Hero Plugin Card */
 	.hero-plugin-card {
-		display: block;
-		width: 100%;
-		max-width: 380px;
+		flex: 0 0 380px;
+		width: 380px;
 		text-align: left;
+		scroll-snap-align: start;
 		background: var(--bg-card);
 		border: 1px solid var(--border);
 		border-radius: var(--radius-lg);
@@ -1162,7 +1177,9 @@
 		}
 		.hero-sub { margin: 0 auto 2rem; }
 		.hero-actions { justify-content: center; }
-		.hero-visual { order: -1; }
+		.hero-visual { order: -1; width: 100%; }
+		.carousel-track { width: 100%; }
+		.hero-plugin-card { flex: 0 0 100%; width: 100%; }
 		.vision-grid { grid-template-columns: 1fr; }
 		.cases-grid { grid-template-columns: 1fr; }
 		.case-card { flex-wrap: wrap; }
