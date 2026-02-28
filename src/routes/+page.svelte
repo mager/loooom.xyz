@@ -4,207 +4,130 @@
 	import { MARKETPLACE_COMMAND } from '$lib/plugins';
 	let { data } = $props();
 
-	// Carousel — native loooom plugins only
-	const featuredPlugins = data.plugins.filter((p: { source: string }) => p.source === 'loooom');
-	let currentPluginIndex = $state(0);
-	let trackEl: HTMLDivElement;
+	const featuredPlugins = $derived(data.plugins.filter((p: { source: string }) => p.source === 'loooom'));
 
-	function goTo(i: number) {
-		currentPluginIndex = i;
-		const card = trackEl?.children[i] as HTMLElement;
-		trackEl?.scrollTo({ left: card?.offsetLeft ?? 0, behavior: 'smooth' });
-	}
-
-	function onTrackScroll() {
-		if (!trackEl) return;
-		const children = Array.from(trackEl.children) as HTMLElement[];
-		let closest = 0;
-		let minDist = Infinity;
-		children.forEach((child, i) => {
-			const dist = Math.abs(child.offsetLeft - trackEl.scrollLeft);
-			if (dist < minDist) { minDist = dist; closest = i; }
-		});
-		currentPluginIndex = closest;
-	}
-
-	const useCases = [
-		{ who: 'A pastry chef', what: 'sourdough starters & lamination' },
-		{ who: 'Your favorite professor', what: 'research methodology' },
-		{ who: 'A manga artist', what: 'panel composition & storytelling' },
-		{ who: 'Anthropic', what: 'prompt engineering & agent design' },
-		{ who: 'MIT OpenCourseWare', what: 'physics & computer science' },
-		{ who: 'An herbalist', what: 'plant medicine & tinctures' },
+	const imagineCards = [
+		{ emoji: '🎵', name: 'Katy Perry', title: 'shared her songwriting process', desc: 'How she builds a hook, writes from emotion, and crafts a bridge that hits every time.' },
+		{ emoji: '🍕', name: 'A Michelin chef', title: 'taught his knife technique', desc: 'The grip, the angle, the rhythm. What takes years to learn, taught in minutes.' },
+		{ emoji: '🏀', name: 'An NBA coach', title: 'broke down zone defense', desc: 'Rotations, reads, positioning. The playbook, unlocked for anyone.' },
+		{ emoji: '🎨', name: 'A tattoo artist', title: 'explained her stippling method', desc: 'Needle depth, pressure, spacing. The craft behind the ink.' },
+		{ emoji: '📚', name: 'A Harvard prof', title: 'shared her research framework', desc: 'How to find a thesis, build an argument, and write something worth reading.' },
+		{ emoji: '🧘', name: 'A meditation teacher', title: 'bottled his breathing method', desc: 'The 4-7-8 technique and the body scan, explained with patience.' },
 	];
 
-	const categories = [
-		'Writing', 'Music', 'Cooking', 'Engineering', 'Art',
-		'Research', 'Design', 'Education', 'Health', 'Business'
-	];
-
-	let copied = $state(false);
-	function copyInstall() {
-		navigator.clipboard.writeText(MARKETPLACE_COMMAND);
-		copied = true;
-		setTimeout(() => { copied = false; }, 2000);
-	}
 </script>
 
 <svelte:head>
-	<title>Loooom — Where Skills Are Woven</title>
-	<meta name="description" content="A social skills marketplace. Everyone has something worth teaching. Skills are always free." />
+	<title>Loooom — Share What You Know</title>
+	<meta name="description" content="Turn your expertise into an AI skill. Anyone can learn from you, forever. No code required." />
 </svelte:head>
-
-<!-- Ambient background -->
-<div class="ambient">
-	<div class="orb orb-1"></div>
-	<div class="orb orb-2"></div>
-</div>
 
 <!-- Nav -->
 <nav>
 	<div class="nav-inner">
 		<a href="/" class="logo">
-			<YarnLogo size={28} />
+			<YarnLogo size={26} />
 			<span class="logo-text">loooom</span>
 		</a>
-		<div class="nav-links">
-			<a href="#vision">About</a>
-			<a href="#explore">Explore</a>
-			<a href="/docs">Docs</a>
-			{#if data?.user}
-				<a href="/create">Create</a>
-			{/if}
+		<div class="nav-right">
+			<a href="/browse" class="nav-link">Explore</a>
 			<ThemeToggle />
-			{#if data?.user}
-				<a href="/dashboard" class="btn-nav">{data.user.displayName}</a>
-			{:else}
-				<a href="/login" class="btn-nav">Sign In</a>
-			{/if}
+			<a href="/login" class="btn-nav">Sign In</a>
 		</div>
 	</div>
 </nav>
 
 <!-- Hero -->
 <section class="hero">
-	<div class="hero-content">
-		<div class="hero-text">
-			<h1>
-				<span class="handwriting">Everyone has something</span>
-				<br />
-				<span class="handwriting accent">worth teaching.</span>
-			</h1>
-			<p class="hero-sub">
-				Loooom is where people share skills — the things they're actually good at — 
-				so AI agents can learn from the best. Not templates. Not prompts.
-				<strong>Real expertise, from real people.</strong>
-			</p>
-			<div class="install-snippet">
-				<div class="install-label">Add to Claude Code — works today:</div>
-				<div class="install-code">
-					<code>{MARKETPLACE_COMMAND}</code>
-					<button class="copy-btn" onclick={copyInstall} title="Copy to clipboard">
-						{copied ? '✓' : '📋'}
-					</button>
+	<div class="hero-inner">
+		<p class="hero-eyebrow">✦ Skills marketplace for AI agents</p>
+		<h1>
+			<span class="hand">Teach what you know.</span>
+			<br />
+			<span class="hand accent">AI does the rest.</span>
+		</h1>
+		<p class="hero-sub">
+			Share your expertise as a skill. Anyone with AI can learn from you — forever.
+			<strong>No coding required.</strong>
+		</p>
+		<div class="hero-ctas">
+			<a href="/startweaving" class="btn-primary">Share Your Expertise</a>
+			<a href="/browse" class="btn-ghost">Browse Skills →</a>
+		</div>
+		<p class="hero-note">Always free. Open source. Works with any AI.</p>
+	</div>
+</section>
+
+<!-- Imagine If... -->
+<section class="imagine">
+	<div class="section-inner">
+		<h2 class="hand">Imagine if your favorite expert<br /><span class="sketch">had an AI version of themselves.</span></h2>
+		<p class="imagine-sub">That's what Loooom skills do. Real knowledge. Real people. Taught by AI.</p>
+	</div>
+	<div class="imagine-track">
+		{#each imagineCards as card}
+			<div class="imagine-card">
+				<span class="imagine-emoji">{card.emoji}</span>
+				<div class="imagine-body">
+					<p class="imagine-who"><strong>{card.name}</strong> {card.title}</p>
+					<p class="imagine-desc">{card.desc}</p>
 				</div>
 			</div>
-			<div class="hero-actions">
-				<a href="/browse" class="btn-primary">
-					Browse Plugins
-					<span class="btn-arrow">→</span>
-				</a>
-				<a href="https://github.com/mager/loooom" target="_blank" rel="noopener" class="btn-secondary">GitHub</a>
+		{/each}
+	</div>
+</section>
+
+<!-- How It Works -->
+<section class="how">
+	<div class="section-inner">
+		<h2 class="hand">Three steps. <span class="sketch">That's it.</span></h2>
+		<div class="steps">
+			<div class="step">
+				<div class="step-num">1</div>
+				<h3>Write what you know</h3>
+				<p>In plain English. Like writing a note to a friend. No code, no git, no jargon.</p>
 			</div>
-			<p class="hero-note">Skills are always free. Open source. Open format.</p>
+			<div class="step-arrow">→</div>
+			<div class="step">
+				<div class="step-num">2</div>
+				<h3>Publish your skill</h3>
+				<p>It goes live on Loooom. Anyone can find it, save it, and share it.</p>
+			</div>
+			<div class="step-arrow">→</div>
+			<div class="step">
+				<div class="step-num">3</div>
+				<h3>Your knowledge, forever</h3>
+				<p>People's AI agents learn from your skill. You teach thousands — without lifting a finger.</p>
+			</div>
 		</div>
-		<div class="hero-visual">
-			<div class="carousel-track" bind:this={trackEl} onscroll={onTrackScroll}>
-				{#each featuredPlugins as plugin, i}
-					<a
-						href="/p/{plugin.author}/{plugin.name}"
-						class="hero-plugin-card"
-					>
-						<div class="hero-plugin-header">
-							<span class="hero-plugin-badge">🧩 Featured Plugin</span>
-							<span class="hero-plugin-count">{plugin.skills.length} skills</span>
-						</div>
-						<h3 class="hero-plugin-title">{plugin.emoji} {plugin.title}</h3>
-						<p class="hero-plugin-desc">{plugin.description}</p>
-						<div class="hero-plugin-skills">
-							{#each plugin.skills.slice(0, 4) as skill, i}
-								<div class="hero-skill-row" style="animation-delay: {i * 0.1}s">
-									<span class="hero-skill-num">{i + 1}</span>
-									<span class="hero-skill-title">{skill.name}</span>
-									<span class="hero-skill-tag">{skill.description}</span>
-								</div>
-							{/each}
-						</div>
-						<div class="hero-plugin-footer">
-							<span class="hero-plugin-author">by @{plugin.author}</span>
-							<span class="hero-plugin-cta">Explore →</span>
-						</div>
-					</a>
-				{/each}
-			</div>
-			<div class="carousel-dots">
-				{#each featuredPlugins as _, i}
-					<button
-						class="carousel-dot"
-						class:active={i === currentPluginIndex}
-						onclick={() => goTo(i)}
-						aria-label="Plugin {i + 1}"
-					></button>
-				{/each}
-			</div>
+		<div class="how-cta">
+			<a href="/startweaving" class="btn-primary">Start Creating</a>
 		</div>
 	</div>
 </section>
 
-<!-- Vision -->
-<section id="vision" class="vision">
+<!-- Plugin Showcase -->
+<section class="plugins">
 	<div class="section-inner">
-		<h2 class="handwriting">Knowledge is meant to be <span class="sketch">shared.</span></h2>
-		<div class="vision-grid">
-			<div class="vision-card">
-				<p>Imagine Dave Grohl sharing a skill for <span class="marker pink">drumming fills</span> and another for <span class="marker blue">writing lyrics from the gut</span>. A pastry chef sharing her <span class="marker orange">sourdough method</span>. Your favorite professor packaging their <span class="marker green">research framework</span>.</p>
+		<div class="plugins-header">
+			<div>
+				<h2 class="hand">Live skills, <span class="sketch">ready to use.</span></h2>
+				<p class="plugins-sub">{data.plugins.length} skills in the marketplace. Free, forever.</p>
 			</div>
-			<div class="vision-card">
-				<p>That's Loooom. A place where knowledge lives as <span class="marker pink">shareable skills</span> — not locked in books or buried in YouTube comments. You write it down, your agent learns it, and anyone can benefit.</p>
-			</div>
-			<div class="vision-card">
-				<p>No coding required. No git. Just a simple editor where you write what you know, and it becomes something an AI agent can actually use. <span class="marker blue">If you can write a recipe, you can write a skill.</span></p>
-			</div>
+			<a href="/browse" class="btn-outline">See all →</a>
 		</div>
-	</div>
-</section>
-
-<!-- Plugin Marketplace Section -->
-<section class="plugins-section">
-	<div class="section-inner">
-		<h2 class="handwriting">The <span class="sketch">Marketplace</span></h2>
-		<p class="plugins-subtitle">{data.plugins.length} plugins. Ready to install. No signup required.</p>
 		<div class="plugins-grid">
-			{#each data.plugins as plugin}
+			{#each featuredPlugins as plugin}
 				<a href="/p/{plugin.author}/{plugin.name}" class="plugin-card">
-					<div class="plugin-card-top">
+					<div class="plugin-top">
 						<span class="plugin-emoji">{plugin.emoji}</span>
-						<div class="plugin-card-badges">
-							<span class="plugin-category">{plugin.category}</span>
-							{#if plugin.source === 'skills.sh'}
-								<span class="source-badge">skills.sh</span>
-							{/if}
-						</div>
+						<span class="plugin-cat">{plugin.category}</span>
 					</div>
 					<h3 class="plugin-title">{plugin.title}</h3>
 					<p class="plugin-desc">{plugin.description}</p>
-					<div class="plugin-install-cmd">
-						<code>{plugin.installCommand}</code>
-					</div>
-					<div class="plugin-author">
-						<span class="plugin-by">by</span>
-						<span class="plugin-author-name">@{plugin.author}</span>
-						{#if plugin.installs}
-							<span class="plugin-installs">{(plugin.installs / 1000).toFixed(0)}K installs</span>
-						{/if}
+					<div class="plugin-footer">
+						<span class="plugin-author">by @{plugin.author}</span>
+						<span class="plugin-skills">{plugin.skills.length} skills</span>
 					</div>
 				</a>
 			{/each}
@@ -212,46 +135,17 @@
 	</div>
 </section>
 
-<!-- Use Cases -->
-<section class="use-cases">
+<!-- For the technically curious -->
+<section class="dev-section">
 	<div class="section-inner">
-		<h2 class="handwriting">Who's it for? <span class="sketch">Everyone.</span></h2>
-		<div class="cases-grid">
-			{#each useCases as uc}
-				<div class="case-card">
-					<span class="case-who">{uc.who}</span>
-					<span class="case-arrow">→</span>
-					<span class="case-what">{uc.what}</span>
-				</div>
-			{/each}
-		</div>
-	</div>
-</section>
-
-<!-- Explore Categories -->
-<section id="explore" class="explore">
-	<div class="section-inner">
-		<h2 class="handwriting">Browse by <span class="sketch">craft</span></h2>
-		<div class="categories">
-			{#each categories as cat}
-				<a href="/browse?category={cat}" class="cat-pill">{cat}</a>
-			{/each}
-		</div>
-		<div class="principles">
-			<div class="principle">
-				<span class="principle-icon">🧶</span>
-				<h3>Always free</h3>
-				<p>Skills never cost money. Knowledge wants to be free. Authors can receive donations from people who love their work.</p>
+		<div class="dev-card">
+			<div class="dev-left">
+				<p class="dev-eyebrow">For Claude Code users</p>
+				<h3 class="hand">Add the whole marketplace<br />in one command.</h3>
+				<p class="dev-desc">Works with Claude Code, Cursor, and any MCP-compatible agent.</p>
 			</div>
-			<div class="principle">
-				<span class="principle-icon">🌍</span>
-				<h3>Open format</h3>
-				<p>Built on the <a href="https://agentskills.io" target="_blank" rel="noopener">AgentSkills.io</a> spec. Works with any AI agent — not locked to one platform.</p>
-			</div>
-			<div class="principle">
-				<span class="principle-icon">✅</span>
-				<h3>Verified authors</h3>
-				<p>Real people, verified profiles. You know exactly who created the skill you're using.</p>
+			<div class="dev-snippet">
+				<code>{MARKETPLACE_COMMAND}</code>
 			</div>
 		</div>
 	</div>
@@ -262,71 +156,34 @@
 	<div class="footer-inner">
 		<div class="footer-brand">
 			<div class="footer-logo">
-				<YarnLogo size={28} />
+				<YarnLogo size={24} />
 				<span class="logo-text">loooom</span>
 			</div>
 			<p class="footer-tagline">Where skills are woven.</p>
-			<p class="footer-note">Open source. Always free. Made with 🧶</p>
+			<p class="footer-note">Open source. Always free. Made with 🧶 in Chicago.</p>
 		</div>
 		<div class="footer-links">
 			<div class="footer-col">
 				<h4>Product</h4>
-				<a href="#vision">About</a>
-				<a href="#explore">Explore</a>
+				<a href="/browse">Browse</a>
+				<a href="/startweaving">Create</a>
+				<a href="/docs">Docs</a>
 			</div>
 			<div class="footer-col">
 				<h4>Open Source</h4>
 				<a href="https://github.com/mager/loooom.xyz" target="_blank" rel="noopener">GitHub</a>
 				<a href="https://agentskills.io" target="_blank" rel="noopener">AgentSkills.io</a>
 			</div>
-			<div class="footer-col">
-				<h4>Community</h4>
-				<a href="https://github.com/mager/loooom.xyz" target="_blank" rel="noopener">Contribute</a>
-			</div>
 		</div>
 	</div>
 	<div class="footer-bottom">
-		<span>A weeknight project by <a href="https://x.com/mager" target="_blank" rel="noopener">@mager</a> & <a href="https://x.com/mager" target="_blank" rel="noopener">@magerbot</a>. Woven in Chicago. Never stop learning.</span>
+		A weeknight project by <a href="https://x.com/mager" target="_blank" rel="noopener">@mager</a> &amp; <a href="https://x.com/mager" target="_blank" rel="noopener">@magerbot</a>.
 	</div>
 </footer>
 
 <style>
-	/* ===== Global overflow fix ===== */
-	:global(body) { overflow-x: hidden; max-width: 100vw; }
-
-	/* ===== Ambient ===== */
-	.ambient {
-		position: fixed;
-		inset: 0;
-		pointer-events: none;
-		z-index: 0;
-		overflow: hidden;
-	}
-	.orb {
-		position: absolute;
-		border-radius: 50%;
-		filter: blur(140px);
-		opacity: 0.06;
-	}
-	:global(html[data-theme="dark"]) .orb {
-		opacity: 0.12;
-	}
-	.orb-1 {
-		width: 500px; height: 500px;
-		background: var(--accent);
-		top: -100px; left: -100px;
-		animation: drift 25s ease-in-out infinite;
-	}
-	.orb-2 {
-		width: 400px; height: 400px;
-		background: var(--yarn-pink);
-		bottom: 10%; right: -100px;
-		animation: drift 30s ease-in-out infinite reverse;
-	}
-	@keyframes drift {
-		0%, 100% { transform: translate(0, 0); }
-		50% { transform: translate(30px, -20px); }
-	}
+	/* ===== Base ===== */
+	:global(body) { overflow-x: hidden; }
 
 	/* ===== Nav ===== */
 	nav {
@@ -338,10 +195,10 @@
 		border-bottom: 1px solid var(--border);
 	}
 	.nav-inner {
-		max-width: 1200px;
+		max-width: 1100px;
 		margin: 0 auto;
-		padding: 0 2rem;
-		height: 64px;
+		padding: 0 1.25rem;
+		height: 56px;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -351,498 +208,426 @@
 		align-items: center;
 		gap: 0.5rem;
 		color: var(--text-primary);
+		text-decoration: none;
 	}
-	.logo:hover { color: var(--text-primary); }
 	.logo-text {
 		font-family: var(--font-handwriting);
-		font-size: 1.3rem;
+		font-size: 1.25rem;
 		font-weight: 100;
-		letter-spacing: 0.02em;
 	}
-	.nav-links {
+	.nav-right {
 		display: flex;
 		align-items: center;
-		gap: 1.5rem;
+		gap: 1.25rem;
 	}
-	.nav-links a {
-		color: var(--text-secondary);
-		font-size: 0.9rem;
-		font-weight: 500;
-		transition: color 0.2s;
-	}
-	.nav-links a:hover { color: var(--text-primary); }
-	.btn-nav {
-		background: var(--bg-card);
-		color: var(--text-primary) !important;
-		border: 1px solid var(--border);
-		padding: 0.5rem 1.25rem;
-		border-radius: var(--radius-sm);
+	.nav-link {
 		font-size: 0.875rem;
 		font-weight: 500;
-		transition: all 0.2s;
+		color: var(--text-secondary);
+		text-decoration: none;
+		transition: color 0.2s;
 	}
-	.btn-nav:hover {
-		border-color: var(--text-secondary);
+	.nav-link:hover { color: var(--text-primary); }
+	.btn-nav {
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: var(--text-primary) !important;
+		text-decoration: none;
+		padding: 0.45rem 1.1rem;
+		border: 1.5px solid var(--border);
+		border-radius: var(--radius-sm);
+		transition: border-color 0.2s;
 	}
+	.btn-nav:hover { border-color: var(--text-muted); }
 
-	/* ===== Handwriting ===== */
-	.handwriting {
+	/* ===== Shared ===== */
+	.section-inner {
+		max-width: 1100px;
+		margin: 0 auto;
+		padding: 0 1.25rem;
+	}
+	.hand {
 		font-family: var(--font-handwriting);
 		font-weight: 100;
-		text-shadow: 0 0.5px 0 rgba(0, 0, 0, 0.06);
+		line-height: 1.15;
 	}
-	:global(html[data-theme="dark"]) .handwriting {
-		text-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.08);
-	}
-	.handwriting.accent {
-		color: var(--accent-rose);
-		font-weight: 200;
-	}
+	.hand.accent { color: var(--accent-rose); font-weight: 200; }
 	.sketch {
 		font-family: var(--font-sketch);
 		font-weight: 400;
 		color: var(--yarn-pink);
 	}
-	.marker {
-		position: relative;
-		padding: 0 2px;
-	}
-	.marker.pink {
-		background: linear-gradient(to top, rgba(232, 67, 147, 0.2) 40%, transparent 40%);
-	}
-	.marker.blue {
-		background: linear-gradient(to top, rgba(61, 133, 198, 0.2) 40%, transparent 40%);
-	}
-	.marker.orange {
-		background: linear-gradient(to top, rgba(232, 160, 32, 0.2) 40%, transparent 40%);
-	}
-	.marker.green {
-		background: linear-gradient(to top, rgba(39, 174, 96, 0.2) 40%, transparent 40%);
-	}
 
-	/* ===== Hero ===== */
-	.hero {
-		position: relative;
-		min-height: 100vh;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 8rem 2rem 4rem;
-		z-index: 1;
-	}
-	.hero-content {
-		max-width: 1200px;
-		width: 100%;
-		display: grid;
-		grid-template-columns: 1.2fr 0.8fr;
-		gap: 4rem;
-		align-items: center;
-	}
-	h1 {
-		font-size: clamp(2.2rem, 4.5vw, 3.5rem);
-		line-height: 1.1;
-		margin-bottom: 1.5rem;
-	}
-	.hero-sub {
-		font-size: 1.15rem;
-		color: var(--text-secondary);
-		line-height: 1.45;
-		max-width: 520px;
-		margin-bottom: 2rem;
-	}
-	.hero-sub strong {
-		color: var(--text-primary);
-	}
-	.hero-note {
-		font-family: var(--font-sketch);
-		font-size: 1rem;
-		color: var(--text-muted);
-		margin-top: 1rem;
-	}
-	.hero-actions {
-		display: flex;
-		gap: 0.5rem;
-	}
+	/* ===== Buttons ===== */
 	.btn-primary {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
-		padding: 0.875rem 2rem;
-		background: var(--accent);
-		color: white;
-		border: none;
+		padding: 0.9rem 2rem;
+		background: var(--accent-rose);
+		color: #fff !important;
 		border-radius: var(--radius-md);
 		font-family: var(--font-display);
 		font-size: 1rem;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.25s;
+		font-weight: 700;
+		text-decoration: none;
+		transition: all 0.2s;
+		border: none;
 	}
 	.btn-primary:hover {
-		background: var(--accent-bright);
+		background: var(--yarn-pink);
 		transform: translateY(-1px);
-		box-shadow: 0 8px 30px rgba(45, 42, 62, 0.2);
+		box-shadow: 0 8px 24px rgba(196, 69, 105, 0.3);
 	}
-	.btn-arrow { transition: transform 0.2s; }
-	.btn-primary:hover .btn-arrow { transform: translateX(3px); }
-	.btn-secondary {
+	.btn-ghost {
 		display: inline-flex;
 		align-items: center;
-		padding: 0.875rem 2rem;
-		background: var(--bg-card);
-		color: var(--text-primary);
-		border: 1px solid var(--border);
-		border-radius: var(--radius-md);
-		font-family: var(--font-display);
+		padding: 0.9rem 1.5rem;
+		color: var(--text-secondary) !important;
 		font-size: 1rem;
 		font-weight: 600;
 		text-decoration: none;
-		transition: all 0.25s;
+		transition: color 0.2s;
 	}
-	.btn-secondary:hover {
-		border-color: var(--text-secondary);
-		color: var(--text-primary);
-		transform: translateY(-1px);
-	}
-	.hero-visual {
-		display: flex;
-		flex-direction: column;
+	.btn-ghost:hover { color: var(--text-primary) !important; }
+	.btn-outline {
+		display: inline-flex;
 		align-items: center;
-		gap: 1rem;
+		padding: 0.6rem 1.25rem;
+		border: 1.5px solid var(--border);
+		border-radius: var(--radius-sm);
+		color: var(--text-secondary) !important;
+		font-size: 0.875rem;
+		font-weight: 600;
+		text-decoration: none;
+		transition: all 0.2s;
+		white-space: nowrap;
+	}
+	.btn-outline:hover {
+		border-color: var(--text-muted);
+		color: var(--text-primary) !important;
 	}
 
-	/* Scroll-snap track */
-	.carousel-track {
-		width: 380px;
-		max-width: 100%;
+	/* ===== Hero ===== */
+	.hero {
+		min-height: 100svh;
 		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 5rem 1.25rem 3rem;
+		text-align: center;
+		position: relative;
+	}
+	.hero::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(196, 69, 105, 0.07) 0%, transparent 70%);
+		pointer-events: none;
+	}
+	.hero-inner {
+		max-width: 680px;
+		width: 100%;
+		position: relative;
+	}
+	.hero-eyebrow {
+		font-size: 0.75rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--accent-rose);
+		margin-bottom: 1.5rem;
+	}
+	h1 {
+		font-size: clamp(2.8rem, 9vw, 5.5rem);
+		margin-bottom: 1.5rem;
+	}
+	.hero-sub {
+		font-size: clamp(1rem, 3vw, 1.2rem);
+		color: var(--text-secondary);
+		line-height: 1.5;
+		max-width: 480px;
+		margin: 0 auto 2rem;
+	}
+	.hero-sub strong { color: var(--text-primary); }
+	.hero-ctas {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-wrap: wrap;
+		gap: 0.25rem;
+		margin-bottom: 1.5rem;
+	}
+	.hero-note {
+		font-size: 0.8rem;
+		color: var(--text-muted);
+		font-family: var(--font-sketch);
+	}
+
+	/* ===== Imagine Section ===== */
+	.imagine {
+		padding: 5rem 0;
+		overflow: hidden;
+	}
+	.imagine .section-inner {
+		margin-bottom: 2rem;
+		text-align: center;
+	}
+	.imagine h2 {
+		font-size: clamp(1.8rem, 5vw, 3rem);
+		margin-bottom: 0.75rem;
+	}
+	.imagine-sub {
+		color: var(--text-secondary);
+		font-size: 1.05rem;
+		max-width: 500px;
+		margin: 0 auto;
+	}
+	.imagine-track {
+		display: flex;
+		gap: 1rem;
 		overflow-x: auto;
 		scroll-snap-type: x mandatory;
-		scroll-behavior: smooth;
 		-webkit-overflow-scrolling: touch;
 		scrollbar-width: none;
-		border-radius: var(--radius-lg);
+		padding: 0.5rem 1.25rem 1rem;
 	}
-	.carousel-track::-webkit-scrollbar { display: none; }
-
-	/* Hero Plugin Card */
-	.hero-plugin-card {
-		flex: 0 0 380px;
-		width: 380px;
-		text-align: left;
+	.imagine-track::-webkit-scrollbar { display: none; }
+	.imagine-card {
+		flex: 0 0 280px;
 		scroll-snap-align: start;
 		background: var(--bg-card);
 		border: 1px solid var(--border);
 		border-radius: var(--radius-lg);
-		padding: 1.75rem;
-		box-shadow: 0 8px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(108,92,231,0.05);
-		transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+		padding: 1.5rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		box-shadow: var(--card-shadow);
+		transition: all 0.25s;
+	}
+	.imagine-card:hover {
+		transform: translateY(-3px);
+		box-shadow: var(--card-shadow-hover);
+	}
+	.imagine-emoji {
+		font-size: 2rem;
+	}
+	.imagine-who {
+		font-size: 0.95rem;
+		color: var(--text-primary);
+		line-height: 1.4;
+	}
+	.imagine-who strong { color: var(--accent-rose); }
+	.imagine-desc {
+		font-size: 0.85rem;
+		color: var(--text-secondary);
+		line-height: 1.45;
+	}
+
+	/* ===== How It Works ===== */
+	.how {
+		padding: 5rem 0;
+		background: var(--bg-secondary);
+	}
+	.how h2 {
+		font-size: clamp(1.8rem, 5vw, 3rem);
+		margin-bottom: 3rem;
+		text-align: center;
+	}
+	.steps {
+		display: flex;
+		align-items: flex-start;
+		gap: 1rem;
+		margin-bottom: 3rem;
+	}
+	.step {
+		flex: 1;
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-lg);
+		padding: 1.75rem 1.5rem;
+		box-shadow: var(--card-shadow);
+	}
+	.step-num {
+		width: 36px;
+		height: 36px;
+		border-radius: 50%;
+		background: var(--accent-rose);
+		color: #fff;
+		font-weight: 800;
+		font-size: 0.9rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 1rem;
+	}
+	.step h3 {
+		font-size: 1.05rem;
+		font-weight: 700;
+		margin-bottom: 0.5rem;
+		color: var(--text-primary);
+	}
+	.step p {
+		font-size: 0.9rem;
+		color: var(--text-secondary);
+		line-height: 1.5;
+	}
+	.step-arrow {
+		font-size: 1.5rem;
+		color: var(--text-muted);
+		padding-top: 1.75rem;
+		flex-shrink: 0;
+	}
+	.how-cta {
+		text-align: center;
+	}
+
+	/* ===== Plugin Showcase ===== */
+	.plugins {
+		padding: 5rem 0;
+	}
+	.plugins-header {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 2rem;
+	}
+	.plugins-header h2 {
+		font-size: clamp(1.8rem, 5vw, 3rem);
+		margin-bottom: 0.25rem;
+	}
+	.plugins-sub {
+		color: var(--text-secondary);
+		font-size: 0.95rem;
+	}
+	.plugins-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+		gap: 1rem;
+	}
+	.plugin-card {
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		padding: 1.5rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
 		text-decoration: none;
 		color: inherit;
-		position: relative;
-		overflow: hidden;
+		box-shadow: var(--card-shadow);
+		transition: all 0.25s;
 	}
-	.hero-plugin-card::before {
-		content: '';
-		position: absolute;
-		top: 0; left: 0; right: 0;
-		height: 3px;
-		background: linear-gradient(90deg, var(--accent), var(--yarn-pink), var(--yarn-teal));
-	}
-	.hero-plugin-card:hover {
-		transform: translateY(-6px) rotate(-0.5deg);
-		box-shadow: 0 20px 60px rgba(0,0,0,0.12), 0 0 0 1px rgba(108,92,231,0.1);
-		border-color: var(--text-muted);
+	.plugin-card:hover {
+		transform: translateY(-3px);
+		box-shadow: var(--card-shadow-hover);
 		color: inherit;
 	}
-	.hero-plugin-header {
+	.plugin-top {
 		display: flex;
-		justify-content: space-between;
 		align-items: center;
-		margin-bottom: 0.75rem;
+		justify-content: space-between;
 	}
-	.hero-plugin-badge {
+	.plugin-emoji { font-size: 1.75rem; }
+	.plugin-cat {
 		font-size: 0.65rem;
 		font-weight: 700;
 		text-transform: uppercase;
-		letter-spacing: 0.12em;
-		color: var(--accent);
-		background: color-mix(in srgb, var(--accent) 10%, transparent);
-		padding: 0.2rem 0.6rem;
-		border-radius: 999px;
-	}
-	.hero-plugin-count {
-		font-family: var(--font-mono);
-		font-size: 0.7rem;
+		letter-spacing: 0.1em;
 		color: var(--text-muted);
 	}
-	.hero-plugin-title {
-		font-family: var(--font-handwriting);
-		font-size: 1.6rem;
-		font-weight: 100;
-		color: var(--text-primary);
-		margin-bottom: 0.25rem;
-	}
-	.hero-plugin-desc {
-		font-size: 0.9rem;
-		color: var(--text-secondary);
-		margin-bottom: 1.25rem;
-	}
-	.hero-plugin-skills {
-		display: flex;
-		flex-direction: column;
-		gap: 0;
-	}
-	.hero-skill-row {
-		display: flex;
-		align-items: center;
-		gap: 0.6rem;
-		padding: 0.5rem 0.6rem;
-		border-radius: var(--radius-sm);
-		transition: background 0.2s;
-		animation: skillFadeIn 0.4s ease-out both;
-	}
-	@keyframes skillFadeIn {
-		from { opacity: 0; transform: translateX(-8px); }
-		to { opacity: 1; transform: translateX(0); }
-	}
-	.hero-plugin-card:hover .hero-skill-row:hover {
-		background: var(--bg-card-hover);
-	}
-	.hero-skill-num {
-		font-family: var(--font-mono);
-		font-size: 0.6rem;
+	.plugin-title {
+		font-size: 1.1rem;
 		font-weight: 700;
-		color: var(--text-muted);
-		width: 16px;
-		text-align: center;
-	}
-	.hero-skill-emoji {
-		font-size: 1rem;
-		width: 24px;
-		text-align: center;
-	}
-	.hero-skill-title {
-		font-family: var(--font-display);
-		font-size: 0.85rem;
-		font-weight: 600;
 		color: var(--text-primary);
+		margin-top: 0.25rem;
+	}
+	.plugin-desc {
+		font-size: 0.85rem;
+		color: var(--text-secondary);
+		line-height: 1.4;
 		flex: 1;
 	}
-	.hero-skill-tag {
-		font-family: var(--font-mono);
-		font-size: 0.6rem;
-		color: var(--text-muted);
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-	}
-	.hero-plugin-footer {
+	.plugin-footer {
 		display: flex;
-		justify-content: space-between;
 		align-items: center;
-		margin-top: 1rem;
+		justify-content: space-between;
+		margin-top: 0.5rem;
 		padding-top: 0.75rem;
 		border-top: 1px solid var(--border);
 	}
-	.hero-plugin-author {
+	.plugin-author {
 		font-family: var(--font-handwriting);
 		font-size: 0.85rem;
 		color: var(--text-muted);
 	}
-	.hero-plugin-cta {
-		font-size: 0.85rem;
-		font-weight: 600;
-		color: var(--accent-rose);
-		transition: transform 0.2s;
-	}
-	.hero-plugin-card:hover .hero-plugin-cta {
-		transform: translateX(4px);
+	.plugin-skills {
+		font-family: var(--font-mono);
+		font-size: 0.65rem;
+		color: var(--text-muted);
 	}
 
-	/* ===== Carousel Dots ===== */
-	.carousel-dots {
-		display: flex;
-		justify-content: center;
-		gap: 0.5rem;
-		margin-top: 1rem;
+	/* ===== Dev Section ===== */
+	.dev-section {
+		padding: 3rem 0;
+		border-top: 1px solid var(--border);
 	}
-	.carousel-dot {
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-		border: none;
-		background: var(--border);
-		cursor: pointer;
-		padding: 0;
-		transition: background 0.25s, transform 0.25s;
-	}
-	.carousel-dot:hover {
-		background: var(--text-muted);
-		transform: scale(1.2);
-	}
-	.carousel-dot.active {
-		background: var(--accent);
-		transform: scale(1.15);
-	}
-
-	/* ===== Vision ===== */
-	.vision {
-		position: relative;
-		z-index: 1;
-		padding: 4rem 0 6rem;
-	}
-	.vision h2 {
-		font-size: clamp(2rem, 4vw, 3rem);
-		margin-bottom: 2.5rem;
-		color: var(--text-primary);
-	}
-	.vision-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 1.5rem;
-	}
-	.vision-card {
+	.dev-card {
 		background: var(--bg-card);
 		border: 1px solid var(--border);
 		border-radius: var(--radius-lg);
 		padding: 2rem;
-		box-shadow: var(--card-shadow);
-		transition: all 0.25s;
-	}
-	.vision-card:hover {
-		box-shadow: var(--card-shadow-hover);
-		transform: translateY(-2px);
-	}
-	.vision-card p {
-		font-size: 1.05rem;
-		line-height: 1.45;
-		color: var(--text-secondary);
-	}
-
-	/* ===== Use Cases ===== */
-	.use-cases {
-		position: relative;
-		z-index: 1;
-		padding: 2rem 0 6rem;
-	}
-	.use-cases h2 {
-		font-size: clamp(2rem, 4vw, 3rem);
-		margin-bottom: 2.5rem;
-	}
-	.cases-grid {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 1rem;
-	}
-	.case-card {
 		display: flex;
 		align-items: center;
-		gap: 1rem;
-		padding: 1.25rem 1.5rem;
-		background: var(--bg-card);
+		gap: 2rem;
+		flex-wrap: wrap;
+		box-shadow: var(--card-shadow);
+	}
+	.dev-left { flex: 1; min-width: 220px; }
+	.dev-eyebrow {
+		font-size: 0.7rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		color: var(--accent-rose);
+		margin-bottom: 0.5rem;
+	}
+	.dev-left h3 {
+		font-size: clamp(1.2rem, 3vw, 1.6rem);
+		margin-bottom: 0.5rem;
+	}
+	.dev-desc {
+		font-size: 0.9rem;
+		color: var(--text-secondary);
+	}
+	.dev-snippet {
+		background: var(--bg-secondary);
 		border: 1px solid var(--border);
 		border-radius: var(--radius-md);
-		box-shadow: var(--card-shadow);
-		transition: all 0.25s;
+		padding: 0.85rem 1.25rem;
+		flex-shrink: 0;
 	}
-	.case-card:hover {
-		border-color: var(--border);
-		box-shadow: var(--card-shadow-hover);
-	}
-	.case-who {
-		font-family: var(--font-handwriting);
-		font-size: 1.2rem;
-		color: var(--text-primary);
+	.dev-snippet code {
+		font-family: var(--font-mono);
+		font-size: 0.85rem;
+		color: var(--accent-rose);
 		white-space: nowrap;
-	}
-	.case-arrow {
-		color: var(--text-muted);
-		font-weight: 400;
-	}
-	.case-what {
-		font-family: var(--font-sketch);
-		font-size: 1.1rem;
-		color: var(--yarn-pink);
-	}
-
-	/* ===== Explore ===== */
-	.section-inner {
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: 0 2rem;
-	}
-	.explore {
-		position: relative;
-		z-index: 1;
-		padding: 2rem 0 6rem;
-	}
-	.explore h2 {
-		font-size: clamp(2rem, 4vw, 3rem);
-		margin-bottom: 2rem;
-	}
-	.categories {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.75rem;
-		margin-bottom: 3rem;
-	}
-	.cat-pill {
-		padding: 0.625rem 1.5rem;
-		border-radius: 100px;
-		background: var(--bg-card);
-		border: 1px solid var(--border);
-		color: var(--text-secondary);
-		font-family: var(--font-handwriting);
-		font-size: 1.05rem;
-		cursor: pointer;
-		transition: all 0.25s;
-		box-shadow: var(--card-shadow);
-		text-decoration: none;
-	}
-	.cat-pill:hover {
-		border-color: var(--text-secondary);
-		color: var(--text-primary);
-		transform: translateY(-1px);
-	}
-	.principles {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 1.5rem;
-	}
-	.principle {
-		text-align: center;
-		padding: 2rem 1.5rem;
-	}
-	.principle-icon {
-		font-size: 2rem;
-		display: block;
-		margin-bottom: 1rem;
-	}
-	.principle h3 {
-		font-family: var(--font-handwriting);
-		font-size: 1.3rem;
-		margin-bottom: 0.75rem;
-	}
-	.principle p {
-		font-size: 0.95rem;
-		color: var(--text-secondary);
-		line-height: 1.45;
 	}
 
 	/* ===== Footer ===== */
 	footer {
-		position: relative;
-		z-index: 1;
 		border-top: 1px solid var(--border);
-		padding: 5rem 2rem 3rem;
-		margin-top: 4rem;
+		padding: 4rem 1.25rem 2rem;
 	}
 	.footer-inner {
-		max-width: 1200px;
-		margin: 0 auto;
+		max-width: 1100px;
+		margin: 0 auto 2.5rem;
 		display: flex;
 		justify-content: space-between;
-		margin-bottom: 3rem;
+		gap: 2rem;
+		flex-wrap: wrap;
 	}
 	.footer-logo {
 		display: flex;
@@ -851,348 +636,82 @@
 		margin-bottom: 0.5rem;
 	}
 	.footer-tagline {
-		color: var(--text-secondary);
 		font-family: var(--font-handwriting);
-		font-size: 1rem;
+		font-size: 0.95rem;
+		color: var(--text-secondary);
+		margin-bottom: 0.25rem;
 	}
 	.footer-note {
+		font-size: 0.75rem;
 		color: var(--text-muted);
-		font-size: 0.8rem;
-		margin-top: 0.5rem;
 	}
 	.footer-links {
 		display: flex;
-		gap: 4rem;
+		gap: 3rem;
 	}
 	.footer-col {
 		display: flex;
 		flex-direction: column;
-		gap: 0.75rem;
+		gap: 0.6rem;
 	}
 	.footer-col h4 {
-		font-size: 0.8rem;
+		font-size: 0.7rem;
 		text-transform: uppercase;
 		letter-spacing: 0.1em;
 		color: var(--text-muted);
 		margin-bottom: 0.25rem;
 	}
 	.footer-col a {
+		font-size: 0.875rem;
 		color: var(--text-secondary);
-		font-size: 0.9rem;
+		text-decoration: none;
+		transition: color 0.2s;
 	}
 	.footer-col a:hover { color: var(--text-primary); }
 	.footer-bottom {
-		max-width: 1200px;
+		max-width: 1100px;
 		margin: 0 auto;
-		padding-top: 2rem;
+		padding-top: 1.5rem;
 		border-top: 1px solid var(--border);
 		text-align: center;
-		color: var(--text-muted);
-		font-size: 0.8rem;
-	}
-
-	/* ===== Featured Skill ===== */
-	.featured {
-		position: relative;
-		z-index: 1;
-		padding: 2rem 0 6rem;
-	}
-	.featured h2 {
-		font-size: clamp(2rem, 4vw, 3rem);
-		margin-bottom: 2rem;
-	}
-	.featured-card {
-		display: block;
-		background: var(--bg-card);
-		border: 1px solid var(--border);
-		border-radius: var(--radius-lg);
-		padding: 2.5rem;
-		box-shadow: var(--card-shadow);
-		transition: all 0.3s;
-		color: inherit;
-		text-decoration: none;
-	}
-	.featured-card:hover {
-		border-color: var(--border);
-		box-shadow: var(--card-shadow-hover);
-		transform: translateY(-3px);
-		color: inherit;
-	}
-	.featured-meta {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 1rem;
-	}
-	.featured-category {
-		font-size: 0.7rem;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.15em;
-		color: var(--text-muted);
-	}
-	.featured-uses {
-		font-family: var(--font-mono);
 		font-size: 0.75rem;
 		color: var(--text-muted);
 	}
-	.featured-title {
-		font-family: var(--font-handwriting);
-		font-size: clamp(1.5rem, 3vw, 2.2rem);
-		font-weight: 200;
-		margin-bottom: 0.75rem;
-		color: var(--text-primary);
-	}
-	.featured-desc {
-		font-size: 1.05rem;
-		color: var(--text-secondary);
-		line-height: 1.45;
-		margin-bottom: 1.5rem;
-		max-width: 700px;
-	}
-	.featured-preview {
-		background: var(--bg-secondary);
-		border: 1px solid var(--border);
-		border-radius: var(--radius-md);
-		overflow: hidden;
-		margin-bottom: 1.5rem;
-	}
-	.featured-code-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 0.6rem 1rem;
-		border-bottom: 1px solid var(--border);
-		background: var(--bg-secondary);
-	}
-	.featured-filename {
-		font-family: var(--font-mono);
-		font-size: 0.75rem;
-		color: var(--text-muted);
-	}
-	.featured-version {
-		font-family: var(--font-mono);
-		font-size: 0.7rem;
-		color: var(--text-muted);
-	}
-	.featured-code {
-		padding: 1.25rem;
-		font-family: var(--font-mono);
-		font-size: 0.88rem;
-		line-height: 1.5;
-		color: var(--text-secondary);
-		margin: 0;
-		white-space: pre-wrap;
-		word-wrap: break-word;
-		overflow-wrap: break-word;
-		max-height: 300px;
-		overflow-y: auto;
-	}
-	.featured-code code { font-family: inherit; }
-	.featured-author {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		font-size: 0.9rem;
-	}
-	.featured-by { color: var(--text-muted); }
-	.featured-author-name {
-		font-family: var(--font-handwriting);
-		font-weight: 200;
-		color: var(--text-primary);
-	}
-	.featured-cta {
-		margin-left: auto;
-		color: var(--accent-rose);
-		font-weight: 600;
-		font-size: 0.875rem;
-		transition: transform 0.2s;
-	}
-	.featured-card:hover .featured-cta { transform: translateX(3px); }
+	.footer-bottom a { color: var(--text-muted); text-decoration: none; }
+	.footer-bottom a:hover { color: var(--text-primary); }
 
-	/* ===== Featured Plugins ===== */
-	.plugins-section {
-		position: relative;
-		z-index: 1;
-		padding: 2rem 0 6rem;
-	}
-	.plugins-section h2 {
-		font-size: clamp(2rem, 4vw, 3rem);
-		margin-bottom: 0.75rem;
-	}
-	.plugins-subtitle {
-		color: var(--text-secondary);
-		font-size: 1.05rem;
-		margin-bottom: 2rem;
-	}
-	.plugins-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-		gap: 1.25rem;
-	}
-	.plugin-card {
-		background: var(--bg-card);
-		border: 1px solid var(--border);
-		border-radius: var(--radius-md);
-		padding: 1.5rem;
-		transition: all 0.25s;
-		text-decoration: none;
-		display: flex;
-		flex-direction: column;
-	}
-	.plugin-card:hover {
-		border-color: var(--border);
-		box-shadow: var(--card-shadow-hover);
-		transform: translateY(-2px);
-	}
-	.plugin-card-top {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 0.75rem;
-	}
-	.plugin-category {
-		font-size: 0.7rem;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.15em;
-		color: var(--text-muted);
-	}
-	.plugin-skill-count {
-		font-family: var(--font-mono);
-		font-size: 0.7rem;
-		color: var(--text-muted);
-	}
-	.plugin-title {
-		font-size: 1.15rem;
-		font-weight: 700;
-		color: var(--text-primary);
-		margin-bottom: 0.5rem;
-	}
-	.plugin-desc {
-		font-size: 0.85rem;
-		color: var(--text-secondary);
-		line-height: 1.35;
-		margin-bottom: 1rem;
-		flex: 1;
-	}
-	.plugin-author {
-		display: flex;
-		align-items: center;
-		gap: 0.4rem;
-		margin-top: auto;
-	}
-	.plugin-by {
-		font-size: 0.8rem;
-		color: var(--text-muted);
-	}
-	.plugin-author-name {
-		font-family: var(--font-handwriting);
-		font-size: 0.9rem;
-		color: var(--text-primary);
-	}
-
-	/* ===== Install Snippet ===== */
-	.install-snippet {
-		margin: 1.5rem 0;
-		background: var(--bg-secondary);
-		border: 1px solid var(--border);
-		border-radius: var(--radius-md);
-		padding: 1rem 1.25rem;
-		max-width: 520px;
-	}
-	.install-label {
-		font-size: 0.75rem;
-		color: var(--text-muted);
-		text-transform: uppercase;
-		letter-spacing: 0.1em;
-		margin-bottom: 0.5rem;
-	}
-	.install-code {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-	}
-	.install-code code {
-		font-family: var(--font-mono);
-		font-size: 0.85rem;
-		color: var(--accent-rose);
-		flex: 1;
-	}
-	.copy-btn {
-		background: none;
-		border: none;
-		cursor: pointer;
-		font-size: 1rem;
-		opacity: 0.6;
-		transition: opacity 0.2s;
-		padding: 0;
-	}
-	.copy-btn:hover { opacity: 1; }
-
-	/* ===== Plugin Card Extras ===== */
-	.plugin-card-badges {
-		display: flex;
-		align-items: center;
-		gap: 0.4rem;
-	}
-	.source-badge {
-		font-size: 0.58rem;
-		font-weight: 600;
-		padding: 0.15rem 0.45rem;
-		border-radius: 999px;
-		background: rgba(108, 92, 231, 0.08);
-		border: 1px solid rgba(108, 92, 231, 0.2);
-		color: var(--accent);
-		letter-spacing: 0.04em;
-	}
-	.plugin-installs {
-		margin-left: auto;
-		font-family: var(--font-mono);
-		font-size: 0.65rem;
-		color: var(--text-muted);
-	}
-	.plugin-emoji {
-		font-size: 1.5rem;
-		line-height: 1;
-	}
-	.plugin-install-cmd {
-		background: var(--bg-secondary);
-		border: 1px solid var(--border);
-		border-radius: 6px;
-		padding: 0.4rem 0.75rem;
-		margin: 0.75rem 0;
-	}
-	.plugin-install-cmd code {
-		font-family: var(--font-mono);
-		font-size: 0.75rem;
-		color: var(--text-secondary);
-	}
-
-	/* ===== Responsive ===== */
-	@media (max-width: 900px) {
-		.hero-content {
-			grid-template-columns: 1fr;
-			text-align: center;
+	/* ===== Responsive — tablet ===== */
+	@media (max-width: 720px) {
+		.steps {
+			flex-direction: column;
+			gap: 0;
 		}
-		.hero-sub { margin: 0 auto 2rem; }
-		.hero-actions { justify-content: center; }
-		.hero-visual { order: -1; width: 100%; }
-		.carousel-track { width: 100%; }
-		.hero-plugin-card { flex: 0 0 100%; width: 100%; }
-		.vision-grid { grid-template-columns: 1fr; }
-		.cases-grid { grid-template-columns: 1fr; }
-		.case-card { flex-wrap: wrap; }
-		.case-who { white-space: normal; }
-		.principles { grid-template-columns: 1fr; }
-		.nav-inner { padding: 0 1rem; }
-		.nav-links a:not(.btn-nav):not(:global(.theme-toggle)) { display: none; }
-		.footer-inner { flex-direction: column; gap: 2rem; }
+		.step-arrow {
+			transform: rotate(90deg);
+			padding: 0.25rem 0;
+			text-align: center;
+			width: 100%;
+		}
+		.plugins-header {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+		.dev-card {
+			flex-direction: column;
+			gap: 1.25rem;
+		}
+		.dev-snippet { width: 100%; overflow-x: auto; }
+		.footer-inner { flex-direction: column; }
 		.footer-links { gap: 2rem; }
-		.waitlist-form { flex-direction: column; }
-		.featured-card { padding: 1.5rem; }
-		.featured-code { max-height: 200px; font-size: 0.78rem; }
-		.hero { padding: 6rem 1rem 3rem; overflow-x: hidden; }
-		.section-inner { padding: 0 1rem; }
+		.imagine-card { flex: 0 0 240px; }
+	}
+
+	@media (max-width: 480px) {
+		.nav-link { display: none; }
+		h1 { font-size: 2.6rem; }
+		.hero { padding: 4.5rem 1.25rem 2.5rem; }
+		.imagine-card { flex: 0 0 85vw; }
+		.hero-ctas { flex-direction: column; align-items: center; }
+		.btn-ghost { padding: 0.5rem; }
 	}
 </style>
