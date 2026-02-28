@@ -1,8 +1,31 @@
 <script lang="ts">
+	import { fade } from 'svelte/transition';
 	import YarnLogo from '$lib/components/YarnLogo.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { MARKETPLACE_COMMAND } from '$lib/plugins';
 	let { data } = $props();
+
+	// Carousel — native loooom plugins only (clean set, not 40+ skills.sh entries)
+	const featuredPlugins = data.plugins.filter((p: { source: string }) => p.source === 'loooom');
+	let currentPluginIndex = $state(0);
+	let carouselTimer: ReturnType<typeof setInterval> | null = null;
+
+	function startTimer() {
+		carouselTimer = setInterval(() => {
+			currentPluginIndex = (currentPluginIndex + 1) % featuredPlugins.length;
+		}, 4000);
+	}
+
+	function goTo(i: number) {
+		currentPluginIndex = i;
+		if (carouselTimer) clearInterval(carouselTimer);
+		startTimer();
+	}
+
+	$effect(() => {
+		startTimer();
+		return () => { if (carouselTimer) clearInterval(carouselTimer); };
+	});
 
 	const useCases = [
 		{ who: 'A pastry chef', what: 'sourdough starters & lamination' },
@@ -94,27 +117,44 @@
 			<p class="hero-note">Skills are always free. Open source. Open format.</p>
 		</div>
 		<div class="hero-visual">
-			<a href="/p/mager/beginner-japanese" class="hero-plugin-card">
-				<div class="hero-plugin-header">
-					<span class="hero-plugin-badge">🧩 Featured Plugin</span>
-					<span class="hero-plugin-count">{data.plugins[0].skills.length} skills</span>
-				</div>
-				<h3 class="hero-plugin-title">{data.plugins[0].emoji} {data.plugins[0].title}</h3>
-				<p class="hero-plugin-desc">From zero to ordering ramen in Tokyo</p>
-				<div class="hero-plugin-skills">
-					{#each data.plugins[0].skills as skill, i}
-						<div class="hero-skill-row" style="animation-delay: {i * 0.1}s">
-							<span class="hero-skill-num">{i + 1}</span>
-							<span class="hero-skill-title">{skill.name}</span>
-							<span class="hero-skill-tag">{skill.description}</span>
-						</div>
-					{/each}
-				</div>
-				<div class="hero-plugin-footer">
-					<span class="hero-plugin-author">by @{data.plugins[0].author}</span>
-					<span class="hero-plugin-cta">Explore →</span>
-				</div>
-			</a>
+			{#key currentPluginIndex}
+				{@const plugin = featuredPlugins[currentPluginIndex]}
+				<a
+					href="/p/{plugin.author}/{plugin.name}"
+					class="hero-plugin-card"
+					in:fade={{ duration: 300 }}
+				>
+					<div class="hero-plugin-header">
+						<span class="hero-plugin-badge">🧩 Featured Plugin</span>
+						<span class="hero-plugin-count">{plugin.skills.length} skills</span>
+					</div>
+					<h3 class="hero-plugin-title">{plugin.emoji} {plugin.title}</h3>
+					<p class="hero-plugin-desc">{plugin.description}</p>
+					<div class="hero-plugin-skills">
+						{#each plugin.skills.slice(0, 4) as skill, i}
+							<div class="hero-skill-row" style="animation-delay: {i * 0.1}s">
+								<span class="hero-skill-num">{i + 1}</span>
+								<span class="hero-skill-title">{skill.name}</span>
+								<span class="hero-skill-tag">{skill.description}</span>
+							</div>
+						{/each}
+					</div>
+					<div class="hero-plugin-footer">
+						<span class="hero-plugin-author">by @{plugin.author}</span>
+						<span class="hero-plugin-cta">Explore →</span>
+					</div>
+				</a>
+			{/key}
+			<div class="carousel-dots">
+				{#each featuredPlugins as _, i}
+					<button
+						class="carousel-dot"
+						class:active={i === currentPluginIndex}
+						onclick={() => goTo(i)}
+						aria-label="Plugin {i + 1}"
+					></button>
+				{/each}
+			</div>
 		</div>
 	</div>
 </section>
@@ -475,6 +515,7 @@
 		display: block;
 		width: 100%;
 		max-width: 380px;
+		text-align: left;
 		background: var(--bg-card);
 		border: 1px solid var(--border);
 		border-radius: var(--radius-lg);
@@ -601,6 +642,32 @@
 	}
 	.hero-plugin-card:hover .hero-plugin-cta {
 		transform: translateX(4px);
+	}
+
+	/* ===== Carousel Dots ===== */
+	.carousel-dots {
+		display: flex;
+		justify-content: center;
+		gap: 0.5rem;
+		margin-top: 1rem;
+	}
+	.carousel-dot {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		border: none;
+		background: var(--border);
+		cursor: pointer;
+		padding: 0;
+		transition: background 0.25s, transform 0.25s;
+	}
+	.carousel-dot:hover {
+		background: var(--text-muted);
+		transform: scale(1.2);
+	}
+	.carousel-dot.active {
+		background: var(--accent);
+		transform: scale(1.15);
 	}
 
 	/* ===== Vision ===== */
