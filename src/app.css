@@ -1,74 +1,73 @@
 :root {
-	--font-display: 'Outfit', sans-serif;
+	--font-display: 'Gaegu', cursive;
 	--font-mono: 'Space Mono', monospace;
 	--font-handwriting: 'Playwrite IT Moderna', cursive;
 	--font-sketch: 'Gaegu', cursive;
-	--font-serif: 'Outfit', sans-serif;
 	--radius-sm: 8px;
 	--radius-md: 12px;
 	--radius-lg: 20px;
 	--radius-xl: 28px;
 }
 
-/* ===== LIGHT MODE (default — craft paper, paint markers, yarn shop) ===== */
+/* ===== LIGHT MODE ===== */
 :root,
 html[data-theme="light"] {
-	--bg-primary: #faf6f0;
-	--bg-secondary: #f3ede4;
+	--bg-primary: #ffffff;
+	--bg-secondary: #fdf0fa;
 	--bg-card: #ffffff;
-	--bg-card-hover: #fdf9f4;
-	--border: #e2d9cc;
-	--border-glow: #c44569;
-	--text-primary: #2d2a3e;
-	--text-secondary: #5c576e;
-	--text-muted: #9a95a8;
-	--accent: #2d2a3e;
-	--accent-bright: #1a1828;
-	--accent-dim: #3d3a4e;
-	--accent-rose: #cf5b7a;
-	--yarn-pink: #e84393;
+	--bg-card-hover: #fdf5ff;
+	--border: #ead5f5;
+	--border-glow: #f01e6e;
+	--text-primary: #110015;
+	--text-secondary: #5c3a6a;
+	--text-muted: #a07ab5;
+	--accent: #110015;
+	--accent-bright: #000008;
+	--accent-dim: #2a1535;
+	--accent-rose: #f01e6e;
+	--yarn-pink: #f01e6e;
+	--yarn-violet: #8b1cf5;
 	--yarn-blue: #3d85c6;
-	--yarn-orange: #e8a020;
-	--yarn-green: #27ae60;
-	--yarn-red: #e74c3c;
-	--yarn-teal: #1abc9c;
-	--gradient-hero: linear-gradient(135deg, #c44569 0%, #e84393 50%, #e8a020 100%);
-	--gradient-subtle: linear-gradient(135deg, rgba(196, 69, 105, 0.05) 0%, rgba(232, 67, 147, 0.03) 100%);
-	--nav-bg: rgba(250, 246, 240, 0.9);
+	--yarn-orange: #ff8c00;
+	--yarn-green: #00c853;
+	--yarn-teal: #00bcd4;
+	--gradient-cta: linear-gradient(135deg, #f01e6e 0%, #8b1cf5 100%);
+	--gradient-hero: linear-gradient(135deg, #f01e6e 0%, #8b1cf5 100%);
+	--gradient-subtle: linear-gradient(135deg, rgba(240, 30, 110, 0.05) 0%, rgba(139, 28, 245, 0.03) 100%);
+	--nav-bg: rgba(255, 255, 255, 0.9);
 	--topic-underline-height: 7px;
-	--card-shadow: 0 2px 12px rgba(45, 42, 62, 0.06);
-	--card-shadow-hover: 0 8px 30px rgba(45, 42, 62, 0.12);
-	--paper-grain: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+	--card-shadow: 0 2px 16px rgba(139, 28, 245, 0.06);
+	--card-shadow-hover: 0 8px 32px rgba(240, 30, 110, 0.14);
 }
 
 /* ===== DARK MODE ===== */
 html[data-theme="dark"] {
-	--bg-primary: #0a0a0f;
-	--bg-secondary: #12121a;
-	--bg-card: #16161f;
-	--bg-card-hover: #1c1c28;
-	--border: #2a2a3a;
-	--border-glow: #c44569;
-	--text-primary: #f0eff4;
-	--text-secondary: #8a89a0;
-	--text-muted: #5a596e;
-	--accent: #f0ece4;
+	--bg-primary: #08000f;
+	--bg-secondary: #10051a;
+	--bg-card: #130820;
+	--bg-card-hover: #1c0f2e;
+	--border: #2a1040;
+	--border-glow: #f01e6e;
+	--text-primary: #f5eeff;
+	--text-secondary: #9980b5;
+	--text-muted: #5a4070;
+	--accent: #f5eeff;
 	--accent-bright: #ffffff;
-	--accent-dim: #c4bfb2;
-	--accent-rose: #e8879f;
-	--yarn-pink: #fd79a8;
+	--accent-dim: #c4aad8;
+	--accent-rose: #ff3d82;
+	--yarn-pink: #ff3d82;
+	--yarn-violet: #a855f7;
 	--yarn-blue: #74b9ff;
-	--yarn-orange: #fdcb6e;
-	--yarn-green: #55efc4;
-	--yarn-red: #ff6b6b;
-	--yarn-teal: #55efc4;
-	--gradient-hero: linear-gradient(135deg, #c44569 0%, #fd79a8 50%, #fdcb6e 100%);
-	--gradient-subtle: linear-gradient(135deg, rgba(196, 69, 105, 0.08) 0%, rgba(253, 121, 168, 0.04) 100%);
-	--nav-bg: rgba(10, 10, 15, 0.8);
+	--yarn-orange: #ffb347;
+	--yarn-green: #69ff9a;
+	--yarn-teal: #67e8f9;
+	--gradient-cta: linear-gradient(135deg, #ff3d82 0%, #a855f7 100%);
+	--gradient-hero: linear-gradient(135deg, #ff3d82 0%, #a855f7 100%);
+	--gradient-subtle: linear-gradient(135deg, rgba(255, 61, 130, 0.08) 0%, rgba(168, 85, 247, 0.04) 100%);
+	--nav-bg: rgba(8, 0, 15, 0.85);
 	--topic-underline-height: 5px;
-	--card-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-	--card-shadow-hover: 0 8px 30px rgba(45, 42, 62, 0.2);
-	--paper-grain: none;
+	--card-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
+	--card-shadow-hover: 0 8px 32px rgba(255, 61, 130, 0.2);
 }
 
 * {
@@ -84,7 +83,6 @@ html {
 body {
 	font-family: var(--font-display);
 	background: var(--bg-primary);
-	background-image: var(--paper-grain);
 	color: var(--text-primary);
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
@@ -99,10 +97,10 @@ a {
 }
 
 a:hover {
-	color: var(--yarn-pink);
+	color: var(--yarn-violet);
 }
 
 ::selection {
-	background: rgba(196, 69, 105, 0.2);
+	background: rgba(240, 30, 110, 0.15);
 	color: var(--text-primary);
 }

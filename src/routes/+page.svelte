@@ -79,23 +79,27 @@
 <section class="how">
 	<div class="section-inner">
 		<h2 class="hand">Three steps. <span class="sketch">That's it.</span></h2>
-		<div class="steps">
-			<div class="step">
-				<div class="step-num">1</div>
-				<h3>Write what you know</h3>
-				<p>Plain English. No code, no jargon.</p>
+		<div class="steps-flow">
+			<div class="step-row">
+				<span class="step-n hand">1</span>
+				<div class="step-content">
+					<h3>Write what you know</h3>
+					<p>Plain English. No code, no jargon.</p>
+				</div>
 			</div>
-			<div class="step-arrow">→</div>
-			<div class="step">
-				<div class="step-num">2</div>
-				<h3>Publish your skill</h3>
-				<p>Live on Loooom. Anyone can find and use it.</p>
+			<div class="step-row">
+				<span class="step-n hand">2</span>
+				<div class="step-content">
+					<h3>Publish your skill</h3>
+					<p>Live on Loooom. Anyone can find and use it.</p>
+				</div>
 			</div>
-			<div class="step-arrow">→</div>
-			<div class="step">
-				<div class="step-num">3</div>
-				<h3>Your knowledge, forever</h3>
-				<p>AI agents learn from you. Teach thousands — effortlessly.</p>
+			<div class="step-row">
+				<span class="step-n hand">3</span>
+				<div class="step-content">
+					<h3>Your knowledge, forever</h3>
+					<p>Teach thousands. Effortlessly.</p>
+				</div>
 			</div>
 		</div>
 		<div class="how-cta">
@@ -249,11 +253,17 @@
 		font-weight: 100;
 		line-height: 1.15;
 	}
-	.hand.accent { color: var(--accent-rose); font-weight: 200; }
+	.hand.accent {
+		background: var(--gradient-hero);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		font-weight: 200;
+	}
 	.sketch {
 		font-family: var(--font-sketch);
-		font-weight: 400;
-		color: var(--yarn-pink);
+		font-weight: 700;
+		color: var(--yarn-violet);
 	}
 
 	/* ===== Buttons ===== */
@@ -262,7 +272,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.9rem 2rem;
-		background: var(--accent-rose);
+		background: var(--gradient-cta);
 		color: #fff !important;
 		border-radius: var(--radius-md);
 		font-family: var(--font-display);
@@ -271,11 +281,12 @@
 		text-decoration: none;
 		transition: all 0.2s;
 		border: none;
+		box-shadow: 0 4px 20px rgba(240, 30, 110, 0.25);
 	}
 	.btn-primary:hover {
-		background: var(--yarn-pink);
-		transform: translateY(-1px);
-		box-shadow: 0 8px 24px rgba(196, 69, 105, 0.3);
+		transform: translateY(-2px);
+		box-shadow: 0 8px 32px rgba(240, 30, 110, 0.4);
+		filter: brightness(1.08);
 	}
 	.btn-ghost {
 		display: inline-flex;
@@ -319,7 +330,7 @@
 		content: '';
 		position: absolute;
 		inset: 0;
-		background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(196, 69, 105, 0.07) 0%, transparent 70%);
+		background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(240, 30, 110, 0.06) 0%, rgba(139, 28, 245, 0.04) 60%, transparent 80%);
 		pointer-events: none;
 	}
 	.hero-inner {
@@ -431,49 +442,42 @@
 		margin-bottom: 2rem;
 		text-align: center;
 	}
-	.steps {
+	.steps-flow {
 		display: flex;
-		align-items: flex-start;
-		gap: 1rem;
-		margin-bottom: 2rem;
+		flex-direction: column;
+		margin-bottom: 2.5rem;
 	}
-	.step {
-		flex: 1;
-		background: var(--bg-card);
-		border: 1px solid var(--border);
-		border-radius: var(--radius-md);
-		padding: 1.25rem;
-		box-shadow: var(--card-shadow);
-	}
-	.step-num {
-		width: 30px;
-		height: 30px;
-		border-radius: 50%;
-		background: var(--accent-rose);
-		color: #fff;
-		font-weight: 800;
-		font-size: 0.85rem;
-		display: flex;
+	.step-row {
+		display: grid;
+		grid-template-columns: 72px 1fr;
+		gap: 1.25rem;
 		align-items: center;
-		justify-content: center;
-		margin-bottom: 0.75rem;
+		padding: 1.25rem 0;
+		border-bottom: 1px solid var(--border);
 	}
-	.step h3 {
-		font-size: 0.95rem;
+	.step-row:last-child { border-bottom: none; }
+	.step-n {
+		font-size: 3.5rem;
+		line-height: 1;
+		background: var(--gradient-cta);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		font-weight: 400;
+		text-align: center;
+	}
+	.step-content h3 {
+		font-family: var(--font-display);
+		font-size: 1.1rem;
 		font-weight: 700;
-		margin-bottom: 0.35rem;
+		margin-bottom: 0.2rem;
 		color: var(--text-primary);
 	}
-	.step p {
-		font-size: 0.82rem;
+	.step-content p {
+		font-family: var(--font-display);
+		font-size: 0.9rem;
 		color: var(--text-secondary);
-		line-height: 1.45;
-	}
-	.step-arrow {
-		font-size: 1.25rem;
-		color: var(--text-muted);
-		padding-top: 1.25rem;
-		flex-shrink: 0;
+		line-height: 1.4;
 	}
 	.how-cta {
 		text-align: center;
@@ -678,16 +682,8 @@
 
 	/* ===== Responsive — tablet ===== */
 	@media (max-width: 720px) {
-		.steps {
-			flex-direction: column;
-			gap: 0;
-		}
-		.step-arrow {
-			transform: rotate(90deg);
-			padding: 0.2rem 0;
-			text-align: center;
-			width: 100%;
-		}
+		.step-row { grid-template-columns: 56px 1fr; gap: 1rem; }
+		.step-n { font-size: 2.75rem; }
 		.plugins-header {
 			flex-direction: column;
 			align-items: flex-start;
