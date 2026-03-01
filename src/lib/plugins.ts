@@ -17,10 +17,11 @@ export interface Plugin {
 	skills: { name: string; description: string }[];
 	emoji: string;
 	// Multi-source fields
-	source: 'loooom' | 'skills.sh';
+	source: 'loooom' | 'skills.sh' | 'github';
 	skillsShPath?: string;       // e.g. 'obra/superpowers/brainstorming'
 	installs?: number;           // live install count from skills.sh sync
 	installCommandSkillsSh?: string; // npx skillsadd command
+	githubRepo?: string;         // e.g. 'blader/theorist'
 }
 
 export const MARKETPLACE_COMMAND = '/plugin marketplace add mager/loooom';
@@ -155,6 +156,32 @@ export const PLUGINS: Plugin[] = [
 		skills: [
 			{ name: 'Design System', description: 'Cards, buttons, forms, spacing, typography' },
 			{ name: 'Layout Principles', description: 'Grid, responsive, visual hierarchy' }
+		]
+	},
+
+	// ─────────────────────────────────────────────
+	// GITHUB NATIVE — featured community skills
+	// ─────────────────────────────────────────────
+	{
+		name: 'theorist',
+		title: 'Theorist',
+		description:
+			'Maintain a continuously updated operating theory for ongoing engineering work. Keeps a per-repo THEORY.MD with problem thesis, system model, strategy, key discoveries, and open questions — so future decisions stay coherent with your latest mental model.',
+		version: '1.0.0',
+		author: 'blader',
+		authorDisplay: 'blader',
+		category: 'productivity',
+		keywords: ['theory', 'engineering', 'documentation', 'strategy', 'memory', 'codex'],
+		homepage: 'https://github.com/blader/theorist',
+		repoPath: 'https://github.com/blader/theorist',
+		installCommand: 'git clone https://github.com/blader/theorist.git "${CLAUDE_SKILLS_DIR:-$HOME/.claude/skills}/theorist"',
+		source: 'github',
+		githubRepo: 'blader/theorist',
+		emoji: '🧠',
+		skills: [
+			{ name: 'Operating Theory', description: 'Per-repo THEORY.MD: thesis, model, strategy, pivots' },
+			{ name: 'Strategic Memory', description: 'Keeps future decisions coherent with current mental model' },
+			{ name: 'Always-On', description: 'Sticky activation — once active, stays active all session' }
 		]
 	},
 
