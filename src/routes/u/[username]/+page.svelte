@@ -172,6 +172,11 @@
 							View on skills.sh
 							<span class="install-arrow">→</span>
 						</a>
+					{:else if data.skills[activeSkill].externalUrl}
+						<a href={data.skills[activeSkill].externalUrl} class="install-btn">
+							View Plugin
+							<span class="install-arrow">→</span>
+						</a>
 					{:else}
 						<a href="/s/{data.user.username}/{data.skills[activeSkill].name}" class="install-btn">
 							Use
@@ -203,6 +208,22 @@
 						This skill is hosted externally on <a href="https://skills.sh" target="_blank" rel="noopener">skills.sh</a>.
 						Install counts and documentation are synced from the source repository.
 					</p>
+				</div>
+			{:else if data.skills[activeSkill].externalUrl && data.skills[activeSkill].installCommand}
+				<!-- Loooom catalog plugin: show install command + link to plugin page -->
+				<div class="install-command-box">
+					<div class="install-command-header">
+						<span class="install-label">Install in Claude Code</span>
+					</div>
+					<div class="install-command">
+						<code>{data.skills[activeSkill].installCommand}</code>
+						<button 
+							class="copy-btn"
+							onclick={() => copyCommand(data.skills[activeSkill].installCommand ?? '')}
+						>
+							{copiedCommand === data.skills[activeSkill].installCommand ? '✓ Copied' : 'Copy'}
+						</button>
+					</div>
 				</div>
 			{:else if data.skills[activeSkill].files?.length}
 				<!-- Native skill: show file viewer -->

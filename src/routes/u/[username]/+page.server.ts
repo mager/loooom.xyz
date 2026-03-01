@@ -88,10 +88,34 @@ export const load: PageServerLoad = async ({ params }) => {
 					contentHash: latestVersion?.contentHash ?? '',
 					files: (latestVersion?.files ?? []) as { name: string; content: string }[],
 					source: 'loooom' as const,
-					externalUrl: null as string | null
+					externalUrl: null as string | null,
+					emoji: null as string | null,
+					installCommand: null as string | null
 				};
 			})
 		);
+
+		// Merge static catalog plugins for this user that aren't already in the DB
+		const dbSkillNames = new Set(skillsWithFiles.map((s) => s.name));
+		const catalogPlugins = PLUGINS.filter(
+			(p) => p.author === dbUser.username && p.source === 'loooom' && !dbSkillNames.has(p.name)
+		).map((p) => ({
+			name: p.name,
+			title: p.title,
+			description: p.description,
+			category: p.category,
+			installs: 0,
+			version: p.version,
+			updatedAt: new Date().toISOString(),
+			contentHash: '',
+			files: [] as { name: string; content: string }[],
+			source: 'loooom' as const,
+			externalUrl: `/p/${p.author}/${p.name}`,
+			emoji: p.emoji,
+			installCommand: p.installCommand
+		}));
+
+		const allSkills = [...skillsWithFiles, ...catalogPlugins];
 
 		return {
 			user: {
@@ -100,12 +124,12 @@ export const load: PageServerLoad = async ({ params }) => {
 				bio: dbUser.bio,
 				avatarUrl: dbUser.avatarUrl,
 				verified: dbUser.verified,
-				topics: skillsWithFiles.length > 0
-					? topicsFromSkills(skillsWithFiles)
+				topics: allSkills.length > 0
+					? topicsFromSkills(allSkills)
 					: (dbUser.topics ?? []) as string[],
 				source: 'loooom' as const
 			},
-			skills: skillsWithFiles,
+			skills: allSkills,
 			externalMarketplace: null
 		};
 	}
