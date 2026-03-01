@@ -1,12 +1,11 @@
 <script lang="ts">
 	import YarnLogo from '$lib/components/YarnLogo.svelte';
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { MARKETPLACE_COMMAND } from '$lib/plugins';
 
 	let { data } = $props();
 
 	const featuredPlugins = $derived(
-		data.plugins.filter((p: { source: string }) => p.source === 'loooom')
+		data.plugins.filter((p: { source: string }) => p.source === 'loooom').slice(0, 3)
 	);
 
 	let copied = $state(false);
@@ -41,7 +40,6 @@
 				rel="noopener"
 				class="nav-link">GitHub</a
 			>
-			<ThemeToggle />
 			<a href="/login" class="btn-nav">Sign In</a>
 		</div>
 	</div>
@@ -179,16 +177,10 @@ Correct gently. Celebrate wins.`}</code></pre>
 		<div class="plugins-grid">
 			{#each featuredPlugins as plugin}
 				<a href="/p/{plugin.author}/{plugin.name}" class="plugin-card">
-					<div class="plugin-top">
-						<span class="plugin-emoji">{plugin.emoji}</span>
-						<span class="plugin-cat">{plugin.category}</span>
-					</div>
+					<span class="plugin-emoji">{plugin.emoji}</span>
 					<h3 class="plugin-title">{plugin.title}</h3>
 					<p class="plugin-desc">{plugin.description}</p>
-					<div class="plugin-footer">
-						<span class="plugin-author">@{plugin.author}</span>
-						<span class="plugin-tag">{plugin.skills.length} skills</span>
-					</div>
+					<span class="plugin-author">@{plugin.author}</span>
 				</a>
 			{/each}
 		</div>
@@ -268,10 +260,10 @@ Correct gently. Celebrate wins.`}</code></pre>
 		text-decoration: none;
 	}
 	.logo-text {
-		font-family: var(--font-display);
-		font-size: 1.1rem;
-		font-weight: 700;
-		letter-spacing: -0.03em;
+		font-family: var(--font-handwriting);
+		font-size: 1.35rem;
+		font-weight: 100;
+		letter-spacing: 0;
 		color: var(--text-primary);
 	}
 	.nav-right {
@@ -606,7 +598,7 @@ Correct gently. Celebrate wins.`}</code></pre>
 	}
 	.plugins-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+		grid-template-columns: repeat(3, 1fr);
 		border: 1px solid var(--border);
 		border-radius: 10px;
 		overflow: hidden;
@@ -616,65 +608,42 @@ Correct gently. Celebrate wins.`}</code></pre>
 		padding: 1.5rem;
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
+		gap: 0.4rem;
 		text-decoration: none;
 		color: inherit;
 		transition: background 0.15s;
 		border-right: 1px solid var(--border);
-		border-bottom: 1px solid var(--border);
+	}
+	.plugin-card:last-child {
+		border-right: none;
 	}
 	.plugin-card:hover {
 		background: var(--bg-card-hover);
 		color: inherit;
 	}
-	.plugin-top {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin-bottom: 0.25rem;
-	}
 	.plugin-emoji {
-		font-size: 1.5rem;
-	}
-	.plugin-cat {
-		font-family: var(--font-mono);
-		font-size: 0.6rem;
-		font-weight: 700;
-		text-transform: uppercase;
-		letter-spacing: 0.1em;
-		color: var(--text-muted);
+		font-size: 1.75rem;
+		margin-bottom: 0.25rem;
 	}
 	.plugin-title {
 		font-family: var(--font-display);
-		font-size: 1rem;
+		font-size: 0.95rem;
 		font-weight: 600;
 		color: var(--text-primary);
 		letter-spacing: -0.015em;
 	}
 	.plugin-desc {
-		font-size: 0.82rem;
+		font-size: 0.8rem;
 		color: var(--text-secondary);
 		line-height: 1.5;
 		flex: 1;
 		font-weight: 300;
 	}
-	.plugin-footer {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin-top: 0.5rem;
-		padding-top: 0.75rem;
-		border-top: 1px solid var(--border);
-	}
 	.plugin-author {
 		font-family: var(--font-mono);
-		font-size: 0.68rem;
+		font-size: 0.65rem;
 		color: var(--text-muted);
-	}
-	.plugin-tag {
-		font-family: var(--font-mono);
-		font-size: 0.62rem;
-		color: var(--text-muted);
+		margin-top: 0.25rem;
 	}
 
 	/* ===== Footer ===== */
@@ -697,10 +666,10 @@ Correct gently. Celebrate wins.`}</code></pre>
 		margin-bottom: 0.5rem;
 	}
 	.footer-logo-text {
-		font-family: var(--font-display);
-		font-size: 1rem;
-		font-weight: 700;
-		letter-spacing: -0.03em;
+		font-family: var(--font-handwriting);
+		font-size: 1.2rem;
+		font-weight: 100;
+		letter-spacing: 0;
 		color: var(--text-primary);
 	}
 	.footer-note {
@@ -759,6 +728,16 @@ Correct gently. Celebrate wins.`}</code></pre>
 		.explainer-grid {
 			grid-template-columns: 1fr;
 			gap: 2rem;
+		}
+		.plugins-grid {
+			grid-template-columns: 1fr;
+		}
+		.plugin-card {
+			border-right: none;
+			border-bottom: 1px solid var(--border);
+		}
+		.plugin-card:last-child {
+			border-bottom: none;
 		}
 		.plugins-header {
 			flex-direction: column;
