@@ -390,7 +390,7 @@
 		scroll-snap-type: x mandatory;
 		-webkit-overflow-scrolling: touch;
 		scrollbar-width: none;
-		padding: 0.5rem 1.25rem 1rem;
+		padding: 0.5rem max(1.25rem, calc((100% - 1100px) / 2 + 1.25rem)) 1rem;
 	}
 	.imagine-track::-webkit-scrollbar { display: none; }
 	.imagine-card {
