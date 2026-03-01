@@ -47,22 +47,20 @@
 			<span class="hand accent">AI does the rest.</span>
 		</h1>
 		<p class="hero-sub">
-			Share your expertise as a skill. Anyone with AI can learn from you — forever.
-			<strong>No coding required.</strong>
+			Turn your expertise into an AI skill. Anyone can learn from you — forever.
 		</p>
 		<div class="hero-ctas">
 			<a href="/startweaving" class="btn-primary">Share Your Expertise</a>
 			<a href="/browse" class="btn-ghost">Browse Skills →</a>
 		</div>
-		<p class="hero-note">Always free. Open source. Works with any AI.</p>
+		<p class="hero-note">Always free · Open source · Works with any AI</p>
 	</div>
 </section>
 
 <!-- Imagine If... -->
 <section class="imagine">
 	<div class="section-inner">
-		<h2 class="hand">Imagine if your favorite expert<br /><span class="sketch">had an AI version of themselves.</span></h2>
-		<p class="imagine-sub">That's what Loooom skills do. Real knowledge. Real people. Taught by AI.</p>
+		<h2 class="hand">What if your favorite expert<br /><span class="sketch">had an AI version?</span></h2>
 	</div>
 	<div class="imagine-track">
 		{#each imagineCards as card}
@@ -85,19 +83,19 @@
 			<div class="step">
 				<div class="step-num">1</div>
 				<h3>Write what you know</h3>
-				<p>In plain English. Like writing a note to a friend. No code, no git, no jargon.</p>
+				<p>Plain English. No code, no jargon.</p>
 			</div>
 			<div class="step-arrow">→</div>
 			<div class="step">
 				<div class="step-num">2</div>
 				<h3>Publish your skill</h3>
-				<p>It goes live on Loooom. Anyone can find it, save it, and share it.</p>
+				<p>Live on Loooom. Anyone can find and use it.</p>
 			</div>
 			<div class="step-arrow">→</div>
 			<div class="step">
 				<div class="step-num">3</div>
 				<h3>Your knowledge, forever</h3>
-				<p>People's AI agents learn from your skill. You teach thousands — without lifting a finger.</p>
+				<p>AI agents learn from you. Teach thousands — effortlessly.</p>
 			</div>
 		</div>
 		<div class="how-cta">
@@ -310,11 +308,10 @@
 
 	/* ===== Hero ===== */
 	.hero {
-		min-height: 100svh;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: 5rem 1.25rem 3rem;
+		padding: 6rem 1.25rem 3.5rem;
 		text-align: center;
 		position: relative;
 	}
@@ -326,56 +323,55 @@
 		pointer-events: none;
 	}
 	.hero-inner {
-		max-width: 680px;
+		max-width: 600px;
 		width: 100%;
 		position: relative;
 	}
 	.hero-eyebrow {
-		font-size: 0.75rem;
+		font-size: 0.7rem;
 		font-weight: 700;
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
 		color: var(--accent-rose);
-		margin-bottom: 1.5rem;
+		margin-bottom: 1rem;
 	}
 	h1 {
-		font-size: clamp(2.8rem, 9vw, 5.5rem);
-		margin-bottom: 1.5rem;
+		font-size: clamp(2.4rem, 8vw, 4.5rem);
+		margin-bottom: 1rem;
 	}
 	.hero-sub {
-		font-size: clamp(1rem, 3vw, 1.2rem);
+		font-size: clamp(0.95rem, 2.5vw, 1.1rem);
 		color: var(--text-secondary);
 		line-height: 1.5;
-		max-width: 480px;
-		margin: 0 auto 2rem;
+		max-width: 420px;
+		margin: 0 auto 1.5rem;
 	}
-	.hero-sub strong { color: var(--text-primary); }
 	.hero-ctas {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		flex-wrap: wrap;
 		gap: 0.25rem;
-		margin-bottom: 1.5rem;
+		margin-bottom: 1rem;
 	}
 	.hero-note {
-		font-size: 0.8rem;
+		font-size: 0.75rem;
 		color: var(--text-muted);
 		font-family: var(--font-sketch);
 	}
 
 	/* ===== Imagine Section ===== */
 	.imagine {
-		padding: 5rem 0;
+		padding: 3rem 0;
 		overflow: hidden;
 	}
 	.imagine .section-inner {
-		margin-bottom: 2rem;
+		margin-bottom: 1.25rem;
 		text-align: center;
 	}
 	.imagine h2 {
-		font-size: clamp(1.8rem, 5vw, 3rem);
-		margin-bottom: 0.75rem;
+		font-size: clamp(1.5rem, 4.5vw, 2.5rem);
+		margin-bottom: 0;
 	}
 	.imagine-sub {
 		color: var(--text-secondary);
@@ -427,56 +423,56 @@
 
 	/* ===== How It Works ===== */
 	.how {
-		padding: 5rem 0;
+		padding: 3rem 0;
 		background: var(--bg-secondary);
 	}
 	.how h2 {
-		font-size: clamp(1.8rem, 5vw, 3rem);
-		margin-bottom: 3rem;
+		font-size: clamp(1.5rem, 4.5vw, 2.5rem);
+		margin-bottom: 2rem;
 		text-align: center;
 	}
 	.steps {
 		display: flex;
 		align-items: flex-start;
 		gap: 1rem;
-		margin-bottom: 3rem;
+		margin-bottom: 2rem;
 	}
 	.step {
 		flex: 1;
 		background: var(--bg-card);
 		border: 1px solid var(--border);
-		border-radius: var(--radius-lg);
-		padding: 1.75rem 1.5rem;
+		border-radius: var(--radius-md);
+		padding: 1.25rem;
 		box-shadow: var(--card-shadow);
 	}
 	.step-num {
-		width: 36px;
-		height: 36px;
+		width: 30px;
+		height: 30px;
 		border-radius: 50%;
 		background: var(--accent-rose);
 		color: #fff;
 		font-weight: 800;
-		font-size: 0.9rem;
+		font-size: 0.85rem;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		margin-bottom: 1rem;
+		margin-bottom: 0.75rem;
 	}
 	.step h3 {
-		font-size: 1.05rem;
+		font-size: 0.95rem;
 		font-weight: 700;
-		margin-bottom: 0.5rem;
+		margin-bottom: 0.35rem;
 		color: var(--text-primary);
 	}
 	.step p {
-		font-size: 0.9rem;
+		font-size: 0.82rem;
 		color: var(--text-secondary);
-		line-height: 1.5;
+		line-height: 1.45;
 	}
 	.step-arrow {
-		font-size: 1.5rem;
+		font-size: 1.25rem;
 		color: var(--text-muted);
-		padding-top: 1.75rem;
+		padding-top: 1.25rem;
 		flex-shrink: 0;
 	}
 	.how-cta {
@@ -485,17 +481,17 @@
 
 	/* ===== Plugin Showcase ===== */
 	.plugins {
-		padding: 5rem 0;
+		padding: 3rem 0;
 	}
 	.plugins-header {
 		display: flex;
 		align-items: flex-end;
 		justify-content: space-between;
 		gap: 1rem;
-		margin-bottom: 2rem;
+		margin-bottom: 1.5rem;
 	}
 	.plugins-header h2 {
-		font-size: clamp(1.8rem, 5vw, 3rem);
+		font-size: clamp(1.5rem, 4.5vw, 2.5rem);
 		margin-bottom: 0.25rem;
 	}
 	.plugins-sub {
@@ -571,17 +567,17 @@
 
 	/* ===== Dev Section ===== */
 	.dev-section {
-		padding: 3rem 0;
+		padding: 2.5rem 0;
 		border-top: 1px solid var(--border);
 	}
 	.dev-card {
 		background: var(--bg-card);
 		border: 1px solid var(--border);
 		border-radius: var(--radius-lg);
-		padding: 2rem;
+		padding: 1.5rem;
 		display: flex;
 		align-items: center;
-		gap: 2rem;
+		gap: 1.5rem;
 		flex-wrap: wrap;
 		box-shadow: var(--card-shadow);
 	}
@@ -619,11 +615,11 @@
 	/* ===== Footer ===== */
 	footer {
 		border-top: 1px solid var(--border);
-		padding: 4rem 1.25rem 2rem;
+		padding: 2.5rem 1.25rem 1.5rem;
 	}
 	.footer-inner {
 		max-width: 1100px;
-		margin: 0 auto 2.5rem;
+		margin: 0 auto 2rem;
 		display: flex;
 		justify-content: space-between;
 		gap: 2rem;
@@ -688,7 +684,7 @@
 		}
 		.step-arrow {
 			transform: rotate(90deg);
-			padding: 0.25rem 0;
+			padding: 0.2rem 0;
 			text-align: center;
 			width: 100%;
 		}
@@ -698,20 +694,26 @@
 		}
 		.dev-card {
 			flex-direction: column;
-			gap: 1.25rem;
+			gap: 1rem;
 		}
 		.dev-snippet { width: 100%; overflow-x: auto; }
 		.footer-inner { flex-direction: column; }
 		.footer-links { gap: 2rem; }
-		.imagine-card { flex: 0 0 240px; }
+		.imagine-card { flex: 0 0 220px; }
 	}
 
 	@media (max-width: 480px) {
 		.nav-link { display: none; }
-		h1 { font-size: 2.6rem; }
-		.hero { padding: 4.5rem 1.25rem 2.5rem; }
-		.imagine-card { flex: 0 0 85vw; }
-		.hero-ctas { flex-direction: column; align-items: center; }
-		.btn-ghost { padding: 0.5rem; }
+		h1 { font-size: 2.2rem; }
+		.hero { padding: 4rem 1.25rem 2rem; }
+		.hero-sub { font-size: 0.95rem; margin-bottom: 1.25rem; }
+		.imagine { padding: 2rem 0; }
+		.how { padding: 2rem 0; }
+		.plugins { padding: 2rem 0; }
+		.dev-section { padding: 2rem 0; }
+		.imagine-card { flex: 0 0 80vw; }
+		.hero-ctas { flex-direction: column; align-items: stretch; }
+		.btn-ghost { padding: 0.5rem; text-align: center; }
+		.btn-primary { justify-content: center; }
 	}
 </style>
