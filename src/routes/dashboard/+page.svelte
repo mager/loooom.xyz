@@ -1,8 +1,40 @@
 <script lang="ts">
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import YarnLogo from '$lib/components/YarnLogo.svelte';
+	import { signInWithGitHub } from '$lib/firebase';
 
 	let { data } = $props();
+
+	let ghLinking = $state(false);
+	let ghLinkError = $state('');
+	let ghLinked = $state(!!data.profile.firebaseUid);
+
+	async function handleLinkGitHub() {
+		ghLinkError = '';
+		ghLinking = true;
+		try {
+			const user = await signInWithGitHub();
+			const idToken = await user.getIdToken();
+			const res = await fetch('/api/link-github', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ idToken })
+			});
+			const d = await res.json();
+			if (!res.ok) {
+				ghLinkError = d.error || 'Failed to link GitHub';
+			} else {
+				ghLinked = true;
+			}
+		} catch (e: unknown) {
+			const msg = e instanceof Error ? e.message : '';
+			if (!msg.includes('popup-closed')) {
+				ghLinkError = 'GitHub sign-in failed. Try again.';
+			}
+		} finally {
+			ghLinking = false;
+		}
+	}
 
 	function relativeTime(iso: string): string {
 		const diff = Date.now() - new Date(iso).getTime();
@@ -76,6 +108,30 @@
 		<a href="/create" class="btn-primary">Write a new skill <span class="btn-arrow">→</span></a>
 		<a href="/u/{data.profile.username}" class="btn-secondary">View my profile</a>
 	</section>
+
+	{#if !ghLinked}
+	<section class="connect-github">
+		<div class="connect-github-inner">
+			<div class="connect-github-text">
+				<span class="connect-github-label">Sign in faster</span>
+				<p>Link your GitHub account to log in with one click next time.</p>
+			</div>
+			<div class="connect-github-action">
+				{#if ghLinkError}
+					<span class="connect-github-error">{ghLinkError}</span>
+				{/if}
+				{#if ghLinked}
+					<span class="connect-github-done">✓ GitHub linked</span>
+				{:else}
+					<button class="btn-link-github" onclick={handleLinkGitHub} disabled={ghLinking}>
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+						{ghLinking ? 'Connecting...' : 'Connect GitHub'}
+					</button>
+				{/if}
+			</div>
+		</div>
+	</section>
+	{/if}
 
 	<section class="skills-section">
 		<h2 class="section-label">My Skills</h2>
@@ -187,6 +243,37 @@
 		font-size: 0.95rem; font-weight: 500; text-decoration: none; transition: all 0.25s;
 	}
 	.btn-secondary:hover { border-color: var(--text-secondary); color: var(--text-primary); }
+
+	.connect-github {
+		margin-bottom: 2rem;
+	}
+	.connect-github-inner {
+		display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+		padding: 1rem 1.5rem;
+		background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md);
+		flex-wrap: wrap;
+	}
+	.connect-github-text { display: flex; flex-direction: column; gap: 0.2rem; }
+	.connect-github-label {
+		font-family: var(--font-mono); font-size: 0.65rem; text-transform: uppercase;
+		letter-spacing: 0.15em; color: var(--text-muted);
+	}
+	.connect-github-text p { font-size: 0.875rem; color: var(--text-secondary); }
+	.connect-github-action { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
+	.connect-github-error { font-size: 0.8rem; color: var(--yarn-pink); }
+	.connect-github-done { font-size: 0.875rem; color: var(--yarn-green); font-weight: 600; }
+	.btn-link-github {
+		display: inline-flex; align-items: center; gap: 0.5rem;
+		padding: 0.6rem 1.25rem;
+		background: var(--accent); color: var(--bg-primary);
+		border: none; border-radius: var(--radius-md);
+		font-family: var(--font-display); font-size: 0.85rem; font-weight: 600;
+		cursor: pointer; transition: all 0.2s;
+		white-space: nowrap;
+	}
+	.btn-link-github:hover:not(:disabled) { background: var(--accent-dim); transform: translateY(-1px); }
+	.btn-link-github:disabled { opacity: 0.6; cursor: not-allowed; }
+	:global(html[data-theme="dark"]) .btn-link-github { color: var(--bg-primary); }
 
 	.skills-section { margin-bottom: 3rem; }
 	.section-label {
