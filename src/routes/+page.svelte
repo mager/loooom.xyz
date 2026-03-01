@@ -128,6 +128,44 @@ Correct gently. Celebrate wins.`}</code></pre>
 	</div>
 </section>
 
+<!-- Creator Trust -->
+<section class="trust">
+	<div class="section-inner">
+		<div class="trust-inner">
+			<div class="trust-text">
+				<p class="section-eyebrow">For creators</p>
+				<h2>This isn't training.<br />It's teaching.</h2>
+				<p>
+					You write the skill. Claude follows it. Your knowledge <strong>never</strong> trains
+					Anthropic's models — it lives in a file on your GitHub, published under your name,
+					deletable by you at any time.
+				</p>
+				<p>
+					Think of it like publishing a book. Except every reader gets a personal tutor who teaches
+					your method, your voice, your way.
+				</p>
+			</div>
+			<div class="trust-stats">
+				<div class="trust-stat">
+					<span class="stat-icon">✍️</span>
+					<strong>You write it</strong>
+					<span>Plain English. Your method. Your voice.</span>
+				</div>
+				<div class="trust-stat">
+					<span class="stat-icon">🔒</span>
+					<strong>You own it</strong>
+					<span>Hosted on your GitHub. Edit or delete anytime.</span>
+				</div>
+				<div class="trust-stat">
+					<span class="stat-icon">🏷️</span>
+					<strong>Your name on it</strong>
+					<span>Every install credits you as the author.</span>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
 <!-- How to install -->
 <section class="how">
 	<div class="section-inner">
@@ -511,6 +549,68 @@ Correct gently. Celebrate wins.`}</code></pre>
 		white-space: pre;
 	}
 
+	/* ===== Creator Trust ===== */
+	.trust {
+		padding: 4.5rem 0;
+		border-top: 1px solid var(--border);
+	}
+	.trust-inner {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 4rem;
+		align-items: center;
+	}
+	.trust-text h2 {
+		font-size: 1.9rem;
+		color: var(--text-primary);
+		margin-bottom: 1rem;
+		line-height: 1.15;
+	}
+	.trust-text p {
+		font-size: 0.95rem;
+		color: var(--text-secondary);
+		line-height: 1.65;
+		font-weight: 300;
+		margin-bottom: 0.75rem;
+	}
+	.trust-text strong {
+		color: var(--yarn-violet);
+		font-weight: 600;
+	}
+	.trust-stats {
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+	}
+	.trust-stat {
+		display: grid;
+		grid-template-columns: 2rem 1fr;
+		grid-template-rows: auto auto;
+		column-gap: 0.75rem;
+		padding: 1.1rem 0;
+		border-top: 1px solid var(--border);
+	}
+	.trust-stat:last-child {
+		border-bottom: 1px solid var(--border);
+	}
+	.stat-icon {
+		grid-row: 1 / 3;
+		font-size: 1.1rem;
+		padding-top: 0.1rem;
+	}
+	.trust-stat strong {
+		font-size: 0.9rem;
+		font-weight: 600;
+		color: var(--text-primary);
+		display: block;
+	}
+	.trust-stat span {
+		font-size: 0.8rem;
+		color: var(--text-muted);
+		font-weight: 300;
+		line-height: 1.4;
+	}
+
 	/* ===== How It Works ===== */
 	.how {
 		padding: 4.5rem 0;
@@ -725,7 +825,8 @@ Correct gently. Celebrate wins.`}</code></pre>
 
 	/* ===== Responsive ===== */
 	@media (max-width: 720px) {
-		.explainer-grid {
+		.explainer-grid,
+		.trust-inner {
 			grid-template-columns: 1fr;
 			gap: 2rem;
 		}
