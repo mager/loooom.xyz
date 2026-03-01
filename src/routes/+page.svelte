@@ -467,9 +467,8 @@
 		text-align: center;
 	}
 	.step-content h3 {
-		font-family: var(--font-display);
-		font-size: 1.1rem;
-		font-weight: 700;
+		font-size: 1.4rem;
+		font-weight: 200;
 		margin-bottom: 0.2rem;
 		color: var(--text-primary);
 	}
@@ -539,8 +538,8 @@
 		color: var(--text-muted);
 	}
 	.plugin-title {
-		font-size: 1.1rem;
-		font-weight: 700;
+		font-size: 1.25rem;
+		font-weight: 200;
 		color: var(--text-primary);
 		margin-top: 0.25rem;
 	}
@@ -595,7 +594,8 @@
 		margin-bottom: 0.5rem;
 	}
 	.dev-left h3 {
-		font-size: clamp(1.2rem, 3vw, 1.6rem);
+		font-size: clamp(1.4rem, 3vw, 1.9rem);
+		font-weight: 200;
 		margin-bottom: 0.5rem;
 	}
 	.dev-desc {
@@ -655,10 +655,9 @@
 		gap: 0.6rem;
 	}
 	.footer-col h4 {
-		font-size: 0.7rem;
-		text-transform: uppercase;
-		letter-spacing: 0.1em;
-		color: var(--text-muted);
+		font-size: 1rem;
+		font-weight: 200;
+		color: var(--text-secondary);
 		margin-bottom: 0.25rem;
 	}
 	.footer-col a {
