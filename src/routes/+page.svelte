@@ -57,6 +57,12 @@
 	</div>
 </section>
 
+<!-- Quick install -->
+<div class="install-strip">
+	<span class="install-label">Claude Code</span>
+	<code class="install-cmd">{MARKETPLACE_COMMAND}</code>
+</div>
+
 <!-- Imagine If... -->
 <section class="imagine">
 	<div class="section-inner">
@@ -133,22 +139,6 @@
 					</div>
 				</a>
 			{/each}
-		</div>
-	</div>
-</section>
-
-<!-- For the technically curious -->
-<section class="dev-section">
-	<div class="section-inner">
-		<div class="dev-card">
-			<div class="dev-left">
-				<p class="dev-eyebrow">For Claude Code users</p>
-				<h3 class="hand">Add the whole marketplace<br />in one command.</h3>
-				<p class="dev-desc">Works with Claude Code, Cursor, and any MCP-compatible agent.</p>
-			</div>
-			<div class="dev-snippet">
-				<code>{MARKETPLACE_COMMAND}</code>
-			</div>
 		</div>
 	</div>
 </section>
@@ -568,52 +558,35 @@
 		color: var(--text-muted);
 	}
 
-	/* ===== Dev Section ===== */
-	.dev-section {
-		padding: 2.5rem 0;
-		border-top: 1px solid var(--border);
-	}
-	.dev-card {
-		background: var(--bg-card);
-		border: 1px solid var(--border);
-		border-radius: var(--radius-lg);
-		padding: 1.5rem;
+	/* ===== Quick Install Strip ===== */
+	.install-strip {
 		display: flex;
 		align-items: center;
-		gap: 1.5rem;
-		flex-wrap: wrap;
-		box-shadow: var(--card-shadow);
+		gap: 0.75rem;
+		max-width: 600px;
+		margin: 0 auto 3rem;
+		padding: 0 1.25rem;
 	}
-	.dev-left { flex: 1; min-width: 220px; }
-	.dev-eyebrow {
+	.install-label {
+		font-family: var(--font-display);
 		font-size: 0.7rem;
 		font-weight: 700;
 		text-transform: uppercase;
-		letter-spacing: 0.12em;
+		letter-spacing: 0.1em;
+		color: var(--text-muted);
+		white-space: nowrap;
+	}
+	.install-cmd {
+		font-family: var(--font-mono);
+		font-size: 0.82rem;
 		color: var(--accent-rose);
-		margin-bottom: 0.5rem;
-	}
-	.dev-left h3 {
-		font-size: clamp(1.4rem, 3vw, 1.9rem);
-		font-weight: 200;
-		margin-bottom: 0.5rem;
-	}
-	.dev-desc {
-		font-size: 0.9rem;
-		color: var(--text-secondary);
-	}
-	.dev-snippet {
 		background: var(--bg-secondary);
 		border: 1px solid var(--border);
-		border-radius: var(--radius-md);
-		padding: 0.85rem 1.25rem;
-		flex-shrink: 0;
-	}
-	.dev-snippet code {
-		font-family: var(--font-mono);
-		font-size: 0.85rem;
-		color: var(--accent-rose);
+		border-radius: var(--radius-sm);
+		padding: 0.5rem 0.9rem;
 		white-space: nowrap;
+		overflow-x: auto;
+		flex: 1;
 	}
 
 	/* ===== Footer ===== */
@@ -687,17 +660,14 @@
 			flex-direction: column;
 			align-items: flex-start;
 		}
-		.dev-card {
-			flex-direction: column;
-			gap: 1rem;
-		}
-		.dev-snippet { width: 100%; overflow-x: auto; }
 		.footer-inner { flex-direction: column; }
 		.footer-links { gap: 2rem; }
 		.imagine-card { flex: 0 0 220px; }
 	}
 
 	@media (max-width: 480px) {
+		.install-strip { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
+		.install-cmd { font-size: 0.75rem; width: 100%; }
 		.nav-link { display: none; }
 		h1 { font-size: 2.2rem; }
 		.hero { padding: 4rem 1.25rem 2rem; }
