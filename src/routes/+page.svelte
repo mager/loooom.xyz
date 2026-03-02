@@ -8,6 +8,10 @@
 		data.plugins.filter((p: { source: string }) => p.source === 'loooom').slice(0, 3)
 	);
 
+	const loooomCount = $derived(
+		data.plugins.filter((p: { source: string }) => p.source === 'loooom').length
+	);
+
 	let copied = $state(false);
 
 	function copyCommand() {
@@ -51,8 +55,8 @@
 		<p class="eyebrow">Claude Code Skills Marketplace</p>
 		<h1>Teach Claude<br />new tricks.</h1>
 		<p class="hero-sub">
-			A GitHub-native marketplace for Claude Code. Browse {data.plugins.length}+ community-built
-			skills and install anything in one command.
+			A GitHub-native marketplace for Claude Code. Browse {loooomCount}+ original skills — plus
+			curated picks from across the ecosystem.
 		</p>
 
 		<div class="terminal">
