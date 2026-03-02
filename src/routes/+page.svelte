@@ -260,6 +260,10 @@ Correct gently. Celebrate wins.`}</code></pre>
 				<a href="https://github.com/mager/loooom.xyz" target="_blank" rel="noopener">GitHub</a>
 				<a href="https://github.com/mager/loooom" target="_blank" rel="noopener">Catalog</a>
 			</div>
+			<div class="footer-col">
+				<h4>Community</h4>
+				<a href="https://twitter.com/loooomxyz" target="_blank" rel="noopener">@loooomxyz</a>
+			</div>
 		</div>
 	</div>
 	<div class="footer-bottom">
