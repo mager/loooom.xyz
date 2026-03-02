@@ -80,6 +80,20 @@
 		if (score >= 50) return 'score-yellow';
 		return 'score-red';
 	}
+
+	// --- Copy to clipboard ---
+	let copiedKey = $state<string | null>(null);
+
+	async function copyInstall(text: string, key: string, e: MouseEvent) {
+		e.stopPropagation();
+		try {
+			await navigator.clipboard.writeText(text);
+			copiedKey = key;
+			setTimeout(() => { copiedKey = null; }, 1800);
+		} catch {
+			// fallback: select the text
+		}
+	}
 </script>
 
 <svelte:head>
@@ -235,11 +249,27 @@
 									<td class="col-install" onclick={(e) => e.stopPropagation()}>
 										{#if plugin.source === 'skills.sh'}
 											<div class="dual-install">
-												<code class="install-code">{plugin.installCommand}</code>
+												<button
+													class="install-code copy-btn"
+													class:copied={copiedKey === `${plugin.author}/${plugin.name}`}
+													onclick={(e) => copyInstall(plugin.installCommand, `${plugin.author}/${plugin.name}`, e)}
+													title="Click to copy"
+												>
+													<span class="install-text">{plugin.installCommand}</span>
+													<span class="copy-icon">{copiedKey === `${plugin.author}/${plugin.name}` ? '✓' : '⎘'}</span>
+												</button>
 												<a href={plugin.homepage} target="_blank" rel="noopener" class="source-link">View on skills.sh ↗</a>
 											</div>
 										{:else}
-											<code class="install-code">{plugin.installCommand}</code>
+											<button
+												class="install-code copy-btn"
+												class:copied={copiedKey === `${plugin.author}/${plugin.name}`}
+												onclick={(e) => copyInstall(plugin.installCommand, `${plugin.author}/${plugin.name}`, e)}
+												title="Click to copy"
+											>
+												<span class="install-text">{plugin.installCommand}</span>
+												<span class="copy-icon">{copiedKey === `${plugin.author}/${plugin.name}` ? '✓' : '⎘'}</span>
+											</button>
 										{/if}
 									</td>
 								</tr>
@@ -579,7 +609,7 @@
 	}
 	.source-link:hover { opacity: 1; }
 
-	/* ---- Install Code ---- */
+	/* ---- Install Code / Copy Button ---- */
 	.install-code {
 		font-family: var(--font-mono);
 		font-size: 0.7rem;
@@ -593,6 +623,46 @@
 		max-width: 100%;
 		overflow: hidden;
 		text-overflow: ellipsis;
+	}
+
+	.copy-btn {
+		cursor: pointer;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		max-width: 100%;
+		transition: border-color 0.15s, background 0.15s, color 0.15s;
+		overflow: hidden;
+	}
+	.copy-btn:hover {
+		border-color: var(--accent);
+		color: var(--accent);
+		background: color-mix(in srgb, var(--accent) 6%, var(--bg-secondary));
+	}
+	.copy-btn.copied {
+		border-color: #16a34a;
+		color: #16a34a;
+		background: rgba(34, 197, 94, 0.08);
+	}
+	:global(html[data-theme="dark"]) .copy-btn.copied {
+		color: #4ade80;
+		border-color: #4ade80;
+		background: rgba(34, 197, 94, 0.12);
+	}
+	.install-text {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		flex: 1;
+	}
+	.copy-icon {
+		font-size: 0.75rem;
+		flex-shrink: 0;
+		opacity: 0.6;
+	}
+	.copy-btn:hover .copy-icon,
+	.copy-btn.copied .copy-icon {
+		opacity: 1;
 	}
 
 	/* ---- Author Cell (Skills) ---- */
