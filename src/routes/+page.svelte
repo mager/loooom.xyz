@@ -222,6 +222,19 @@ Correct gently. Celebrate wins.`}</code></pre>
 				</a>
 			{/each}
 		</div>
+		<div class="community-callout">
+			<span class="community-icon">🌐</span>
+			<p>
+				We also curate the best skills from across the ecosystem — not just Loooom originals.
+				Got one worth featuring?
+				<a
+					href="https://twitter.com/loooomxyz"
+					target="_blank"
+					rel="noopener"
+					class="callout-link">Tweet at @loooomxyz</a
+				> to submit.
+			</p>
+		</div>
 	</div>
 </section>
 
@@ -744,6 +757,39 @@ Correct gently. Celebrate wins.`}</code></pre>
 		font-size: 0.65rem;
 		color: var(--text-muted);
 		margin-top: 0.25rem;
+	}
+
+	/* ===== Community Callout ===== */
+	.community-callout {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.75rem;
+		margin-top: 1.5rem;
+		padding: 1rem 1.25rem;
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: 8px;
+	}
+	.community-icon {
+		font-size: 1.1rem;
+		flex-shrink: 0;
+		padding-top: 0.05rem;
+	}
+	.community-callout p {
+		font-size: 0.85rem;
+		color: var(--text-secondary);
+		line-height: 1.6;
+		font-weight: 300;
+		margin: 0;
+	}
+	.callout-link {
+		color: var(--yarn-violet) !important;
+		text-decoration: none;
+		font-weight: 500;
+		transition: opacity 0.2s;
+	}
+	.callout-link:hover {
+		opacity: 0.75;
 	}
 
 	/* ===== Footer ===== */
