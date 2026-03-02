@@ -172,7 +172,54 @@
 			</div>
 		{/if}
 
-		<div class="footer-actions">
+		{#if data.promptfooConfig && data.promptfooConfig.tests.length > 0}
+		<div class="tests-section">
+			<div class="tests-header">
+				<h2 class="section-title handwriting">Test Suite</h2>
+				<div class="tests-meta">
+					{#if data.evalScore}
+						<span class="tests-score score-{data.evalScore.status}">
+							{data.evalScore.passed}/{data.evalScore.total} passing
+						</span>
+					{/if}
+					<span class="tests-count">{data.promptfooConfig.tests.length} tests</span>
+				</div>
+			</div>
+
+			<div class="tests-list">
+				{#each data.promptfooConfig.tests as test, i}
+					<div class="test-item">
+						<div class="test-index">{i + 1}</div>
+						<div class="test-body">
+							<div class="test-description">{test.description}</div>
+							{#if test.message}
+								<div class="test-input">"{test.message}"</div>
+							{/if}
+							<div class="test-assertions">
+								{#each test.assertions as assertion}
+									<span
+										class="assertion-pill type-{assertion.type
+											.replace('llm-rubric', 'rubric')
+											.replace('contains-any', 'contains')
+											.replace('not-contains', 'not')}"
+									>
+										{assertion.type}
+									</span>
+								{/each}
+							</div>
+						</div>
+					</div>
+				{/each}
+			</div>
+
+			<details class="yaml-details">
+				<summary class="yaml-summary">View promptfooconfig.yaml</summary>
+				<pre class="yaml-block"><code>{data.promptfooConfig.rawYaml}</code></pre>
+			</details>
+		</div>
+	{/if}
+
+	<div class="footer-actions">
 			<a
 				href="{data.githubBase}/{data.plugin.repoPath}"
 				target="_blank"
@@ -605,6 +652,202 @@
 	.btn-browse:hover {
 		color: var(--text-primary);
 		border-color: var(--text-secondary);
+	}
+
+	/* ---- Test Suite ---- */
+	.tests-section {
+		margin-bottom: 2.5rem;
+	}
+	.tests-header {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		margin-bottom: 1.25rem;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+	}
+	.tests-header .section-title {
+		margin-bottom: 0;
+	}
+	.tests-meta {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+	.tests-score {
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+		font-weight: 600;
+		padding: 0.2rem 0.65rem;
+		border-radius: 100px;
+		border: 1px solid;
+	}
+	.tests-score.score-passing {
+		background: rgba(34, 197, 94, 0.12);
+		color: #16a34a;
+		border-color: rgba(34, 197, 94, 0.3);
+	}
+	.tests-score.score-failing {
+		background: rgba(234, 179, 8, 0.12);
+		color: #ca8a04;
+		border-color: rgba(234, 179, 8, 0.3);
+	}
+	:global(html[data-theme='dark']) .tests-score.score-passing {
+		color: #4ade80;
+		background: rgba(34, 197, 94, 0.15);
+		border-color: rgba(34, 197, 94, 0.25);
+	}
+	:global(html[data-theme='dark']) .tests-score.score-failing {
+		color: #facc15;
+		background: rgba(234, 179, 8, 0.15);
+		border-color: rgba(234, 179, 8, 0.25);
+	}
+	.tests-count {
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		color: var(--text-muted);
+	}
+	.tests-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		margin-bottom: 1rem;
+	}
+	.test-item {
+		display: flex;
+		gap: 0.875rem;
+		padding: 0.875rem 1rem;
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		box-shadow: var(--card-shadow);
+	}
+	.test-index {
+		font-family: var(--font-mono);
+		font-size: 0.65rem;
+		color: var(--text-muted);
+		min-width: 1.5rem;
+		padding-top: 0.15rem;
+		text-align: right;
+		flex-shrink: 0;
+	}
+	.test-body {
+		flex: 1;
+		min-width: 0;
+	}
+	.test-description {
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: var(--text-primary);
+		margin-bottom: 0.3rem;
+		line-height: 1.35;
+	}
+	.test-input {
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		color: var(--text-secondary);
+		margin-bottom: 0.4rem;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.test-assertions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.3rem;
+	}
+	.assertion-pill {
+		font-family: var(--font-mono);
+		font-size: 0.6rem;
+		font-weight: 600;
+		padding: 0.1rem 0.45rem;
+		border-radius: 100px;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		border: 1px solid;
+	}
+	.type-rubric {
+		background: rgba(139, 92, 246, 0.1);
+		color: #7c3aed;
+		border-color: rgba(139, 92, 246, 0.25);
+	}
+	:global(html[data-theme='dark']) .type-rubric {
+		color: #a78bfa;
+		background: rgba(139, 92, 246, 0.15);
+		border-color: rgba(139, 92, 246, 0.25);
+	}
+	.type-contains {
+		background: rgba(16, 185, 129, 0.1);
+		color: #059669;
+		border-color: rgba(16, 185, 129, 0.25);
+	}
+	:global(html[data-theme='dark']) .type-contains {
+		color: #34d399;
+		background: rgba(16, 185, 129, 0.15);
+		border-color: rgba(16, 185, 129, 0.25);
+	}
+	.type-not {
+		background: rgba(239, 68, 68, 0.1);
+		color: #dc2626;
+		border-color: rgba(239, 68, 68, 0.25);
+	}
+	:global(html[data-theme='dark']) .type-not {
+		color: #f87171;
+		background: rgba(239, 68, 68, 0.15);
+		border-color: rgba(239, 68, 68, 0.25);
+	}
+	.type-unknown {
+		background: var(--bg-secondary);
+		color: var(--text-muted);
+		border-color: var(--border);
+	}
+
+	/* ---- YAML Details ---- */
+	.yaml-details {
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		overflow: hidden;
+	}
+	.yaml-summary {
+		padding: 0.75rem 1rem;
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+		color: var(--text-muted);
+		cursor: pointer;
+		background: var(--bg-secondary);
+		user-select: none;
+		list-style: none;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		transition: color 0.15s;
+	}
+	.yaml-summary:hover {
+		color: var(--text-primary);
+	}
+	.yaml-summary::before {
+		content: '▶';
+		font-size: 0.55rem;
+		transition: transform 0.2s;
+		flex-shrink: 0;
+	}
+	.yaml-details[open] .yaml-summary::before {
+		transform: rotate(90deg);
+	}
+	.yaml-block {
+		margin: 0;
+		padding: 1rem;
+		overflow-x: auto;
+		font-size: 0.72rem;
+		line-height: 1.5;
+		background: var(--bg-primary);
+		color: var(--text-secondary);
+	}
+	.yaml-block code {
+		font-family: var(--font-mono);
+		color: inherit;
+		background: none;
+		padding: 0;
 	}
 
 	@media (max-width: 600px) {

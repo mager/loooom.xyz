@@ -427,7 +427,7 @@
 	.table-wrap {
 		border: 1px solid var(--border);
 		border-radius: var(--radius-md);
-		overflow: hidden;
+		overflow-x: auto;
 		background: var(--bg-card);
 	}
 
@@ -508,7 +508,7 @@
 	.col-category { width: 12%; }
 	.col-skills, .col-installs { width: 8%; text-align: center; }
 	.col-score { width: 10%; text-align: center; }
-	.col-install { width: 23%; }
+	.col-install { width: 23%; min-width: 210px; }
 
 	/* ---- Cell Content ---- */
 	.plugin-name-cell { display: flex; align-items: flex-start; gap: 0.75rem; }
