@@ -13,11 +13,31 @@
 	);
 
 	let copied = $state(false);
+	let waitlistEmail = $state('');
+	let waitlistState = $state<'idle' | 'loading' | 'done' | 'already' | 'error'>('idle');
 
 	function copyCommand() {
 		navigator.clipboard.writeText(MARKETPLACE_COMMAND);
 		copied = true;
 		setTimeout(() => (copied = false), 2000);
+	}
+
+	async function joinWaitlist(e: Event) {
+		e.preventDefault();
+		if (!waitlistEmail) return;
+		waitlistState = 'loading';
+		try {
+			const res = await fetch('/api/waitlist', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ email: waitlistEmail })
+			});
+			const data = await res.json();
+			if (!res.ok) { waitlistState = 'error'; return; }
+			waitlistState = data.already ? 'already' : 'done';
+		} catch {
+			waitlistState = 'error';
+		}
 	}
 </script>
 
@@ -83,6 +103,32 @@
 				rel="noopener"
 				class="link-ghost">Contribute on GitHub</a
 			>
+		</div>
+
+		<div class="waitlist-block">
+			<p class="waitlist-eyebrow">Want to publish skills?</p>
+			{#if waitlistState === 'done'}
+				<p class="waitlist-success">✓ You're on the list. We'll reach out when creator tools open up.</p>
+			{:else if waitlistState === 'already'}
+				<p class="waitlist-success">✓ Already on the list — we've got you.</p>
+			{:else}
+				<form class="waitlist-form" onsubmit={joinWaitlist}>
+					<input
+						type="email"
+						bind:value={waitlistEmail}
+						placeholder="you@example.com"
+						required
+						disabled={waitlistState === 'loading'}
+					/>
+					<button type="submit" disabled={waitlistState === 'loading'}>
+						{waitlistState === 'loading' ? '...' : 'Join waitlist →'}
+					</button>
+				</form>
+				{#if waitlistState === 'error'}
+					<p class="waitlist-error">Something went wrong. Try again.</p>
+				{/if}
+				<p class="waitlist-note">Or <a href="/login">sign in with GitHub</a> for instant access.</p>
+			{/if}
 		</div>
 	</div>
 </section>
@@ -495,6 +541,78 @@ Correct gently. Celebrate wins.`}</code></pre>
 	}
 	.link-ghost:hover {
 		color: var(--text-secondary) !important;
+	}
+
+	/* ===== Waitlist ===== */
+	.waitlist-block {
+		margin-top: 2.5rem;
+		padding-top: 2rem;
+		border-top: 1px solid var(--border);
+		text-align: center;
+		max-width: 440px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	.waitlist-eyebrow {
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		color: var(--text-muted);
+		margin-bottom: 0.75rem;
+	}
+	.waitlist-form {
+		display: flex;
+		gap: 0.5rem;
+		width: 100%;
+	}
+	.waitlist-form input {
+		flex: 1;
+		padding: 0.75rem 1rem;
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		color: var(--text-primary);
+		font-family: var(--font-display);
+		font-size: 0.9rem;
+		outline: none;
+		transition: border-color 0.2s;
+	}
+	.waitlist-form input:focus { border-color: var(--accent); }
+	.waitlist-form input::placeholder { color: var(--text-muted); }
+	.waitlist-form input:disabled { opacity: 0.6; }
+	.waitlist-form button {
+		padding: 0.75rem 1.25rem;
+		background: var(--accent);
+		color: white;
+		border: none;
+		border-radius: var(--radius-md);
+		font-family: var(--font-display);
+		font-size: 0.875rem;
+		font-weight: 600;
+		cursor: pointer;
+		white-space: nowrap;
+		transition: all 0.2s;
+	}
+	.waitlist-form button:hover:not(:disabled) { background: var(--accent-bright); }
+	.waitlist-form button:disabled { opacity: 0.6; cursor: not-allowed; }
+	:global(html[data-theme="dark"]) .waitlist-form button { color: var(--bg-primary); }
+	.waitlist-note {
+		font-size: 0.8rem;
+		color: var(--text-muted);
+		margin-top: 0.75rem;
+	}
+	.waitlist-note a { color: var(--accent-rose); text-decoration: none; }
+	.waitlist-note a:hover { color: var(--yarn-pink); }
+	.waitlist-success {
+		font-size: 0.9rem;
+		color: var(--yarn-green);
+		font-weight: 600;
+	}
+	.waitlist-error {
+		font-size: 0.8rem;
+		color: var(--yarn-pink);
+		margin-top: 0.5rem;
 	}
 
 	/* ===== Explainer (What is a skill?) ===== */

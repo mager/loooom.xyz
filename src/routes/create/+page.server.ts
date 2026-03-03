@@ -1,5 +1,9 @@
-import type { Actions } from './$types';
+import type { Actions, PageServerLoad } from './$types';
 import { redirect, fail } from '@sveltejs/kit';
+
+export const load: PageServerLoad = async () => {
+	throw redirect(302, '/dashboard');
+};
 import { db } from '$lib/server/db';
 import { skills, skillVersions } from '$lib/server/schema';
 import crypto from 'crypto';
