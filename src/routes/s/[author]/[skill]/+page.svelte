@@ -4,10 +4,9 @@
 
 	let { data } = $props();
 	let activeFile = $state(0);
-	let showUsePanel = $state(false);
+	let showInstall = $state(false);
 	let copiedSkill = $state(false);
 	let copiedCli = $state(false);
-	let copiedCurl = $state(false);
 
 	function relativeTime(iso: string): string {
 		const diff = Date.now() - new Date(iso).getTime();
@@ -38,39 +37,26 @@
 		setTimeout(() => copiedSkill = false, 2000);
 	}
 
-	function downloadSkill() {
-		const content = getSkillContent();
-		const blob = new Blob([content], { type: 'text/markdown' });
-		const url = URL.createObjectURL(blob);
-		const a = document.createElement('a');
-		a.href = url;
-		a.download = 'SKILL.md';
-		a.click();
-		URL.revokeObjectURL(url);
-	}
-
-	async function copyText(text: string, which: 'cli' | 'curl') {
-		await navigator.clipboard.writeText(text);
-		if (which === 'cli') { copiedCli = true; setTimeout(() => copiedCli = false, 2000); }
-		if (which === 'curl') { copiedCurl = true; setTimeout(() => copiedCurl = false, 2000); }
+	async function copyCli() {
+		const cmd = `npx loooom add ${data.author.username}/${data.skill.name}`;
+		await navigator.clipboard.writeText(cmd);
+		copiedCli = true;
+		setTimeout(() => copiedCli = false, 2000);
 	}
 
 	function handleClickOutside(e: MouseEvent) {
 		const target = e.target as HTMLElement;
-		if (!target.closest('.use-panel-wrap')) {
-			showUsePanel = false;
+		if (!target.closest('.install-wrap')) {
+			showInstall = false;
 		}
 	}
 
 	$effect(() => {
-		if (showUsePanel) {
+		if (showInstall) {
 			document.addEventListener('click', handleClickOutside, true);
 			return () => document.removeEventListener('click', handleClickOutside, true);
 		}
 	});
-
-	const cliCommand = `npx loooom add ${data.author.username}/${data.skill.name}`;
-	const curlCommand = `curl -sL https://loooom.xyz/api/skills/${data.author.username}/${data.skill.name}/raw -o SKILL.md`;
 </script>
 
 <svelte:head>
@@ -108,125 +94,89 @@
 
 		<!-- Header -->
 		<div class="skill-header">
-			<div class="header-left">
-				{#if data.skill.category}
-					<span class="skill-category">{data.skill.category}</span>
-				{/if}
-				<h1 class="handwriting">{data.skill.title}</h1>
-				{#if data.skill.description}
-					<p class="skill-desc">{data.skill.description}</p>
-				{/if}
-				<div class="skill-meta">
-					<span class="meta-item">{data.skill.installs.toLocaleString()} uses</span>
-					<span class="meta-dot">·</span>
-					<span class="meta-item">v{data.skill.version}</span>
-					<span class="meta-dot">·</span>
-					<span class="meta-item">Updated {relativeTime(data.skill.updatedAt)}</span>
-				</div>
-			</div>
-			<div class="header-actions">
-				{#if data.isOwner}
-					<a href="/edit/{data.skill.id}" class="btn-edit">Edit</a>
-				{/if}
-				<div class="use-panel-wrap">
-					<button class="btn-use" onclick={() => showUsePanel = !showUsePanel}>
-						Use this skill
-						<span class="btn-arrow" class:open={showUsePanel}>↓</span>
-					</button>
-
-					{#if showUsePanel}
-						<div class="use-panel">
-							<!-- Quick Start -->
-							<div class="use-section-title">Quick Start</div>
-							<div class="use-steps">
-								<div class="use-step">
-									<span class="step-num">1</span>
-									<span class="step-text">Copy the skill content below</span>
-								</div>
-								<div class="use-step">
-									<span class="step-num">2</span>
-									<span class="step-text">In Claude, open a project → Project knowledge → Add content</span>
-								</div>
-								<div class="use-step">
-									<span class="step-num">3</span>
-									<span class="step-text">Paste it in and start chatting — Claude will use the skill automatically</span>
-								</div>
-							</div>
-
-							<div class="use-option">
-								<div class="use-option-row">
-									<button class="use-btn" onclick={copySkillContent}>
-										{copiedSkill ? '✓ Copied' : '📋 Copy SKILL.md'}
-									</button>
-									<button class="use-btn use-btn-secondary" onclick={downloadSkill}>
-										↓ Download
-									</button>
-								</div>
-							</div>
-
-							<div class="use-divider"></div>
-
-							<!-- Advanced -->
-							<div class="use-section-title">For Developers</div>
-
-							<div class="use-option">
-								<span class="use-label">CLI</span>
-								<button class="use-code" onclick={() => copyText(cliCommand, 'cli')}>
-									<code>{cliCommand}</code>
-									<span class="use-copy-hint">{copiedCli ? '✓' : 'copy'}</span>
-								</button>
-								<span class="use-note">Requires Node.js</span>
-							</div>
-
-							<div class="use-divider"></div>
-
-							<div class="use-option">
-								<span class="use-label">curl</span>
-								<button class="use-code" onclick={() => copyText(curlCommand, 'curl')}>
-									<code>{curlCommand}</code>
-									<span class="use-copy-hint">{copiedCurl ? '✓' : 'copy'}</span>
-								</button>
-							</div>
-						</div>
-					{/if}
-				</div>
-			</div>
-		</div>
-
-		<!-- Author card -->
-		<a href="/u/{data.author.username}" class="author-card">
-			<div class="author-avatar">
-				{#if data.author.avatarUrl}
-					<img src={data.author.avatarUrl} alt={data.author.displayName} />
-				{:else}
-					{data.author.displayName[0]}
-				{/if}
-			</div>
-			<div class="author-info">
-				<span class="author-name">
-					{data.author.displayName}
+			{#if data.skill.category}
+				<span class="skill-category">{data.skill.category}</span>
+			{/if}
+			<h1 class="handwriting">{data.skill.title}</h1>
+			{#if data.skill.description}
+				<p class="skill-desc">{data.skill.description}</p>
+			{/if}
+			
+			<!-- Author byline -->
+			<div class="byline">
+				<a href="/u/{data.author.username}" class="byline-author">
+					<span class="byline-avatar">
+						{#if data.author.avatarUrl}
+							<img src={data.author.avatarUrl} alt={data.author.displayName} />
+						{:else}
+							{data.author.displayName[0]}
+						{/if}
+					</span>
+					<span class="byline-name">{data.author.displayName}</span>
 					{#if data.author.verified}
 						<span class="verified" title="Verified">✓</span>
 					{/if}
-				</span>
-				<span class="author-handle">@{data.author.username}</span>
+				</a>
+				<span class="byline-dot">·</span>
+				<span class="byline-meta">v{data.skill.version}</span>
+				<span class="byline-dot">·</span>
+				<span class="byline-meta">{data.skill.installs.toLocaleString()} uses</span>
+				<span class="byline-dot">·</span>
+				<span class="byline-meta">Updated {relativeTime(data.skill.updatedAt)}</span>
+				
+				{#if data.isOwner}
+					<span class="byline-dot">·</span>
+					<a href="/edit/{data.skill.id}" class="byline-edit">Edit</a>
+				{/if}
 			</div>
-		</a>
+		</div>
 
-		<!-- Files -->
+		<!-- Files - moved up front -->
 		{#if data.skill.files.length > 0}
 			<div class="files-section">
-				<div class="file-tabs">
-					{#each data.skill.files as file, i}
-						<button
-							class="file-tab"
-							class:active={activeFile === i}
-							onclick={() => activeFile = i}
-						>
-							<span class="file-icon">{fileIcon(file.name)}</span>
-							{file.name}
+				<div class="files-header">
+					<div class="file-tabs">
+						{#each data.skill.files as file, i}
+							<button
+								class="file-tab"
+								class:active={activeFile === i}
+								onclick={() => activeFile = i}
+							>
+								<span class="file-icon">{fileIcon(file.name)}</span>
+								{file.name}
+							</button>
+						{/each}
+					</div>
+					
+					<!-- Compact install dropdown -->
+					<div class="install-wrap">
+						<button class="btn-install" onclick={() => showInstall = !showInstall}>
+							Install
+							<svg class="install-arrow" class:open={showInstall} viewBox="0 0 12 12" width="12" height="12">
+								<path fill="currentColor" d="M6 8L1 3h10z"/>
+							</svg>
 						</button>
-					{/each}
+						
+						{#if showInstall}
+							<div class="install-popover">
+								<div class="install-option">
+									<span class="install-label">CLI</span>
+									<button class="install-copy" onclick={copyCli}>
+										<code>npx loooom add {data.author.username}/{data.skill.name}</code>
+										<span class="copy-hint">{copiedCli ? '✓' : 'copy'}</span>
+									</button>
+								</div>
+								<div class="install-divider"></div>
+								<div class="install-option">
+									<span class="install-label">Manual</span>
+									<button class="install-copy" onclick={copySkillContent}>
+										<span>Copy SKILL.md content</span>
+										<span class="copy-hint">{copiedSkill ? '✓' : 'copy'}</span>
+									</button>
+								</div>
+							</div>
+						{/if}
+					</div>
 				</div>
 
 				<div class="code-viewer">
@@ -277,127 +227,31 @@
 	.skill-page { position: relative; z-index: 1; min-height: 100vh; padding: 7rem 2rem 4rem; }
 	.skill-inner { max-width: 900px; margin: 0 auto; }
 
-	.back-link { display: inline-block; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 2rem; transition: color 0.2s; }
+	.back-link { display: inline-block; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem; transition: color 0.2s; }
 	.back-link:hover { color: var(--accent-rose); }
 
-	.skill-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem; margin-bottom: 2rem; }
-	.header-left { flex: 1; }
+	.skill-header { margin-bottom: 2rem; }
 	.skill-category { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); margin-bottom: 0.5rem; display: inline-block; }
 	.skill-header h1 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 0.75rem; color: var(--text-primary); }
-	.skill-desc { font-size: 1.1rem; color: var(--text-secondary); line-height: 1.45; margin-bottom: 1rem; }
-	.skill-meta { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
-	.meta-item { font-size: 0.85rem; color: var(--text-muted); font-family: var(--font-mono); }
-	.meta-dot { color: var(--text-muted); }
+	.skill-desc { font-size: 1.1rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 1.25rem; }
 
-	.header-actions { display: flex; gap: 0.75rem; align-items: center; flex-shrink: 0; padding-top: 1.5rem; }
-	.use-panel-wrap { position: relative; }
-	.btn-use {
-		display: inline-flex; align-items: center; gap: 0.5rem;
-		padding: 0.75rem 1.75rem; background: var(--accent); color: white;
-		border: none; border-radius: var(--radius-md); font-family: var(--font-display);
-		font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.25s;
-	}
-	.btn-use:hover { background: var(--accent-bright); transform: translateY(-1px); box-shadow: 0 6px 24px rgba(45,42,62,0.2); }
-	:global(html[data-theme="dark"]) .btn-use { color: var(--bg-primary); }
-	.btn-arrow { transition: transform 0.2s; display: inline-block; }
-	.btn-arrow.open { transform: rotate(180deg); }
-	.btn-use:hover .btn-arrow:not(.open) { transform: translateY(2px); }
-	.btn-edit {
-		padding: 0.75rem 1.5rem; background: var(--bg-card); color: var(--text-primary);
-		border: 1px solid var(--border); border-radius: var(--radius-md); font-family: var(--font-display);
-		font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: all 0.2s; text-decoration: none;
-	}
-	.btn-edit:hover { border-color: var(--text-secondary); color: var(--text-primary); }
+	/* Byline - compact author info */
+	.byline { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-size: 0.85rem; }
+	.byline-author { display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary); text-decoration: none; transition: opacity 0.2s; }
+	.byline-author:hover { opacity: 0.8; }
+	.byline-avatar { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--yarn-pink)); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: white; font-weight: 500; overflow: hidden; }
+	.byline-avatar img { width: 100%; height: 100%; object-fit: cover; }
+	.byline-name { font-weight: 500; }
+	.verified { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; background: var(--yarn-teal); color: white; font-size: 0.5rem; font-weight: 700; margin-left: -0.1rem; }
+	.byline-dot { color: var(--text-muted); }
+	.byline-meta { color: var(--text-muted); }
+	.byline-edit { color: var(--accent); text-decoration: none; }
+	.byline-edit:hover { text-decoration: underline; }
 
-	/* Use Panel Dropdown */
-	.use-panel {
-		position: absolute; top: calc(100% + 0.5rem); right: 0;
-		width: 420px; max-width: 90vw;
-		background: var(--bg-card); border: 1px solid var(--border);
-		border-radius: var(--radius-md); box-shadow: 0 12px 40px rgba(0,0,0,0.15);
-		padding: 1.25rem; z-index: 200;
-		animation: panelIn 0.15s ease-out;
-	}
-	@keyframes panelIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
-
-	.use-option { display: flex; flex-direction: column; gap: 0.5rem; }
-	.use-option-row { display: flex; gap: 0.5rem; }
-	.use-btn {
-		flex: 1; padding: 0.6rem 1rem;
-		background: var(--accent); color: white; border: none;
-		border-radius: var(--radius-sm); font-family: var(--font-display);
-		font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
-	}
-	:global(html[data-theme="dark"]) .use-btn { color: var(--bg-primary); }
-	.use-btn:hover { background: var(--accent-bright); }
-	.use-btn-secondary {
-		background: var(--bg-secondary); color: var(--text-primary);
-		border: 1px solid var(--border);
-	}
-	:global(html[data-theme="dark"]) .use-btn-secondary { color: var(--text-primary); }
-	.use-btn-secondary:hover { border-color: var(--text-secondary); background: var(--bg-card-hover); }
-
-	.use-section-title {
-		font-family: var(--font-mono); font-size: 0.65rem; font-weight: 700;
-		text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-muted);
-		margin-bottom: 0.5rem;
-	}
-	.use-steps { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 0.75rem; }
-	.use-step { display: flex; align-items: flex-start; gap: 0.6rem; }
-	.step-num {
-		width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
-		background: var(--accent); color: white; font-size: 0.65rem; font-weight: 700;
-		display: flex; align-items: center; justify-content: center;
-		font-family: var(--font-mono); margin-top: 1px;
-	}
-	:global(html[data-theme="dark"]) .step-num { color: var(--bg-primary); }
-	.step-text { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; }
-
-	.use-divider { height: 1px; background: var(--border); margin: 0.5rem 0; }
-
-	.use-label {
-		font-family: var(--font-mono); font-size: 0.65rem; font-weight: 600;
-		text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted);
-	}
-	.use-code {
-		display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
-		width: 100%; padding: 0.6rem 0.85rem;
-		background: var(--bg-secondary); border: 1px solid var(--border);
-		border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s;
-		text-align: left;
-	}
-	.use-code:hover { border-color: var(--text-muted); }
-	.use-code code {
-		font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary);
-		overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0;
-	}
-	.use-copy-hint {
-		font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted);
-		flex-shrink: 0; transition: color 0.2s;
-	}
-	.use-code:hover .use-copy-hint { color: var(--text-primary); }
-	.use-note { font-size: 0.7rem; color: var(--text-muted); }
-
-	.author-card {
-		display: flex; align-items: center; gap: 1rem;
-		padding: 1rem 1.25rem; background: var(--bg-card); border: 1px solid var(--border);
-		border-radius: var(--radius-md); margin-bottom: 2rem; transition: all 0.25s; text-decoration: none;
-	}
-	.author-card:hover { border-color: var(--text-muted); box-shadow: var(--card-shadow-hover); }
-	.author-avatar {
-		width: 48px; height: 48px; border-radius: 50%;
-		background: linear-gradient(135deg, var(--accent), var(--yarn-pink));
-		display: flex; align-items: center; justify-content: center;
-		font-size: 1.2rem; color: white; font-weight: 500; overflow: hidden; flex-shrink: 0;
-	}
-	.author-avatar img { width: 100%; height: 100%; object-fit: cover; }
-	.author-info { display: flex; flex-direction: column; gap: 0.15rem; }
-	.author-name { font-weight: 600; color: var(--text-primary); font-size: 0.95rem; }
-	.verified { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: var(--yarn-teal); color: white; font-size: 0.6rem; font-weight: 700; margin-left: 0.3rem; vertical-align: middle; }
-	.author-handle { font-size: 0.8rem; color: var(--text-muted); }
-
+	/* Files section - now primary content */
 	.files-section { margin-bottom: 1rem; }
-	.file-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); }
+	.files-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+	.file-tabs { display: flex; gap: 0; }
 	.file-tab {
 		display: flex; align-items: center; gap: 0.4rem;
 		padding: 0.75rem 1.25rem; background: none; border: none;
@@ -407,6 +261,53 @@
 	.file-tab:hover { color: var(--text-primary); background: var(--bg-card-hover); }
 	.file-tab.active { color: var(--text-primary); border-bottom-color: var(--accent); }
 	.file-icon { font-size: 0.9rem; }
+
+	/* Compact install dropdown */
+	.install-wrap { position: relative; padding-right: 0.5rem; }
+	.btn-install {
+		display: inline-flex; align-items: center; gap: 0.4rem;
+		padding: 0.4rem 0.75rem; background: var(--bg-card); color: var(--text-secondary);
+		border: 1px solid var(--border); border-radius: var(--radius-sm);
+		font-family: var(--font-mono); font-size: 0.75rem; font-weight: 500;
+		cursor: pointer; transition: all 0.2s;
+	}
+	.btn-install:hover { border-color: var(--text-muted); color: var(--text-primary); }
+	.install-arrow { transition: transform 0.2s; opacity: 0.7; }
+	.install-arrow.open { transform: rotate(180deg); }
+
+	.install-popover {
+		position: absolute; top: calc(100% + 0.4rem); right: 0;
+		width: 320px; max-width: 90vw;
+		background: var(--bg-card); border: 1px solid var(--border);
+		border-radius: var(--radius-md); box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+		padding: 0.75rem; z-index: 200;
+		animation: popoverIn 0.12s ease-out;
+	}
+	@keyframes popoverIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+	.install-option { display: flex; flex-direction: column; gap: 0.35rem; }
+	.install-divider { height: 1px; background: var(--border); margin: 0.5rem 0; }
+	.install-label {
+		font-family: var(--font-mono); font-size: 0.6rem; font-weight: 600;
+		text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);
+	}
+	.install-copy {
+		display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+		width: 100%; padding: 0.5rem 0.6rem;
+		background: var(--bg-secondary); border: 1px solid var(--border);
+		border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s;
+		text-align: left;
+	}
+	.install-copy:hover { border-color: var(--text-muted); }
+	.install-copy code, .install-copy span:first-child {
+		font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-secondary);
+		overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0;
+	}
+	.copy-hint {
+		font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-muted);
+		flex-shrink: 0; transition: color 0.2s;
+	}
+	.install-copy:hover .copy-hint { color: var(--text-primary); }
 
 	.code-viewer { background: var(--bg-card); border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius-md) var(--radius-md); overflow: hidden; }
 	.code-header { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--border); background: var(--bg-secondary); }
@@ -422,10 +323,11 @@
 	.hash-sep { color: var(--text-muted); }
 
 	@media (max-width: 768px) {
-		.skill-header { flex-direction: column; gap: 1.5rem; }
-		.header-actions { padding-top: 0; width: 100%; }
-		.btn-use { flex: 1; justify-content: center; }
-		.use-panel { right: auto; left: 0; width: calc(100vw - 4rem); }
+		.files-header { flex-direction: column; align-items: stretch; }
+		.file-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+		.install-wrap { padding: 0.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: flex-end; }
+		.install-popover { right: 0.5rem; }
+		.byline { font-size: 0.8rem; }
 		.nav-right a:not(.btn-nav):not(:global(.theme-toggle)) { display: none; }
 	}
 </style>
