@@ -159,7 +159,7 @@
 	.orb { position: absolute; border-radius: 50%; filter: blur(140px); opacity: 0.06; }
 	:global(html[data-theme="dark"]) .orb { opacity: 0.12; }
 	.orb-1 { width: 500px; height: 500px; background: var(--accent); top: -100px; right: -100px; animation: drift 25s ease-in-out infinite; }
-	.orb-2 { width: 400px; height: 400px; background: var(--yarn-pink); bottom: 10%; left: -100px; animation: drift 30s ease-in-out infinite reverse; }
+	.orb-2 { width: 400px; height: 400px; background: var(--ocean); bottom: 10%; left: -100px; animation: drift 30s ease-in-out infinite reverse; }
 	@keyframes drift { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(30px, -20px); } }
 
 	nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; backdrop-filter: blur(20px); background: var(--nav-bg); border-bottom: 1px solid var(--border); }
@@ -191,8 +191,8 @@
 	.endpoint-card:hover { box-shadow: var(--card-shadow-hover); }
 	.endpoint-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
 	.method { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.3rem 0.7rem; border-radius: 6px; }
-	.method.get { background: rgba(39, 174, 96, 0.15); color: var(--yarn-green); }
-	.method.cli { background: rgba(196, 69, 105, 0.15); color: var(--accent-rose); }
+	.method.get { background: rgba(39, 174, 96, 0.15); color: var(--emerald); }
+	.method.cli { background: rgba(196, 69, 105, 0.15); color: var(--ocean); }
 	.endpoint-path { font-family: var(--font-mono); font-size: 1rem; color: var(--text-primary); font-weight: 500; }
 	.endpoint-desc { font-size: 1rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 1.5rem; }
 	.inline-code { font-family: var(--font-mono); font-size: 0.85em; background: var(--bg-secondary); padding: 0.15rem 0.4rem; border-radius: 4px; color: var(--text-primary); }
@@ -209,7 +209,7 @@
 	.code-block.json { font-size: 0.8rem; }
 
 	.param-note { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; background: var(--bg-secondary); border-radius: var(--radius-sm); margin-top: 1rem; }
-	.param-name { font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-rose); font-weight: 600; white-space: nowrap; }
+	.param-name { font-family: var(--font-mono); font-size: 0.8rem; color: var(--ocean); font-weight: 600; white-space: nowrap; }
 	.param-desc { font-size: 0.85rem; color: var(--text-secondary); }
 
 	@media (max-width: 768px) {

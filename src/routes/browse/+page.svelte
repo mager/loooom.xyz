@@ -370,7 +370,7 @@
 	.orb { position: absolute; border-radius: 50%; filter: blur(140px); opacity: 0.06; }
 	:global(html[data-theme="dark"]) .orb { opacity: 0.12; }
 	.orb-1 { width: 500px; height: 500px; background: var(--accent); top: -100px; left: -100px; animation: drift 25s ease-in-out infinite; }
-	.orb-2 { width: 400px; height: 400px; background: var(--yarn-pink); bottom: 10%; right: -100px; animation: drift 30s ease-in-out infinite reverse; }
+	.orb-2 { width: 400px; height: 400px; background: var(--indigo); bottom: 10%; right: -100px; animation: drift 30s ease-in-out infinite reverse; opacity: 0.06; }
 	@keyframes drift { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(30px, -20px); } }
 
 	/* ---- Nav ---- */
@@ -388,7 +388,7 @@
 	/* ---- Typography ---- */
 	.handwriting { font-family: var(--font-handwriting); font-weight: 100; text-shadow: 0 0.5px 0 rgba(0,0,0,0.06); }
 	:global(html[data-theme="dark"]) .handwriting { text-shadow: 0 0.5px 0 rgba(255,255,255,0.08); }
-	.sketch { font-family: var(--font-sketch); font-weight: 400; color: var(--yarn-pink); }
+	.sketch { font-family: var(--font-sketch); font-weight: 400; color: var(--ocean); }
 
 	/* ---- Page Layout ---- */
 	.browse-page { position: relative; z-index: 1; min-height: 100vh; padding: 7rem 2rem 4rem; }
@@ -669,12 +669,12 @@
 	.author-cell { display: flex; align-items: center; gap: 0.4rem; }
 	.author-avatar-sm {
 		width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
-		background: linear-gradient(135deg, var(--accent), var(--yarn-pink));
+		background: linear-gradient(135deg, var(--ocean), var(--indigo));
 		display: flex; align-items: center; justify-content: center;
 		font-size: 0.6rem; color: white; overflow: hidden;
 	}
 	.author-avatar-sm img { width: 100%; height: 100%; object-fit: cover; }
-	.verified { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; background: var(--yarn-teal); color: white; font-size: 0.5rem; font-weight: 700; }
+	.verified { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; background: var(--emerald); color: white; font-size: 0.5rem; font-weight: 700; }
 
 	/* ---- Mobile ---- */
 	@media (max-width: 768px) {

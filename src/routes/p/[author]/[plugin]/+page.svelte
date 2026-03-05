@@ -257,14 +257,14 @@
 	.orb-1 {
 		width: 600px;
 		height: 600px;
-		background: var(--yarn-pink);
+		background: var(--ocean);
 		top: -200px;
 		left: -200px;
 	}
 	.orb-2 {
 		width: 500px;
 		height: 500px;
-		background: var(--yarn-blue);
+		background: var(--indigo);
 		bottom: -150px;
 		right: -100px;
 	}
@@ -506,7 +506,7 @@
 		width: 32px;
 		height: 32px;
 		border-radius: 50%;
-		background: var(--accent-rose, #e84a5f);
+		background: var(--ocean);
 		color: white;
 		display: flex;
 		align-items: center;
@@ -540,7 +540,7 @@
 	.code-block code {
 		font-family: var(--font-mono);
 		font-size: 0.875rem;
-		color: var(--accent-rose, #e84a5f);
+		color: var(--ocean);
 		flex: 1;
 	}
 	.copy-btn {

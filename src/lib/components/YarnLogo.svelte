@@ -14,11 +14,11 @@
 	</defs>
 	<circle cx="100" cy="100" r="70" fill="var(--bg-card, #16161f)" stroke="var(--border, #2a2a3a)" stroke-width="1" />
 	<g filter="url(#logo-glow)">
-		<ellipse cx="100" cy="100" rx="66" ry="28" fill="none" stroke="var(--accent, #6c5ce7)" stroke-width="3" opacity="0.9" />
-		<ellipse cx="100" cy="100" rx="64" ry="26" fill="none" stroke="var(--yarn-pink, #fd79a8)" stroke-width="3" opacity="0.9" transform="rotate(60, 100, 100)" />
-		<ellipse cx="100" cy="100" rx="62" ry="24" fill="none" stroke="var(--yarn-blue, #74b9ff)" stroke-width="3" opacity="0.9" transform="rotate(120, 100, 100)" />
+		<ellipse cx="100" cy="100" rx="66" ry="28" fill="none" stroke="var(--ocean, #06b6d4)" stroke-width="3" opacity="0.9" />
+		<ellipse cx="100" cy="100" rx="64" ry="26" fill="none" stroke="var(--indigo, #6366f1)" stroke-width="3" opacity="0.9" transform="rotate(60, 100, 100)" />
+		<ellipse cx="100" cy="100" rx="62" ry="24" fill="none" stroke="var(--violet, #8b5cf6)" stroke-width="3" opacity="0.9" transform="rotate(120, 100, 100)" />
 	</g>
-	<path d="M 168 95 Q 178 88 183 76 Q 188 65 192 58" fill="none" stroke="var(--accent, #6c5ce7)" stroke-width="2.5" stroke-linecap="round" opacity="0.7" />
+	<path d="M 168 95 Q 178 88 183 76 Q 188 65 192 58" fill="none" stroke="var(--ocean, #06b6d4)" stroke-width="2.5" stroke-linecap="round" opacity="0.7" />
 </svg>
 
 <style>

@@ -412,7 +412,7 @@ Correct gently. Celebrate wins.`}</code></pre>
 		font-weight: 400;
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
-		color: var(--yarn-violet);
+		color: var(--ocean);
 		margin-bottom: 0.5rem;
 	}
 
@@ -431,7 +431,7 @@ Correct gently. Celebrate wins.`}</code></pre>
 		font-weight: 400;
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
-		color: var(--yarn-violet);
+		color: var(--ocean);
 		margin-bottom: 1.25rem;
 	}
 	h1 {
@@ -509,7 +509,7 @@ Correct gently. Celebrate wins.`}</code></pre>
 	.cmd {
 		font-family: var(--font-mono);
 		font-size: 0.85rem;
-		color: var(--yarn-violet);
+		color: var(--ocean);
 	}
 
 	/* ===== Hero Links ===== */
@@ -530,7 +530,7 @@ Correct gently. Celebrate wins.`}</code></pre>
 		transition: color 0.2s;
 	}
 	.link-cta:hover {
-		color: var(--yarn-violet) !important;
+		color: var(--ocean) !important;
 	}
 	.link-ghost {
 		font-size: 0.875rem;
@@ -602,16 +602,16 @@ Correct gently. Celebrate wins.`}</code></pre>
 		color: var(--text-muted);
 		margin-top: 0.75rem;
 	}
-	.waitlist-note a { color: var(--accent-rose); text-decoration: none; }
-	.waitlist-note a:hover { color: var(--yarn-pink); }
+	.waitlist-note a { color: var(--ocean); text-decoration: none; }
+	.waitlist-note a:hover { color: var(--ocean-deep); }
 	.waitlist-success {
 		font-size: 0.9rem;
-		color: var(--yarn-green);
+		color: var(--emerald);
 		font-weight: 600;
 	}
 	.waitlist-error {
 		font-size: 0.8rem;
-		color: var(--yarn-pink);
+		color: var(--rose);
 		margin-top: 0.5rem;
 	}
 
@@ -643,7 +643,7 @@ Correct gently. Celebrate wins.`}</code></pre>
 	.explainer-text code {
 		font-family: var(--font-mono);
 		font-size: 0.82rem;
-		color: var(--yarn-violet);
+		color: var(--ocean);
 		background: var(--bg-card);
 		border: 1px solid var(--border);
 		padding: 0.1em 0.4em;
@@ -713,7 +713,7 @@ Correct gently. Celebrate wins.`}</code></pre>
 		margin-bottom: 0.75rem;
 	}
 	.trust-text strong {
-		color: var(--yarn-violet);
+		color: var(--ocean);
 		font-weight: 600;
 	}
 	.trust-stats {
@@ -797,7 +797,7 @@ Correct gently. Celebrate wins.`}</code></pre>
 	.step-body p code {
 		font-family: var(--font-mono);
 		font-size: 0.8rem;
-		color: var(--yarn-violet);
+		color: var(--ocean);
 		background: var(--bg-secondary);
 		border: 1px solid var(--border);
 		padding: 0.1em 0.4em;
@@ -806,7 +806,7 @@ Correct gently. Celebrate wins.`}</code></pre>
 	.inline-cmd {
 		font-family: var(--font-mono);
 		font-size: 0.78rem;
-		color: var(--yarn-violet);
+		color: var(--ocean);
 		background: var(--bg-secondary);
 		border: 1px solid var(--border);
 		border-radius: 6px;
@@ -909,7 +909,7 @@ Correct gently. Celebrate wins.`}</code></pre>
 		margin: 0;
 	}
 	.callout-link {
-		color: var(--yarn-violet) !important;
+		color: var(--ocean) !important;
 		text-decoration: none;
 		font-weight: 500;
 		transition: opacity 0.2s;

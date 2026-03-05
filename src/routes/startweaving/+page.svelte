@@ -197,7 +197,7 @@
 	}
 	.orb-2 {
 		width: 400px; height: 400px;
-		background: var(--yarn-pink);
+		background: var(--ocean);
 		bottom: -100px; right: -100px;
 	}
 
@@ -257,7 +257,7 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.12em;
-		color: var(--accent-rose);
+		color: var(--ocean);
 		margin-bottom: 1rem;
 	}
 
@@ -284,7 +284,7 @@
 		background: rgba(253, 121, 168, 0.1);
 		border: 1px solid rgba(253, 121, 168, 0.3);
 		border-radius: var(--radius-sm);
-		color: var(--yarn-pink);
+		color: var(--ocean);
 		font-size: 0.875rem;
 		margin-bottom: 1.5rem;
 	}
@@ -363,10 +363,10 @@
 		color: var(--text-secondary);
 	}
 	.login-link a {
-		color: var(--accent-rose);
+		color: var(--ocean);
 	}
 	.login-link a:hover {
-		color: var(--yarn-pink);
+		color: var(--ocean);
 	}
 	.btn-github {
 		display: flex; align-items: center; justify-content: center; gap: 0.75rem;

@@ -286,7 +286,7 @@
 	}
 	.orb-2 {
 		width: 400px; height: 400px;
-		background: var(--yarn-pink);
+		background: var(--ocean);
 		bottom: 10%; left: -100px;
 		animation: drift 30s ease-in-out infinite reverse;
 	}
@@ -366,7 +366,7 @@
 		width: 100px;
 		height: 100px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, var(--accent), var(--yarn-pink));
+		background: linear-gradient(135deg, var(--accent), var(--ocean));
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -389,7 +389,7 @@
 		width: 28px;
 		height: 28px;
 		border-radius: 50%;
-		background: var(--yarn-teal);
+		background: var(--emerald);
 		color: white;
 		font-size: 0.8rem;
 		font-weight: 700;
@@ -439,7 +439,7 @@
 		color: var(--text-primary);
 		position: relative;
 		display: inline;
-		background-image: linear-gradient(to right, var(--accent), var(--yarn-pink));
+		background-image: linear-gradient(to right, var(--accent), var(--ocean));
 		background-position: 0 92%;
 		background-size: 100% var(--topic-underline-height, 4px);
 		background-repeat: no-repeat;
@@ -505,8 +505,8 @@
 		transition: all 0.25s;
 	}
 	.tip-btn:hover {
-		border-color: var(--yarn-pink);
-		color: var(--yarn-pink);
+		border-color: var(--ocean);
+		color: var(--ocean);
 	}
 
 	.skills-section {

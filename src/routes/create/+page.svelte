@@ -238,7 +238,7 @@
 	.orb { position: absolute; border-radius: 50%; filter: blur(140px); opacity: 0.06; }
 	:global(html[data-theme="dark"]) .orb { opacity: 0.12; }
 	.orb-1 { width: 500px; height: 500px; background: var(--accent); top: -100px; left: -100px; animation: drift 25s ease-in-out infinite; }
-	.orb-2 { width: 400px; height: 400px; background: var(--yarn-pink); bottom: 10%; right: -100px; animation: drift 30s ease-in-out infinite reverse; }
+	.orb-2 { width: 400px; height: 400px; background: var(--ocean); bottom: 10%; right: -100px; animation: drift 30s ease-in-out infinite reverse; }
 	@keyframes drift { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(30px, -20px); } }
 
 	nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; backdrop-filter: blur(20px); background: var(--nav-bg); border-bottom: 1px solid var(--border); }
@@ -279,7 +279,7 @@
 	.error-msg {
 		padding: 0.875rem 1.25rem; background: rgba(232,67,147,0.1);
 		border: 1px solid rgba(232,67,147,0.3); border-radius: var(--radius-md);
-		color: var(--yarn-pink); font-weight: 500; margin-bottom: 1.5rem;
+		color: var(--ocean); font-weight: 500; margin-bottom: 1.5rem;
 	}
 
 	.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 2rem; }
@@ -323,7 +323,7 @@
 	.md-preview :global(pre code) { background: none; padding: 0; }
 	.md-preview :global(ul) { padding-left: 1.5rem; margin: 0 0 0.75rem; }
 	.md-preview :global(li) { margin-bottom: 0.3rem; }
-	.md-preview :global(a) { color: var(--accent-rose); text-decoration: underline; }
+	.md-preview :global(a) { color: var(--ocean); text-decoration: underline; }
 
 	/* Additional files */
 	.additional-files { margin-bottom: 2rem; }
@@ -344,7 +344,7 @@
 	}
 	.file-name-input::placeholder { color: var(--text-muted); }
 	.btn-remove-file { background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; padding: 0.25rem 0.5rem; }
-	.btn-remove-file:hover { color: var(--yarn-pink); }
+	.btn-remove-file:hover { color: var(--ocean); }
 	.file-content-input {
 		width: 100%; min-height: 120px; padding: 0.75rem; background: transparent; border: none;
 		color: var(--text-primary); font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.5;

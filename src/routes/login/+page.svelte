@@ -216,7 +216,7 @@
 	.error {
 		background: rgba(253, 121, 168, 0.1);
 		border: 1px solid rgba(253, 121, 168, 0.3);
-		color: var(--yarn-pink);
+		color: var(--ocean);
 		padding: 0.75rem 1rem;
 		border-radius: var(--radius-sm);
 		font-size: 0.875rem;
@@ -274,7 +274,7 @@
 	.link-btn {
 		background: none;
 		border: none;
-		color: var(--accent-rose);
+		color: var(--ocean);
 		cursor: pointer;
 		font-family: var(--font-display);
 		font-size: 0.875rem;
@@ -282,7 +282,7 @@
 		margin-top: 1rem;
 	}
 	.link-btn:hover {
-		color: var(--yarn-pink);
+		color: var(--ocean);
 	}
 	.btn-github {
 		display: flex; align-items: center; justify-content: center; gap: 0.75rem;

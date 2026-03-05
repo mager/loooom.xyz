@@ -89,7 +89,7 @@
 	.orb { position: absolute; border-radius: 50%; filter: blur(140px); opacity: 0.06; }
 	:global(html[data-theme="dark"]) .orb { opacity: 0.12; }
 	.orb-1 { width: 500px; height: 500px; background: var(--accent); top: -100px; right: -100px; animation: drift 25s ease-in-out infinite; }
-	.orb-2 { width: 400px; height: 400px; background: var(--yarn-pink); bottom: 10%; left: -100px; animation: drift 30s ease-in-out infinite reverse; }
+	.orb-2 { width: 400px; height: 400px; background: var(--ocean); bottom: 10%; left: -100px; animation: drift 30s ease-in-out infinite reverse; }
 	@keyframes drift { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(30px, -20px); } }
 
 	nav {
@@ -114,7 +114,7 @@
 	.user-chip-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
 	.user-chip-initial {
 		width: 28px; height: 28px; border-radius: 50%;
-		background: linear-gradient(135deg, var(--accent), var(--yarn-pink));
+		background: linear-gradient(135deg, var(--accent), var(--ocean));
 		display: flex; align-items: center; justify-content: center;
 		color: white; font-size: 0.75rem; font-weight: 600;
 	}
@@ -155,7 +155,7 @@
 	}
 	.avatar-fallback {
 		width: 80px; height: 80px; border-radius: 50%;
-		background: linear-gradient(135deg, var(--accent), var(--yarn-pink));
+		background: linear-gradient(135deg, var(--accent), var(--ocean));
 		display: flex; align-items: center; justify-content: center;
 		font-size: 2rem; color: white; font-weight: 700;
 		border: 3px solid var(--border);
@@ -191,7 +191,7 @@
 	}
 	.check-row.pending { color: var(--text-muted); }
 	.check-icon {
-		color: var(--yarn-green); font-weight: 700; flex-shrink: 0; width: 16px;
+		color: var(--emerald); font-weight: 700; flex-shrink: 0; width: 16px;
 	}
 	.check-icon.pending { color: var(--text-muted); }
 	code {
