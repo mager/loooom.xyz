@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://loooom.xyz/me-md-schema.json",
+  "title": "ME.md Frontmatter",
+  "description": "JSON Schema for ME.md v1.0 — Portable Human Context Protocol. See https://loooom.xyz/me/spec",
+  "type": "object",
+  "required": ["version", "handle"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "ME.md spec version",
+      "enum": ["1.0"],
+      "examples": ["1.0"]
+    },
+    "handle": {
+      "type": "string",
+      "description": "Human's primary identifier (e.g. @mager)",
+      "pattern": "^@?[a-zA-Z0-9_-]+$",
+      "examples": ["@mager", "mager"]
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name",
+      "examples": ["Mager"]
+    },
+    "location": {
+      "type": "string",
+      "description": "Where the human is based",
+      "examples": ["Chicago, IL"]
+    },
+    "timezone": {
+      "type": "string",
+      "description": "IANA timezone string",
+      "examples": ["America/Chicago", "Europe/London", "Asia/Tokyo"]
+    },
+    "updated": {
+      "type": "string",
+      "format": "date",
+      "description": "ISO date of last update (YYYY-MM-DD)",
+      "examples": ["2026-03-07"]
+    },
+    "agents": {
+      "type": "array",
+      "description": "Active AI agent fleet",
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Agent identifier or name",
+            "examples": ["magerbot", "genny"]
+          },
+          "model": {
+            "type": "string",
+            "description": "Underlying model (e.g. claude-sonnet-4-6)",
+            "examples": ["claude-sonnet-4-6", "gpt-4o", "gemini-2.0-flash"]
+          },
+          "role": {
+            "type": "string",
+            "description": "Role or job description for this agent",
+            "examples": ["Principal Engineer", "Life Architect", "Research Assistant"]
+          },
+          "emoji": {
+            "type": "string",
+            "description": "Emoji identifier for this agent",
+            "examples": ["⚡", "🌿", "🔬"]
+          },
+          "channel": {
+            "type": "string",
+            "description": "Primary communication channel",
+            "examples": ["telegram", "discord", "slack", "signal"]
+          }
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "description": "Freeform keywords describing the human",
+      "items": {
+        "type": "string"
+      },
+      "examples": [["coding", "music", "design"], ["finance", "writing", "travel"]]
+    },
+    "public": {
+      "type": "boolean",
+      "description": "Whether this context file is publicly accessible (default: true)",
+      "default": true
+    }
+  }
+}

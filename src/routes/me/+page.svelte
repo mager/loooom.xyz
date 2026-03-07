@@ -35,6 +35,7 @@
 			<span class="logo-text">loooom</span>
 		</a>
 		<div class="nav-right">
+			<a href="/me/spec" class="nav-link">Spec</a>
 			<a href="/browse" class="nav-link">Skills</a>
 			<a href="https://github.com/mager/loooom" target="_blank" rel="noopener" class="nav-link">GitHub</a>
 			<ThemeToggle />
@@ -150,6 +151,10 @@ Loooom (skills marketplace)</code></pre>
 					</div>
 				</div>
 			{/each}
+		</div>
+		<div class="spec-footer">
+			<a href="/me/spec" class="spec-link">View the full ME.md spec v1.0 →</a>
+			<a href="/me-md-schema.json" target="_blank" download class="spec-link ghost">Download JSON Schema ↓</a>
 		</div>
 	</div>
 </section>
@@ -547,6 +552,39 @@ This is their robots.txt for human consciousness.</code></pre>
 		color: var(--text-muted);
 		line-height: 1.5;
 		margin: 0;
+	}
+	.spec-footer {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 20px;
+		margin-top: 36px;
+		flex-wrap: wrap;
+	}
+	.spec-link {
+		color: var(--accent);
+		text-decoration: none;
+		font-size: 0.9rem;
+		font-weight: 500;
+		padding: 8px 20px;
+		border-radius: 999px;
+		border: 1px solid var(--accent-bright);
+		background: var(--accent-glow);
+		transition: all 0.2s;
+	}
+	.spec-link:hover {
+		background: var(--accent);
+		color: white;
+	}
+	.spec-link.ghost {
+		background: none;
+		border-color: var(--border);
+		color: var(--text-secondary);
+	}
+	.spec-link.ghost:hover {
+		border-color: var(--accent);
+		color: var(--accent);
+		background: var(--accent-glow);
 	}
 
 	/* ─── Injection ──────────────────────────────────────────────────────── */
