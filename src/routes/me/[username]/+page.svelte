@@ -11,6 +11,7 @@
 
 	let copiedPrompt = $state(false);
 	let copiedRaw = $state(false);
+	let copiedContent = $state(false);
 	let activeSection = $state<string | null>(sections[0]?.id ?? null);
 
 	const injectionPrompt = generateInjectionPrompt(
@@ -28,6 +29,28 @@
 		navigator.clipboard.writeText(`https://loooom.xyz${rawUrl}`);
 		copiedRaw = true;
 		setTimeout(() => (copiedRaw = false), 2000);
+	}
+
+	async function copyContent() {
+		try {
+			const res = await fetch(`/me/${user.username}/raw`);
+			const text = await res.text();
+			await navigator.clipboard.writeText(text);
+			copiedContent = true;
+			setTimeout(() => (copiedContent = false), 2500);
+		} catch {
+			// fallback: open in new tab
+			window.open(`/me/${user.username}/raw`, '_blank');
+		}
+	}
+
+	function downloadMd() {
+		const a = document.createElement('a');
+		a.href = `/me/${user.username}/raw?download`;
+		a.download = `${user.username}.md`;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
 	}
 
 	function renderMarkdown(md: string): string {
@@ -174,12 +197,15 @@
 				<button class="action-btn" onclick={copyPrompt}>
 					{copiedPrompt ? '✓ Copied!' : '⚡ Copy injection prompt'}
 				</button>
+				<button class="action-btn action-btn-secondary" onclick={copyContent}>
+					{copiedContent ? '✓ Copied!' : '📋 Copy ME.md'}
+				</button>
+				<button class="action-btn action-btn-secondary" onclick={downloadMd}>
+					⬇ Download .md
+				</button>
 				<button class="action-btn action-btn-secondary" onclick={copyRaw}>
 					{copiedRaw ? '✓ Copied!' : '🔗 Copy raw URL'}
 				</button>
-				<a href="/me/{user.username}/raw" target="_blank" class="action-link">
-					View raw markdown ↗
-				</a>
 			</div>
 		</div>
 

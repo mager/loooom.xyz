@@ -1,5 +1,6 @@
 <script lang="ts">
 	import YarnLogo from '$lib/components/YarnLogo.svelte';
+	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { MARKETPLACE_COMMAND } from '$lib/plugins';
 
 	let { data } = $props();
@@ -11,41 +12,13 @@
 	const loooomCount = $derived(
 		data.plugins.filter((p: { source: string }) => p.source === 'loooom').length
 	);
-
-	let copied = $state(false);
-	let waitlistEmail = $state('');
-	let waitlistState = $state<'idle' | 'loading' | 'done' | 'already' | 'error'>('idle');
-
-	function copyCommand() {
-		navigator.clipboard.writeText(MARKETPLACE_COMMAND);
-		copied = true;
-		setTimeout(() => (copied = false), 2000);
-	}
-
-	async function joinWaitlist(e: Event) {
-		e.preventDefault();
-		if (!waitlistEmail) return;
-		waitlistState = 'loading';
-		try {
-			const res = await fetch('/api/waitlist', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ email: waitlistEmail })
-			});
-			const data = await res.json();
-			if (!res.ok) { waitlistState = 'error'; return; }
-			waitlistState = data.already ? 'already' : 'done';
-		} catch {
-			waitlistState = 'error';
-		}
-	}
 </script>
 
 <svelte:head>
-	<title>Loooom — Claude Code Skills Marketplace</title>
+	<title>Loooom — ME.md & AI Skills Marketplace</title>
 	<meta
 		name="description"
-		content="A GitHub-native marketplace for Claude Code. Browse community-built skills and install anything in one command."
+		content="Publish your ME.md — a portable human context file any AI can read. Plus a GitHub-native Claude Code skills marketplace."
 	/>
 </svelte:head>
 
@@ -57,14 +30,15 @@
 			<span class="logo-text">loooom</span>
 		</a>
 		<div class="nav-right">
-			<a href="/browse" class="nav-link">Skills</a>
 			<a href="/me" class="nav-link nav-link-memd">ME.md</a>
+			<a href="/browse" class="nav-link">Skills</a>
 			<a
 				href="https://github.com/mager/loooom"
 				target="_blank"
 				rel="noopener"
 				class="nav-link">GitHub</a
 			>
+			<ThemeToggle />
 			<a href="/login" class="btn-nav">Sign In</a>
 		</div>
 	</div>
@@ -73,241 +47,130 @@
 <!-- Hero -->
 <section class="hero">
 	<div class="hero-inner">
-		<p class="eyebrow">Claude Code Skills Marketplace</p>
-		<h1>Teach Claude<br />new tricks.</h1>
+		<div class="hero-eyebrow">
+			<span class="eyebrow-badge">Portable Human Context</span>
+		</div>
+		<h1>One URL.<br/>Every AI<br/>knows you.</h1>
 		<p class="hero-sub">
-			A GitHub-native marketplace for Claude Code. Browse {loooomCount}+ original skills — plus
-			curated picks from across the ecosystem.
+			Stop re-prompting every session. Publish your <strong>ME.md</strong> on Loooom — one file that tells any AI who you are, how you think, and what you're building.
 		</p>
-
-		<div class="terminal">
-			<div class="terminal-bar">
-				<span class="terminal-dot"></span>
-				<span class="terminal-dot"></span>
-				<span class="terminal-dot"></span>
-				<span class="terminal-label">Claude Code</span>
-				<button class="copy-btn" onclick={copyCommand}>
-					{copied ? '✓ copied' : 'copy'}
-				</button>
-			</div>
-			<div class="terminal-body">
-				<span class="prompt">$</span>
-				<span class="cmd">{MARKETPLACE_COMMAND}</span>
-			</div>
+		<div class="hero-url-preview">
+			<span class="url-prefix">loooom.xyz/me/</span><span class="url-handle">you</span>
 		</div>
-
-		<div class="hero-links">
-			<a href="/browse" class="link-cta">Browse skills →</a>
-			<a
-				href="https://github.com/mager/loooom"
-				target="_blank"
-				rel="noopener"
-				class="link-ghost">Contribute on GitHub</a
-			>
+		<div class="hero-actions">
+			<a href="/login" class="btn-primary-hero">Claim your ME.md →</a>
+			<a href="/me/mager" class="btn-ghost-hero">See an example</a>
 		</div>
-
-		<div class="waitlist-block">
-			<p class="waitlist-eyebrow">Want to publish skills?</p>
-			{#if waitlistState === 'done'}
-				<p class="waitlist-success">✓ You're on the list. We'll reach out when creator tools open up.</p>
-			{:else if waitlistState === 'already'}
-				<p class="waitlist-success">✓ Already on the list — we've got you.</p>
-			{:else}
-				<form class="waitlist-form" onsubmit={joinWaitlist}>
-					<input
-						type="email"
-						bind:value={waitlistEmail}
-						placeholder="you@example.com"
-						required
-						disabled={waitlistState === 'loading'}
-					/>
-					<button type="submit" disabled={waitlistState === 'loading'}>
-						{waitlistState === 'loading' ? '...' : 'Join waitlist →'}
-					</button>
-				</form>
-				{#if waitlistState === 'error'}
-					<p class="waitlist-error">Something went wrong. Try again.</p>
-				{/if}
-				<p class="waitlist-note">Or <a href="/login">sign in with GitHub</a> for instant access.</p>
-			{/if}
-		</div>
+		<p class="hero-hint">Free. No signup required to browse. Raw markdown always public.</p>
 	</div>
 </section>
 
-<!-- What is a skill? -->
-<section class="explainer">
+<!-- How it works -->
+<section class="how-memd">
 	<div class="section-inner">
-		<div class="explainer-grid">
-			<div class="explainer-text">
-				<p class="section-eyebrow">How it works</p>
-				<h2>Skills are just markdown.</h2>
-				<p>
-					A skill is a <code>SKILL.md</code> file — plain English instructions Claude reads before
-					responding. No SDK. No server. No build step.
-				</p>
-				<p>
-					GitHub is the database. Your <code>.claude/skills/</code> directory is the runtime.
-					Skills activate automatically when Claude Code reads them at session start.
-				</p>
-				<a href="/docs" class="link-cta" style="display: inline-flex; margin-top: 1.25rem;"
-					>Read the docs →</a
-				>
-			</div>
-			<div class="skill-preview">
-				<div class="skill-file-header">
-					<span class="file-dot"></span>
-					<span class="file-dot"></span>
-					<span class="file-dot"></span>
-					<span class="file-name">SKILL.md</span>
+		<p class="section-eyebrow">How it works</p>
+		<h2>Three steps. Done forever.</h2>
+		<div class="steps-memd">
+			<div class="step-memd">
+				<div class="step-num-memd">01</div>
+				<div class="step-content">
+					<h3>Write your ME.md</h3>
+					<p>Seven canonical sections. Plain markdown. Start with your values, stack, and one hard list of what you hate.</p>
 				</div>
-				<pre class="skill-code"><code>{`# Beginner Japanese
-
-## When to activate
-When the user wants to practice
-Japanese for an upcoming trip.
-
-## Your method
-1. Start with survival phrases
-2. Build vocabulary through context
-3. Track progress across sessions
-
-## Always
-Speak romaji first, then kana.
-Correct gently. Celebrate wins.`}</code></pre>
+			</div>
+			<div class="step-memd">
+				<div class="step-num-memd">02</div>
+				<div class="step-content">
+					<h3>Publish on Loooom</h3>
+					<p>Your context lives at <code>loooom.xyz/me/you</code>. Raw markdown at <code>/me/you/raw</code>. CORS-open so any AI can fetch it directly.</p>
+				</div>
+			</div>
+			<div class="step-memd">
+				<div class="step-num-memd">03</div>
+				<div class="step-content">
+					<h3>Paste once. Known everywhere.</h3>
+					<p>One injection prompt in your system prompt. Every AI session starts already knowing you. No more re-introducing yourself.</p>
+				</div>
 			</div>
 		</div>
 	</div>
 </section>
 
-<!-- Creator Trust -->
-<section class="trust">
+<!-- Live example -->
+<section class="demo-section">
 	<div class="section-inner">
-		<div class="trust-inner">
-			<div class="trust-text">
-				<p class="section-eyebrow">For creators</p>
-				<h2>This isn't training.<br />It's teaching.</h2>
-				<p>
-					You write the skill. Claude follows it. Your knowledge <strong>never</strong> trains
-					Anthropic's models — it lives in a file on your GitHub, published under your name,
-					deletable by you at any time.
-				</p>
-				<p>
-					Think of it like publishing a book. Except every reader gets a personal tutor who teaches
-					your method, your voice, your way.
-				</p>
+		<div class="demo-grid">
+			<div class="demo-text">
+				<p class="section-eyebrow">The format</p>
+				<h2>Frontmatter for machines.<br/>Markdown for humans.</h2>
+				<p>YAML frontmatter carries your identity: handle, timezone, agent fleet. Markdown sections carry your soul: values, preferences, anti-patterns.</p>
+				<p>Any AI can read it. Any human can edit it. One file to rule every context window.</p>
+				<a href="/me" class="link-cta" style="display: inline-flex; margin-top: 1.25rem;">Explore the ME.md spec →</a>
 			</div>
-			<div class="trust-stats">
-				<div class="trust-stat">
-					<span class="stat-icon">✍️</span>
-					<strong>You write it</strong>
-					<span>Plain English. Your method. Your voice.</span>
-				</div>
-				<div class="trust-stat">
-					<span class="stat-icon">🔒</span>
-					<strong>You own it</strong>
-					<span>Hosted on your GitHub. Edit or delete anytime.</span>
-				</div>
-				<div class="trust-stat">
-					<span class="stat-icon">🏷️</span>
-					<strong>Your name on it</strong>
-					<span>Every install credits you as the author.</span>
+			<div class="demo-code">
+				<div class="code-win">
+					<div class="code-win-bar">
+						<span class="win-dot r"></span>
+						<span class="win-dot y"></span>
+						<span class="win-dot g"></span>
+						<span class="win-label">ME.md</span>
+					</div>
+					<pre class="code-win-body"><code>---
+version: "1.0"
+handle: "@you"
+timezone: "America/Chicago"
+agents:
+  - id: mybot
+    role: "Principal Engineer"
+    emoji: "⚡"
+tags: [coding, music, coffee]
+---
+
+# 🫀 The Soul
+Ship fast. Refactor ruthlessly.
+First principles over best practices.
+
+# 🚫 Anti-Patterns
+- Never pad a response
+- Never explain what I can see
+- Never ask — just do it
+
+# 📍 Context
+Building: my-app-v2</code></pre>
 				</div>
 			</div>
 		</div>
 	</div>
 </section>
 
-<!-- How to install -->
-<section class="how">
+<!-- Skills: secondary -->
+<section class="skills-secondary">
 	<div class="section-inner">
-		<p class="section-eyebrow">Getting started</p>
-		<h2>Three steps. That's it.</h2>
-		<div class="steps">
-			<div class="step">
-				<span class="step-num">01</span>
-				<div class="step-body">
-					<h3>Add the marketplace</h3>
-					<p>Connect Claude Code to the Loooom skill catalog with one command.</p>
-					<code class="inline-cmd">{MARKETPLACE_COMMAND}</code>
+		<div class="skills-secondary-inner">
+			<div class="skills-secondary-text">
+				<p class="section-eyebrow">Also on Loooom</p>
+				<h2>AI Skills Marketplace</h2>
+				<p>Claude Code skills — plain markdown files that teach Claude new capabilities. Browse {loooomCount}+ originals, install with one command.</p>
+				<div class="skills-links">
+					<a href="/browse" class="link-cta">Browse skills →</a>
+					<a href="https://github.com/mager/loooom" target="_blank" rel="noopener" class="link-ghost">Contribute on GitHub</a>
 				</div>
 			</div>
-			<div class="step">
-				<span class="step-num">02</span>
-				<div class="step-body">
-					<h3>Install any skill</h3>
-					<p>Browse by category or search. Every skill is a single install command.</p>
-					<code class="inline-cmd">/plugin install beginner-japanese@loooom</code>
-				</div>
-			</div>
-			<div class="step">
-				<span class="step-num">03</span>
-				<div class="step-body">
-					<h3>Claude reads it automatically</h3>
-					<p>
-						Skills live in <code>.claude/skills/</code>. Claude reads them at session start — no
-						configuration required.
-					</p>
-				</div>
+			<div class="skills-secondary-plugins">
+				{#each featuredPlugins as plugin}
+					<a href="/p/{plugin.author}/{plugin.name}" class="mini-plugin-card">
+						<span class="mini-plugin-emoji">{plugin.emoji}</span>
+						<div>
+							<div class="mini-plugin-title">{plugin.title}</div>
+							<div class="mini-plugin-author">@{plugin.author}</div>
+						</div>
+					</a>
+				{/each}
 			</div>
 		</div>
 	</div>
 </section>
 
-<!-- Plugin Showcase -->
-<section class="plugins">
-	<div class="section-inner">
-		<div class="plugins-header">
-			<div>
-				<p class="section-eyebrow">Marketplace</p>
-				<h2>Featured skills</h2>
-			</div>
-			<a href="/browse" class="link-ghost browse-all">Browse all {data.plugins.length} →</a>
-		</div>
-		<div class="plugins-grid">
-			{#each featuredPlugins as plugin}
-				<a href="/p/{plugin.author}/{plugin.name}" class="plugin-card">
-					<span class="plugin-emoji">{plugin.emoji}</span>
-					<h3 class="plugin-title">{plugin.title}</h3>
-					<p class="plugin-desc">{plugin.description}</p>
-					<span class="plugin-author">@{plugin.author}</span>
-				</a>
-			{/each}
-		</div>
-		<div class="community-callout">
-			<span class="community-icon">🌐</span>
-			<p>
-				We also curate the best skills from across the ecosystem — not just Loooom originals.
-				Got one worth featuring?
-				<a
-					href="https://twitter.com/loooomxyz"
-					target="_blank"
-					rel="noopener"
-					class="callout-link">Tweet at @loooomxyz</a
-				> to submit.
-			</p>
-		</div>
-	</div>
-</section>
-
-<!-- ME.md callout -->
-<section class="memd-callout">
-	<div class="memd-inner">
-		<div class="memd-badge">New</div>
-		<h2 class="memd-title">
-			<span class="memd-brand">ME.md</span>
-			— Your portable context, everywhere.
-		</h2>
-		<p class="memd-desc">
-			One file. Every AI knows you. Stop re-prompting every session.<br />
-			Publish your <strong>ME.md</strong> and inject your soul into any AI with a single URL.
-		</p>
-		<div class="memd-actions">
-			<a href="/me" class="btn-memd-primary">Discover ME.md →</a>
-			<a href="/me/mager" class="btn-memd-ghost">See an example</a>
-		</div>
-		<p class="memd-tagline">"robots.txt for human consciousness."</p>
-	</div>
-</section>
 
 <!-- Footer -->
 <footer>
@@ -321,10 +184,15 @@ Correct gently. Celebrate wins.`}</code></pre>
 		</div>
 		<div class="footer-links">
 			<div class="footer-col">
-				<h4>Product</h4>
-				<a href="/browse">Browse Skills</a>
-				<a href="/me">ME.md</a>
-				<a href="/startweaving">Create a Skill</a>
+				<h4>ME.md</h4>
+				<a href="/me">What is ME.md?</a>
+				<a href="/me/mager">See an example</a>
+				<a href="/login">Claim yours</a>
+			</div>
+			<div class="footer-col">
+				<h4>Skills</h4>
+				<a href="/browse">Browse</a>
+				<a href="/startweaving">Create</a>
 				<a href="/docs">Docs</a>
 			</div>
 			<div class="footer-col">
@@ -440,108 +308,231 @@ Correct gently. Celebrate wins.`}</code></pre>
 
 	/* ===== Hero ===== */
 	.hero {
-		padding: 7rem 1.5rem 4.5rem;
+		padding: 7rem 1.5rem 5rem;
 		text-align: center;
 	}
 	.hero-inner {
-		max-width: 600px;
+		max-width: 580px;
 		margin: 0 auto;
 	}
-	.eyebrow {
-		font-family: var(--font-mono);
-		font-size: 0.65rem;
-		font-weight: 400;
-		letter-spacing: 0.12em;
+	.hero-eyebrow { margin-bottom: 1.5rem; }
+	.eyebrow-badge {
+		display: inline-block;
+		background: linear-gradient(135deg, rgba(139,92,246,0.12) 0%, rgba(6,182,212,0.08) 100%);
+		border: 1px solid rgba(139,92,246,0.3);
+		color: var(--violet);
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 0.1em;
 		text-transform: uppercase;
-		color: var(--ocean);
-		margin-bottom: 1.25rem;
+		padding: 4px 14px;
+		border-radius: 999px;
 	}
 	h1 {
-		font-size: clamp(2.75rem, 9vw, 5rem);
+		font-size: clamp(3rem, 10vw, 5.5rem);
 		color: var(--text-primary);
-		margin-bottom: 1.25rem;
+		margin-bottom: 1.5rem;
+		line-height: 1;
 	}
 	.hero-sub {
 		font-size: clamp(0.95rem, 2.5vw, 1.1rem);
 		color: var(--text-secondary);
-		line-height: 1.6;
-		max-width: 460px;
+		line-height: 1.65;
+		max-width: 480px;
 		margin: 0 auto 2rem;
 		font-weight: 300;
 	}
-
-	/* ===== Terminal Block ===== */
-	.terminal {
+	.hero-sub strong { color: var(--text-primary); }
+	.hero-url-preview {
+		display: inline-flex;
+		align-items: center;
 		background: var(--bg-card);
 		border: 1px solid var(--border);
 		border-radius: 10px;
-		overflow: hidden;
-		margin: 0 auto 1.75rem;
-		max-width: 460px;
-		text-align: left;
-	}
-	.terminal-bar {
-		display: flex;
-		align-items: center;
-		gap: 0.4rem;
-		padding: 0.55rem 0.85rem;
-		background: var(--bg-secondary);
-		border-bottom: 1px solid var(--border);
-	}
-	.terminal-dot {
-		width: 9px;
-		height: 9px;
-		border-radius: 50%;
-		background: var(--border);
-	}
-	.terminal-label {
+		padding: 0.65rem 1.25rem;
 		font-family: var(--font-mono);
-		font-size: 0.62rem;
-		color: var(--text-muted);
-		margin-left: 0.25rem;
-		flex: 1;
+		font-size: 1rem;
+		margin-bottom: 2rem;
 	}
-	.copy-btn {
-		font-family: var(--font-mono);
-		font-size: 0.62rem;
-		color: var(--text-muted);
-		background: none;
-		border: 1px solid var(--border);
-		border-radius: 4px;
-		padding: 0.18rem 0.5rem;
-		cursor: pointer;
-		transition: all 0.15s;
+	.url-prefix { color: var(--text-muted); }
+	.url-handle {
+		color: var(--violet);
+		font-weight: 700;
 	}
-	.copy-btn:hover {
-		color: var(--text-primary);
-		border-color: var(--text-muted);
-	}
-	.terminal-body {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		padding: 0.9rem 1rem;
-	}
-	.prompt {
-		font-family: var(--font-mono);
-		font-size: 0.9rem;
-		color: var(--text-muted);
-		user-select: none;
-	}
-	.cmd {
-		font-family: var(--font-mono);
-		font-size: 0.85rem;
-		color: var(--ocean);
-	}
-
-	/* ===== Hero Links ===== */
-	.hero-links {
+	.hero-actions {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 1.75rem;
+		gap: 1rem;
 		flex-wrap: wrap;
+		margin-bottom: 1.25rem;
 	}
+	.btn-primary-hero {
+		background: linear-gradient(135deg, var(--violet) 0%, var(--ocean) 100%);
+		color: white;
+		font-weight: 700;
+		font-size: 0.95rem;
+		padding: 0.8rem 1.75rem;
+		border-radius: 999px;
+		text-decoration: none;
+		transition: opacity 0.2s, transform 0.2s;
+	}
+	.btn-primary-hero:hover { opacity: 0.9; transform: translateY(-1px); }
+	.btn-ghost-hero {
+		background: none;
+		border: 1.5px solid var(--border);
+		color: var(--text-secondary);
+		font-size: 0.9rem;
+		padding: 0.8rem 1.5rem;
+		border-radius: 999px;
+		text-decoration: none;
+		transition: all 0.2s;
+	}
+	.btn-ghost-hero:hover { border-color: var(--violet); color: var(--violet); }
+	.hero-hint {
+		font-size: 0.78rem;
+		color: var(--text-muted);
+		margin: 0;
+	}
+
+	/* ===== How ME.md Works ===== */
+	.how-memd {
+		padding: 5rem 1.5rem;
+		background: var(--bg-secondary);
+		border-top: 1px solid var(--border);
+	}
+	.how-memd h2 { margin-bottom: 3rem; }
+	.steps-memd {
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+		border-left: 2px solid var(--border);
+		padding-left: 2.5rem;
+		margin-left: 2rem;
+		max-width: 640px;
+	}
+	.step-memd {
+		display: flex;
+		gap: 1.5rem;
+		padding-bottom: 2.5rem;
+		position: relative;
+	}
+	.step-memd::before {
+		content: '';
+		position: absolute;
+		left: -2.85rem;
+		top: 5px;
+		width: 10px; height: 10px;
+		border-radius: 50%;
+		background: var(--violet);
+		border: 2px solid var(--bg-secondary);
+	}
+	.step-num-memd {
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		color: var(--violet);
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		padding-top: 4px;
+		flex-shrink: 0;
+	}
+	.step-content h3 { font-size: 1.05rem; margin: 0 0 0.4rem; }
+	.step-content p { color: var(--text-secondary); line-height: 1.65; margin: 0; font-size: 0.9rem; }
+	.step-content code {
+		font-family: var(--font-mono);
+		font-size: 0.82em;
+		background: var(--bg-primary);
+		border: 1px solid var(--border);
+		padding: 1px 6px;
+		border-radius: 4px;
+		color: var(--violet);
+	}
+
+	/* ===== Demo Section ===== */
+	.demo-section {
+		padding: 5rem 1.5rem;
+	}
+	.demo-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 4rem;
+		align-items: center;
+	}
+	.demo-text h2 { margin-bottom: 1rem; }
+	.demo-text p { color: var(--text-secondary); line-height: 1.65; margin: 0 0 0.85rem; font-size: 0.95rem; }
+	.code-win {
+		border: 1px solid var(--border);
+		border-radius: var(--radius-lg, 16px);
+		overflow: hidden;
+		box-shadow: var(--card-shadow);
+	}
+	.code-win-bar {
+		background: var(--bg-secondary);
+		border-bottom: 1px solid var(--border);
+		padding: 10px 14px;
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+	.win-dot {
+		width: 10px; height: 10px;
+		border-radius: 50%;
+	}
+	.win-dot.r { background: #ff5f57; }
+	.win-dot.y { background: #febc2e; }
+	.win-dot.g { background: #28c840; }
+	.win-label {
+		margin-left: 8px;
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		color: var(--text-muted);
+	}
+	.code-win-body {
+		margin: 0;
+		padding: 1.25rem 1.5rem;
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+		line-height: 1.65;
+		color: var(--text-secondary);
+		background: var(--bg-primary);
+		overflow-x: auto;
+		white-space: pre;
+	}
+
+	/* ===== Skills Secondary ===== */
+	.skills-secondary {
+		padding: 4rem 1.5rem;
+		background: var(--bg-secondary);
+		border-top: 1px solid var(--border);
+	}
+	.skills-secondary-inner {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 4rem;
+		align-items: start;
+	}
+	.skills-secondary-text h2 { margin-bottom: 0.75rem; font-size: 1.6rem; }
+	.skills-secondary-text p { color: var(--text-secondary); line-height: 1.65; margin: 0 0 1.5rem; font-size: 0.9rem; }
+	.skills-links { display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: center; }
+	.skills-secondary-plugins { display: flex; flex-direction: column; gap: 10px; }
+	.mini-plugin-card {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: 10px;
+		padding: 12px 16px;
+		text-decoration: none;
+		color: inherit;
+		transition: border-color 0.2s, box-shadow 0.2s;
+	}
+	.mini-plugin-card:hover { border-color: var(--ocean); box-shadow: 0 4px 16px rgba(6,182,212,0.1); }
+	.mini-plugin-emoji { font-size: 1.4rem; flex-shrink: 0; }
+	.mini-plugin-title { font-size: 0.88rem; font-weight: 600; color: var(--text-primary); }
+	.mini-plugin-author { font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); }
+
+	/* ===== Shared ===== */
 	.link-cta {
 		font-size: 0.9rem;
 		font-weight: 600;
@@ -551,9 +542,7 @@ Correct gently. Celebrate wins.`}</code></pre>
 		align-items: center;
 		transition: color 0.2s;
 	}
-	.link-cta:hover {
-		color: var(--ocean) !important;
-	}
+	.link-cta:hover { color: var(--ocean) !important; }
 	.link-ghost {
 		font-size: 0.875rem;
 		font-weight: 500;
@@ -561,384 +550,7 @@ Correct gently. Celebrate wins.`}</code></pre>
 		text-decoration: none;
 		transition: color 0.2s;
 	}
-	.link-ghost:hover {
-		color: var(--text-secondary) !important;
-	}
-
-	/* ===== Waitlist ===== */
-	.waitlist-block {
-		margin-top: 2.5rem;
-		padding-top: 2rem;
-		border-top: 1px solid var(--border);
-		text-align: center;
-		max-width: 440px;
-		margin-left: auto;
-		margin-right: auto;
-	}
-	.waitlist-eyebrow {
-		font-family: var(--font-mono);
-		font-size: 0.7rem;
-		text-transform: uppercase;
-		letter-spacing: 0.12em;
-		color: var(--text-muted);
-		margin-bottom: 0.75rem;
-	}
-	.waitlist-form {
-		display: flex;
-		gap: 0.5rem;
-		width: 100%;
-	}
-	.waitlist-form input {
-		flex: 1;
-		padding: 0.75rem 1rem;
-		background: var(--bg-card);
-		border: 1px solid var(--border);
-		border-radius: var(--radius-md);
-		color: var(--text-primary);
-		font-family: var(--font-display);
-		font-size: 0.9rem;
-		outline: none;
-		transition: border-color 0.2s;
-	}
-	.waitlist-form input:focus { border-color: var(--accent); }
-	.waitlist-form input::placeholder { color: var(--text-muted); }
-	.waitlist-form input:disabled { opacity: 0.6; }
-	.waitlist-form button {
-		padding: 0.75rem 1.25rem;
-		background: var(--accent);
-		color: white;
-		border: none;
-		border-radius: var(--radius-md);
-		font-family: var(--font-display);
-		font-size: 0.875rem;
-		font-weight: 600;
-		cursor: pointer;
-		white-space: nowrap;
-		transition: all 0.2s;
-	}
-	.waitlist-form button:hover:not(:disabled) { background: var(--accent-bright); }
-	.waitlist-form button:disabled { opacity: 0.6; cursor: not-allowed; }
-	:global(html[data-theme="dark"]) .waitlist-form button { color: var(--bg-primary); }
-	.waitlist-note {
-		font-size: 0.8rem;
-		color: var(--text-muted);
-		margin-top: 0.75rem;
-	}
-	.waitlist-note a { color: var(--ocean); text-decoration: none; }
-	.waitlist-note a:hover { color: var(--ocean-deep); }
-	.waitlist-success {
-		font-size: 0.9rem;
-		color: var(--emerald);
-		font-weight: 600;
-	}
-	.waitlist-error {
-		font-size: 0.8rem;
-		color: var(--rose);
-		margin-top: 0.5rem;
-	}
-
-	/* ===== Explainer (What is a skill?) ===== */
-	.explainer {
-		padding: 4.5rem 0;
-		border-top: 1px solid var(--border);
-		border-bottom: 1px solid var(--border);
-		background: var(--bg-secondary);
-	}
-	.explainer-grid {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 4rem;
-		align-items: center;
-	}
-	.explainer-text h2 {
-		font-size: 1.9rem;
-		color: var(--text-primary);
-		margin-bottom: 1rem;
-	}
-	.explainer-text p {
-		font-size: 0.95rem;
-		color: var(--text-secondary);
-		line-height: 1.65;
-		margin-bottom: 0.75rem;
-		font-weight: 300;
-	}
-	.explainer-text code {
-		font-family: var(--font-mono);
-		font-size: 0.82rem;
-		color: var(--ocean);
-		background: var(--bg-card);
-		border: 1px solid var(--border);
-		padding: 0.1em 0.4em;
-		border-radius: 4px;
-	}
-	.skill-preview {
-		background: var(--bg-card);
-		border: 1px solid var(--border);
-		border-radius: 10px;
-		overflow: hidden;
-	}
-	.skill-file-header {
-		display: flex;
-		align-items: center;
-		gap: 0.35rem;
-		padding: 0.55rem 0.85rem;
-		background: var(--bg-secondary);
-		border-bottom: 1px solid var(--border);
-	}
-	.file-dot {
-		width: 9px;
-		height: 9px;
-		border-radius: 50%;
-		background: var(--border);
-	}
-	.file-name {
-		font-family: var(--font-mono);
-		font-size: 0.68rem;
-		color: var(--text-muted);
-		margin-left: 0.3rem;
-	}
-	.skill-code {
-		padding: 1rem 1.1rem;
-		margin: 0;
-		overflow-x: auto;
-	}
-	.skill-code code {
-		font-family: var(--font-mono);
-		font-size: 0.75rem;
-		color: var(--text-secondary);
-		line-height: 1.65;
-		white-space: pre;
-	}
-
-	/* ===== Creator Trust ===== */
-	.trust {
-		padding: 4.5rem 0;
-		border-top: 1px solid var(--border);
-	}
-	.trust-inner {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 4rem;
-		align-items: center;
-	}
-	.trust-text h2 {
-		font-size: 1.9rem;
-		color: var(--text-primary);
-		margin-bottom: 1rem;
-		line-height: 1.15;
-	}
-	.trust-text p {
-		font-size: 0.95rem;
-		color: var(--text-secondary);
-		line-height: 1.65;
-		font-weight: 300;
-		margin-bottom: 0.75rem;
-	}
-	.trust-text strong {
-		color: var(--ocean);
-		font-weight: 600;
-	}
-	.trust-stats {
-		display: flex;
-		flex-direction: column;
-		gap: 0;
-	}
-	.trust-stat {
-		display: grid;
-		grid-template-columns: 2rem 1fr;
-		grid-template-rows: auto auto;
-		column-gap: 0.75rem;
-		padding: 1.1rem 0;
-		border-top: 1px solid var(--border);
-	}
-	.trust-stat:last-child {
-		border-bottom: 1px solid var(--border);
-	}
-	.stat-icon {
-		grid-row: 1 / 3;
-		font-size: 1.1rem;
-		padding-top: 0.1rem;
-	}
-	.trust-stat strong {
-		font-size: 0.9rem;
-		font-weight: 600;
-		color: var(--text-primary);
-		display: block;
-	}
-	.trust-stat span {
-		font-size: 0.8rem;
-		color: var(--text-muted);
-		font-weight: 300;
-		line-height: 1.4;
-	}
-
-	/* ===== How It Works ===== */
-	.how {
-		padding: 4.5rem 0;
-	}
-	.how h2 {
-		font-size: 1.9rem;
-		color: var(--text-primary);
-		margin-bottom: 2.5rem;
-	}
-	.steps {
-		display: flex;
-		flex-direction: column;
-	}
-	.step {
-		display: grid;
-		grid-template-columns: 56px 1fr;
-		gap: 1.5rem;
-		padding: 1.75rem 0;
-		border-top: 1px solid var(--border);
-	}
-	.step:last-child {
-		border-bottom: 1px solid var(--border);
-	}
-	.step-num {
-		font-family: var(--font-mono);
-		font-size: 0.72rem;
-		font-weight: 700;
-		color: var(--text-muted);
-		padding-top: 0.3rem;
-	}
-	.step-body h3 {
-		font-size: 1.1rem;
-		font-weight: 600;
-		color: var(--text-primary);
-		margin-bottom: 0.4rem;
-		letter-spacing: -0.015em;
-	}
-	.step-body p {
-		font-size: 0.9rem;
-		color: var(--text-secondary);
-		line-height: 1.6;
-		margin-bottom: 0.75rem;
-		font-weight: 300;
-	}
-	.step-body p code {
-		font-family: var(--font-mono);
-		font-size: 0.8rem;
-		color: var(--ocean);
-		background: var(--bg-secondary);
-		border: 1px solid var(--border);
-		padding: 0.1em 0.4em;
-		border-radius: 4px;
-	}
-	.inline-cmd {
-		font-family: var(--font-mono);
-		font-size: 0.78rem;
-		color: var(--ocean);
-		background: var(--bg-secondary);
-		border: 1px solid var(--border);
-		border-radius: 6px;
-		padding: 0.45rem 0.85rem;
-		display: inline-block;
-	}
-
-	/* ===== Plugin Showcase ===== */
-	.plugins {
-		padding: 4.5rem 0;
-		border-top: 1px solid var(--border);
-		background: var(--bg-secondary);
-	}
-	.plugins-header {
-		display: flex;
-		align-items: flex-end;
-		justify-content: space-between;
-		margin-bottom: 1.75rem;
-		gap: 1rem;
-	}
-	.plugins-header h2 {
-		font-size: 1.9rem;
-		color: var(--text-primary);
-	}
-	.browse-all {
-		white-space: nowrap;
-		padding-bottom: 0.2rem;
-	}
-	.plugins-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		border: 1px solid var(--border);
-		border-radius: 10px;
-		overflow: hidden;
-	}
-	.plugin-card {
-		background: var(--bg-card);
-		padding: 1.5rem;
-		display: flex;
-		flex-direction: column;
-		gap: 0.4rem;
-		text-decoration: none;
-		color: inherit;
-		transition: background 0.15s;
-		border-right: 1px solid var(--border);
-	}
-	.plugin-card:last-child {
-		border-right: none;
-	}
-	.plugin-card:hover {
-		background: var(--bg-card-hover);
-		color: inherit;
-	}
-	.plugin-emoji {
-		font-size: 1.75rem;
-		margin-bottom: 0.25rem;
-	}
-	.plugin-title {
-		font-family: var(--font-display);
-		font-size: 0.95rem;
-		font-weight: 600;
-		color: var(--text-primary);
-		letter-spacing: -0.015em;
-	}
-	.plugin-desc {
-		font-size: 0.8rem;
-		color: var(--text-secondary);
-		line-height: 1.5;
-		flex: 1;
-		font-weight: 300;
-	}
-	.plugin-author {
-		font-family: var(--font-mono);
-		font-size: 0.65rem;
-		color: var(--text-muted);
-		margin-top: 0.25rem;
-	}
-
-	/* ===== Community Callout ===== */
-	.community-callout {
-		display: flex;
-		align-items: flex-start;
-		gap: 0.75rem;
-		margin-top: 1.5rem;
-		padding: 1rem 1.25rem;
-		background: var(--bg-card);
-		border: 1px solid var(--border);
-		border-radius: 8px;
-	}
-	.community-icon {
-		font-size: 1.1rem;
-		flex-shrink: 0;
-		padding-top: 0.05rem;
-	}
-	.community-callout p {
-		font-size: 0.85rem;
-		color: var(--text-secondary);
-		line-height: 1.6;
-		font-weight: 300;
-		margin: 0;
-	}
-	.callout-link {
-		color: var(--ocean) !important;
-		text-decoration: none;
-		font-weight: 500;
-		transition: opacity 0.2s;
-	}
-	.callout-link:hover {
-		opacity: 0.75;
-	}
+	.link-ghost:hover { color: var(--text-secondary) !important; }
 
 	/* ===== Footer ===== */
 	footer {
