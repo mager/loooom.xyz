@@ -11,6 +11,7 @@ export const users = pgTable('users', {
 	xUsername: text('x_username'),
 	verified: boolean('verified').notNull().default(false),
 	topics: jsonb('topics').$type<string[]>().default([]),
+	meMd: text('me_md'), // Portable Human Context — me.md content (raw markdown)
 	createdAt: timestamp('created_at').notNull().defaultNow(),
 	firebaseUid: text('firebase_uid').unique(),
 	updatedAt: timestamp('updated_at').notNull().defaultNow()

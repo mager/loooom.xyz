@@ -127,7 +127,8 @@ export const load: PageServerLoad = async ({ params }) => {
 				topics: allSkills.length > 0
 					? topicsFromSkills(allSkills)
 					: (dbUser.topics ?? []) as string[],
-				source: 'loooom' as const
+				source: 'loooom' as const,
+				hasMeMd: !!dbUser.meMd
 			},
 			skills: allSkills,
 			externalMarketplace: null

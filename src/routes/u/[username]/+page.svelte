@@ -111,6 +111,10 @@
 				<button class="follow-btn">Follow</button>
 				<button class="tip-btn">💜 Tip</button>
 			{/if}
+			{#if data.user.hasMeMd}
+				<span class="meta-dot">·</span>
+				<a href="/me/{data.user.username}" class="memd-link">me.md ↗</a>
+			{/if}
 		</div>
 	</div>
 </section>
@@ -507,6 +511,22 @@
 	.tip-btn:hover {
 		border-color: var(--ocean);
 		color: var(--ocean);
+	}
+	.memd-link {
+		padding: 0.4rem 1rem;
+		border-radius: 100px;
+		background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(6, 182, 212, 0.08) 100%);
+		border: 1px solid rgba(139, 92, 246, 0.3);
+		color: var(--violet);
+		font-size: 0.82rem;
+		font-weight: 600;
+		font-style: italic;
+		text-decoration: none;
+		transition: all 0.2s;
+	}
+	.memd-link:hover {
+		background: linear-gradient(135deg, rgba(139, 92, 246, 0.18) 0%, rgba(6, 182, 212, 0.14) 100%);
+		border-color: var(--violet);
 	}
 
 	.skills-section {

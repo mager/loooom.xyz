@@ -57,7 +57,8 @@
 			<span class="logo-text">loooom</span>
 		</a>
 		<div class="nav-right">
-			<a href="/browse" class="nav-link">Browse</a>
+			<a href="/browse" class="nav-link">Skills</a>
+			<a href="/me" class="nav-link nav-link-memd">ME.md</a>
 			<a
 				href="https://github.com/mager/loooom"
 				target="_blank"
@@ -288,6 +289,26 @@ Correct gently. Celebrate wins.`}</code></pre>
 	</div>
 </section>
 
+<!-- ME.md callout -->
+<section class="memd-callout">
+	<div class="memd-inner">
+		<div class="memd-badge">New</div>
+		<h2 class="memd-title">
+			<span class="memd-brand">ME.md</span>
+			— Your portable context, everywhere.
+		</h2>
+		<p class="memd-desc">
+			One file. Every AI knows you. Stop re-prompting every session.<br />
+			Publish your <strong>ME.md</strong> and inject your soul into any AI with a single URL.
+		</p>
+		<div class="memd-actions">
+			<a href="/me" class="btn-memd-primary">Discover ME.md →</a>
+			<a href="/me/mager" class="btn-memd-ghost">See an example</a>
+		</div>
+		<p class="memd-tagline">"robots.txt for human consciousness."</p>
+	</div>
+</section>
+
 <!-- Footer -->
 <footer>
 	<div class="footer-inner">
@@ -301,7 +322,8 @@ Correct gently. Celebrate wins.`}</code></pre>
 		<div class="footer-links">
 			<div class="footer-col">
 				<h4>Product</h4>
-				<a href="/browse">Browse</a>
+				<a href="/browse">Browse Skills</a>
+				<a href="/me">ME.md</a>
 				<a href="/startweaving">Create a Skill</a>
 				<a href="/docs">Docs</a>
 			</div>
@@ -1050,5 +1072,80 @@ Correct gently. Celebrate wins.`}</code></pre>
 		.plugins {
 			padding: 3rem 0;
 		}
+	}
+
+	/* ── ME.md callout ── */
+	.memd-callout {
+		padding: 80px 2rem;
+		background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(6, 182, 212, 0.06) 100%);
+		border-top: 1px solid var(--border);
+		border-bottom: 1px solid var(--border);
+		text-align: center;
+	}
+	.memd-inner { max-width: 680px; margin: 0 auto; }
+	.memd-badge {
+		display: inline-block;
+		background: linear-gradient(135deg, var(--violet) 0%, var(--ocean) 100%);
+		color: white;
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		padding: 3px 12px;
+		border-radius: 999px;
+		margin-bottom: 20px;
+	}
+	.memd-title {
+		font-size: clamp(1.4rem, 3.5vw, 2rem);
+		line-height: 1.3;
+		margin: 0 0 16px;
+		font-weight: 700;
+	}
+	.memd-brand {
+		background: linear-gradient(135deg, var(--violet) 0%, var(--ocean) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		font-style: italic;
+	}
+	.memd-desc {
+		color: var(--text-secondary);
+		line-height: 1.65;
+		margin: 0 0 28px;
+	}
+	.memd-actions { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 20px; }
+	.btn-memd-primary {
+		background: linear-gradient(135deg, var(--violet) 0%, var(--ocean) 100%);
+		color: white; border: none;
+		padding: 12px 28px; border-radius: 999px;
+		font-weight: 600; font-size: 0.95rem;
+		text-decoration: none; cursor: pointer;
+		transition: opacity 0.2s, transform 0.2s;
+	}
+	.btn-memd-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+	.btn-memd-ghost {
+		background: none;
+		border: 1px solid var(--border);
+		color: var(--text-secondary);
+		padding: 12px 24px; border-radius: 999px;
+		font-size: 0.9rem; text-decoration: none;
+		transition: all 0.2s;
+	}
+	.btn-memd-ghost:hover { border-color: var(--violet); color: var(--violet); }
+	.memd-tagline { color: var(--text-muted); font-style: italic; font-size: 0.9rem; margin: 0; }
+
+	/* ME.md nav pill */
+	.nav-link-memd {
+		background: linear-gradient(135deg, rgba(139, 92, 246, 0.12) 0%, rgba(6, 182, 212, 0.08) 100%);
+		border: 1px solid rgba(139, 92, 246, 0.25);
+		color: var(--violet) !important;
+		padding: 3px 10px;
+		border-radius: 999px;
+		font-weight: 600;
+		font-style: italic;
+	}
+	.nav-link-memd:hover {
+		background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(6, 182, 212, 0.15) 100%);
+		color: var(--violet) !important;
 	}
 </style>
