@@ -16,7 +16,7 @@ export const POST: RequestHandler = async ({ params, cookies }) => {
 	const [user] = await db
 		.select({ id: users.id, username: users.username })
 		.from(users)
-		.where(eq(users.firebaseUid, sessionToken));
+		.where(eq(users.id, sessionToken));
 
 	if (!user) throw error(401, 'Session invalid');
 

@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ cookies }) => {
 	const [user] = await db
 		.select({ meMd: users.meMd, username: users.username, id: users.id })
 		.from(users)
-		.where(eq(users.firebaseUid, sessionToken));
+		.where(eq(users.id, sessionToken));
 
 	if (!user) throw redirect(302, '/login');
 

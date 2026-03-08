@@ -17,7 +17,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	const [user] = await db
 		.select({ id: users.id, username: users.username })
 		.from(users)
-		.where(eq(users.firebaseUid, sessionToken));
+		.where(eq(users.id, sessionToken));
 
 	if (!user) throw error(401, 'Session invalid');
 
@@ -79,7 +79,7 @@ export const GET: RequestHandler = async ({ cookies }) => {
 	const [user] = await db
 		.select({ meMd: users.meMd, username: users.username })
 		.from(users)
-		.where(eq(users.firebaseUid, sessionToken));
+		.where(eq(users.id, sessionToken));
 
 	if (!user) throw error(401, 'Session invalid');
 
