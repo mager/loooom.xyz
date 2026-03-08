@@ -79,8 +79,50 @@
 </script>
 
 <svelte:head>
-	<title>{frontmatter.handle} — ME.md</title>
-	<meta name="description" content="{frontmatter.name ?? user.username}'s Portable Human Context on Loooom" />
+	<title>{frontmatter.handle} — ME.md on Loooom</title>
+	<meta name="description" content="{frontmatter.name ?? user.username}'s Portable Human Context. Fetch raw: https://loooom.xyz{rawUrl}" />
+
+	<!-- Machine-readable meta tags for AI agents -->
+	<meta name="me-md-raw" content="https://loooom.xyz{rawUrl}" />
+	<meta name="me-md-handle" content="{frontmatter.handle}" />
+	<meta name="me-md-version" content="{frontmatter.version ?? '1.0'}" />
+	{#if frontmatter.updated}
+		<meta name="me-md-updated" content="{frontmatter.updated}" />
+	{/if}
+	{#if frontmatter.timezone}
+		<meta name="me-md-timezone" content="{frontmatter.timezone}" />
+	{/if}
+
+	<!-- OpenGraph -->
+	<meta property="og:title" content="{frontmatter.handle} — ME.md" />
+	<meta property="og:description" content="{frontmatter.name ?? user.username}'s portable human context. Any AI can read this. Raw: loooom.xyz{rawUrl}" />
+	<meta property="og:type" content="profile" />
+	<meta property="og:url" content="https://loooom.xyz/me/{user.username}" />
+
+	<!-- JSON-LD structured data for machines -->
+	{@html `<script type="application/ld+json">${JSON.stringify({
+		"@context": "https://schema.org",
+		"@type": "Person",
+		"identifier": frontmatter.handle,
+		"name": frontmatter.name ?? user.username,
+		"url": "https://loooom.xyz/me/" + user.username,
+		"description": "Portable human context profile (ME.md v" + (frontmatter.version ?? "1.0") + ")",
+		...(frontmatter.location ? { "address": { "@type": "PostalAddress", "addressLocality": frontmatter.location } } : {}),
+		...(frontmatter.timezone ? { "homeLocation": { "@type": "Place", "name": frontmatter.location ?? "", "containsPlace": { "name": frontmatter.timezone } } } : {}),
+		"sameAs": [],
+		"additionalProperty": [
+			{
+				"@type": "PropertyValue",
+				"name": "me-md-raw",
+				"value": "https://loooom.xyz" + rawUrl
+			},
+			{
+				"@type": "PropertyValue",
+				"name": "me-md-spec",
+				"value": "https://loooom.xyz/me/spec"
+			}
+		]
+	})}</script>`}
 </svelte:head>
 
 <div class="ambient">
@@ -107,6 +149,18 @@
 		</div>
 	</div>
 </nav>
+
+<!-- Agent Banner: machine-first, always visible -->
+<div class="agent-banner">
+	<div class="agent-banner-inner">
+		<span class="agent-banner-label">🤖 For AI Agents</span>
+		<code class="agent-banner-url">curl https://loooom.xyz{rawUrl}</code>
+		<div class="agent-banner-actions">
+			<button class="agent-banner-btn" onclick={copyRaw}>{copiedRaw ? '✓ copied' : 'Copy URL'}</button>
+			<a href="{rawUrl}" target="_blank" class="agent-banner-link">Raw ↗</a>
+		</div>
+	</div>
+</div>
 
 <!-- Layout: sidebar + content -->
 <div class="layout">
@@ -260,6 +314,80 @@
 </div>
 
 <style>
+	/* ─── Agent Banner ────────────────────────────────────────────────────── */
+	.agent-banner {
+		position: sticky;
+		top: 54px; /* below nav */
+		z-index: 90;
+		background: color-mix(in srgb, var(--ocean) 8%, var(--bg-primary));
+		border-bottom: 1px solid color-mix(in srgb, var(--ocean) 30%, transparent);
+		padding: 0.5rem 1.5rem;
+	}
+	.agent-banner-inner {
+		max-width: 1200px;
+		margin: 0 auto;
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		flex-wrap: wrap;
+	}
+	.agent-banner-label {
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ocean);
+		flex-shrink: 0;
+	}
+	.agent-banner-url {
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+		color: var(--text-secondary);
+		background: var(--bg-secondary);
+		border: 1px solid var(--border);
+		padding: 2px 10px;
+		border-radius: 4px;
+		flex: 1;
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.agent-banner-actions {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		flex-shrink: 0;
+	}
+	.agent-banner-btn {
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		font-weight: 600;
+		background: var(--ocean);
+		color: white;
+		border: none;
+		padding: 3px 10px;
+		border-radius: 4px;
+		cursor: pointer;
+		transition: opacity 0.2s;
+	}
+	.agent-banner-btn:hover { opacity: 0.85; }
+	.agent-banner-link {
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		font-weight: 600;
+		color: var(--ocean);
+		text-decoration: none;
+		padding: 3px 8px;
+		border: 1px solid color-mix(in srgb, var(--ocean) 40%, transparent);
+		border-radius: 4px;
+		transition: all 0.2s;
+	}
+	.agent-banner-link:hover {
+		background: color-mix(in srgb, var(--ocean) 10%, transparent);
+	}
+
 	/* ─── Ambient ─────────────────────────────────────────────────────────── */
 	.ambient {
 		position: fixed; inset: 0;

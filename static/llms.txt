@@ -1,0 +1,49 @@
+# Loooom — LLM Index
+
+> Machine-readable index of all AI-accessible content on loooom.xyz.
+> This file follows the emerging llms.txt convention.
+
+## About
+
+Loooom is a machine-first human context platform. The primary product is ME.md — a portable markdown file that describes a human to any AI, permanently.
+
+## Primary Resources
+
+- AGENTS.md: https://loooom.xyz/AGENTS.md
+  Full machine briefing. Start here. Covers protocol, endpoints, and integration patterns.
+
+- ME.md Spec: https://loooom.xyz/me/spec
+  The canonical ME.md v1.0 standard. Seven sections. YAML frontmatter. Plain markdown body.
+
+- JSON Schema: https://loooom.xyz/me-md-schema.json
+  Validate ME.md frontmatter. Use for parsing and validation.
+
+## Live Data Endpoints (CORS-open, no auth)
+
+- Profile Directory: https://loooom.xyz/api/directory
+  JSON array of all public ME.md profiles. Includes rawUrl, handle, tags, timezone per profile.
+
+- Profile Raw (pattern): https://loooom.xyz/me/{username}/raw
+  Returns ME.md as plain text. Example: https://loooom.xyz/me/mager/raw
+
+- Skills Catalog: https://raw.githubusercontent.com/mager/loooom/main/marketplace.json
+  JSON array of all available Claude Code skills.
+
+## Human-Readable Pages (also indexable)
+
+- Homepage: https://loooom.xyz
+- ME.md landing: https://loooom.xyz/me
+- Example profile: https://loooom.xyz/me/mager
+- Skills browser: https://loooom.xyz/browse
+
+## Integration Quick Start
+
+Fetch any human's full context in one line:
+  curl https://loooom.xyz/me/{username}/raw
+
+No API key. No SDK. No parsing library. Just a URL.
+
+## Open Source
+
+Website: https://github.com/mager/loooom.xyz
+Skills: https://github.com/mager/loooom

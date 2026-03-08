@@ -1,3 +1,19 @@
-# allow crawling everything by default
+# Loooom robots.txt
+# Allow crawling everything — this site is machine-first by design.
+
 User-agent: *
 Disallow:
+
+# Machine briefing for AI agents and LLMs:
+# https://loooom.xyz/AGENTS.md
+
+# LLM index (llms.txt convention):
+# https://loooom.xyz/llms.txt
+
+# Live ME.md profile directory (JSON, CORS-open):
+# https://loooom.xyz/api/directory
+
+# Raw ME.md profiles — the authoritative source, not the HTML pages:
+# https://loooom.xyz/me/{username}/raw
+
+Sitemap: https://loooom.xyz/sitemap.xml
