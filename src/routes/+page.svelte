@@ -355,8 +355,10 @@ Building: my-app-v2</code></pre>
 
 <style>
 	/* ===== Base ===== */
+	:global(html),
 	:global(body) {
 		overflow-x: hidden;
+		max-width: 100vw;
 	}
 
 	h1, h2, h3 {
@@ -485,6 +487,9 @@ Building: my-app-v2</code></pre>
 		margin-bottom: 2rem;
 		font-family: var(--font-mono);
 		font-size: 0.78rem;
+		max-width: 100%;
+		box-sizing: border-box;
+		overflow: hidden;
 	}
 	.machine-eyebrow-prompt {
 		color: var(--ocean);
@@ -494,6 +499,10 @@ Building: my-app-v2</code></pre>
 	.machine-eyebrow-cmd {
 		color: var(--text-secondary);
 		font-family: inherit;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		min-width: 0;
 	}
 	.cmd-handle {
 		color: var(--violet);
@@ -664,6 +673,8 @@ Building: my-app-v2</code></pre>
 		display: flex;
 		flex-direction: column;
 		gap: 3px;
+		overflow-x: auto;
+		max-width: 100%;
 	}
 	.code-line {
 		font-family: var(--font-mono);
@@ -673,6 +684,7 @@ Building: my-app-v2</code></pre>
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+		max-width: 100%;
 	}
 	.code-dim { opacity: 0.6; }
 	.code-comment { color: var(--text-muted); }
@@ -711,6 +723,8 @@ Building: my-app-v2</code></pre>
 		border: 1px solid var(--border);
 		border-radius: 12px;
 		overflow: hidden;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
 	}
 	.endpoints-title {
 		background: var(--bg-primary);
@@ -726,6 +740,7 @@ Building: my-app-v2</code></pre>
 	.endpoints-grid {
 		display: flex;
 		flex-direction: column;
+		min-width: 560px;
 	}
 	.ep-row {
 		display: grid;
@@ -750,6 +765,7 @@ Building: my-app-v2</code></pre>
 		font-family: var(--font-mono);
 		font-size: 0.78rem;
 		color: var(--violet);
+		word-break: break-all;
 	}
 	.ep-row span:not(.ep-badge):not(.ep-none) {
 		color: var(--text-secondary);
@@ -872,6 +888,7 @@ Building: my-app-v2</code></pre>
 		background: var(--bg-primary);
 		overflow-x: auto;
 		white-space: pre;
+		-webkit-overflow-scrolling: touch;
 	}
 
 	/* ===== Skills Secondary ===== */
@@ -1051,11 +1068,17 @@ Building: my-app-v2</code></pre>
 	}
 	@media (max-width: 480px) {
 		h1 { font-size: 2.75rem; }
-		.hero { padding: 5.5rem 1.25rem 3rem; }
+		.hero { padding: 5.5rem 1rem 3rem; }
 		.hero-actions { flex-direction: column; align-items: center; }
-		.machine-eyebrow { font-size: 0.68rem; }
+		.machine-eyebrow { font-size: 0.68rem; max-width: calc(100vw - 2rem); }
 		.nav-link { display: none; }
 		.nav-link-memd, .nav-link-agents { display: flex; }
-		.endpoints-table { display: none; }
+		.agent-section { padding: 3rem 1rem; }
+		.agent-card { padding: 1.25rem; }
+		.section-inner { padding: 0 1rem; }
+		.how-memd { padding: 3.5rem 1rem; }
+		.demo-section { padding: 3.5rem 1rem; }
+		.skills-secondary { padding: 3rem 1rem; }
+		.hero-url-preview { font-size: 0.85rem; max-width: calc(100vw - 2rem); }
 	}
 </style>
