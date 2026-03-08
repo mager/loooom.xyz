@@ -446,8 +446,11 @@ Building: my-app-v2</code></pre>
 		border: 1.5px solid var(--border);
 		border-radius: 6px;
 		transition: border-color 0.2s;
+		white-space: nowrap;
+		flex-shrink: 0;
 	}
 	.btn-nav:hover { border-color: var(--text-muted); }
+	.logo { flex-shrink: 0; }
 
 	/* ===== Shared ===== */
 	.section-inner {
@@ -1066,13 +1069,14 @@ Building: my-app-v2</code></pre>
 			display: none;
 		}
 	}
-	@media (max-width: 480px) {
+	@media (max-width: 640px) {
 		h1 { font-size: 2.75rem; }
 		.hero { padding: 5.5rem 1rem 3rem; }
 		.hero-actions { flex-direction: column; align-items: center; }
 		.machine-eyebrow { font-size: 0.68rem; max-width: calc(100vw - 2rem); }
 		.nav-link { display: none; }
-		.nav-link-memd, .nav-link-agents { display: flex; }
+		.nav-link-memd { display: none; }
+		.nav-link-agents { display: none; }
 		.agent-section { padding: 3rem 1rem; }
 		.agent-card { padding: 1.25rem; }
 		.section-inner { padding: 0 1rem; }
