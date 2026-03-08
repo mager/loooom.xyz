@@ -177,6 +177,82 @@ Do not summarize what you found. Do not say "I read your ME.md." Just... know.
 This is their robots.txt for human consciousness. Respect it.`.trim();
 }
 
+// ─── Form State ──────────────────────────────────────────────────────────────
+
+export interface MeMdFormState {
+	handle: string;
+	name: string;
+	location: string;
+	timezone: string;
+	updated: string;
+	tags: string[];
+	agents: AgentConfig[];
+	isPublic: boolean;
+	sections: Record<string, string>; // KNOWN_SECTIONS id → markdown content
+}
+
+export function defaultFormState(): MeMdFormState {
+	const today = new Date().toISOString().split('T')[0];
+	const sections: Record<string, string> = {};
+	KNOWN_SECTIONS.forEach((s) => { sections[s.id] = ''; });
+	return { handle: '', name: '', location: '', timezone: 'America/Chicago', updated: today, tags: [], agents: [], isPublic: true, sections };
+}
+
+export function formStateFromParsed(parsed: ParsedMeMd): MeMdFormState {
+	const fm = parsed.frontmatter;
+	const today = new Date().toISOString().split('T')[0];
+	const sections: Record<string, string> = {};
+	KNOWN_SECTIONS.forEach((s) => { sections[s.id] = ''; });
+	for (const sec of parsed.sections) {
+		sections[sec.id] = sec.content;
+	}
+	return {
+		handle: fm.handle ?? '',
+		name: fm.name ?? '',
+		location: fm.location ?? '',
+		timezone: fm.timezone ?? 'America/Chicago',
+		updated: fm.updated ?? today,
+		tags: fm.tags ?? [],
+		agents: fm.agents ?? [],
+		isPublic: fm.public ?? true,
+		sections
+	};
+}
+
+export function markdownFromFormState(fs: MeMdFormState): string {
+	const today = new Date().toISOString().split('T')[0];
+	const lines: string[] = ['---'];
+	lines.push(`version: "1.0"`);
+	lines.push(`handle: "${fs.handle || '@yourhandle'}"`);
+	if (fs.name) lines.push(`name: "${fs.name}"`);
+	if (fs.location) lines.push(`location: "${fs.location}"`);
+	if (fs.timezone) lines.push(`timezone: "${fs.timezone}"`);
+	lines.push(`updated: "${fs.updated || today}"`);
+	if (fs.tags.length > 0) {
+		lines.push('tags:');
+		fs.tags.forEach((t) => lines.push(`  - ${t}`));
+	}
+	if (fs.agents.length > 0) {
+		lines.push('agents:');
+		fs.agents.forEach((a) => {
+			lines.push(`  - id: ${a.id || 'agent'}`);
+			if (a.model) lines.push(`    model: ${a.model}`);
+			if (a.role) lines.push(`    role: "${a.role}"`);
+			if (a.emoji) lines.push(`    emoji: "${a.emoji}"`);
+			if (a.channel) lines.push(`    channel: ${a.channel}`);
+		});
+	}
+	lines.push(`public: ${fs.isPublic}`);
+	lines.push('---');
+
+	const body = KNOWN_SECTIONS.map((s) => {
+		const content = fs.sections[s.id] ?? '';
+		return `# ${s.icon} ${s.title}\n\n${content}`;
+	}).join('\n\n');
+
+	return lines.join('\n') + '\n\n' + body;
+}
+
 // ─── Default Template ─────────────────────────────────────────────────────────
 
 export const ME_MD_TEMPLATE = `---

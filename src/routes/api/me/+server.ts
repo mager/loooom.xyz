@@ -1,14 +1,14 @@
 import type { RequestHandler } from './$types';
 import { db } from '$lib/server/db';
-import { users } from '$lib/server/schema';
-import { eq } from 'drizzle-orm';
+import { users, meMdVersions } from '$lib/server/schema';
+import { eq, desc, count } from 'drizzle-orm';
 import { json, error } from '@sveltejs/kit';
 import { parseMeMd } from '$lib/memd';
 
 /**
  * POST /api/me
- * Saves the authenticated user's ME.md content.
- * Body: { content: string }
+ * Saves the authenticated user's ME.md content + auto-creates a version snapshot.
+ * Body: { content: string, label?: string }
  */
 export const POST: RequestHandler = async ({ request, cookies }) => {
 	const sessionToken = cookies.get('session');
@@ -35,14 +35,32 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		throw error(400, 'ME.md must have a handle in frontmatter');
 	}
 
+	// Get next version number
+	const [{ value: versionCount }] = await db
+		.select({ value: count() })
+		.from(meMdVersions)
+		.where(eq(meMdVersions.userId, user.id));
+
+	const nextVersionNum = Number(versionCount) + 1;
+
+	// Save current content + create version snapshot (transaction-style)
 	await db
 		.update(users)
 		.set({ meMd: content, updatedAt: new Date() })
 		.where(eq(users.id, user.id));
 
+	await db.insert(meMdVersions).values({
+		userId: user.id,
+		content,
+		versionNum: nextVersionNum,
+		label: body.label ?? null,
+		charCount: content.length
+	});
+
 	return json({
 		ok: true,
 		username: user.username,
+		versionNum: nextVersionNum,
 		sections: parsed.sections.length,
 		agents: parsed.frontmatter.agents?.length ?? 0,
 		valid: parsed.valid,

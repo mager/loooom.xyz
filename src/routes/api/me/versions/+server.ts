@@ -1,19 +1,23 @@
-import type { PageServerLoad } from './$types';
+import type { RequestHandler } from './$types';
 import { db } from '$lib/server/db';
 import { users, meMdVersions } from '$lib/server/schema';
 import { eq, desc } from 'drizzle-orm';
-import { redirect } from '@sveltejs/kit';
+import { json, error } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ cookies }) => {
+/**
+ * GET /api/me/versions
+ * Returns the authenticated user's ME.md version history (most recent first).
+ */
+export const GET: RequestHandler = async ({ cookies }) => {
 	const sessionToken = cookies.get('session');
-	if (!sessionToken) throw redirect(302, '/login');
+	if (!sessionToken) throw error(401, 'Not authenticated');
 
 	const [user] = await db
-		.select({ meMd: users.meMd, username: users.username, id: users.id })
+		.select({ id: users.id })
 		.from(users)
 		.where(eq(users.firebaseUid, sessionToken));
 
-	if (!user) throw redirect(302, '/login');
+	if (!user) throw error(401, 'Session invalid');
 
 	const versions = await db
 		.select({
@@ -26,11 +30,7 @@ export const load: PageServerLoad = async ({ cookies }) => {
 		.from(meMdVersions)
 		.where(eq(meMdVersions.userId, user.id))
 		.orderBy(desc(meMdVersions.createdAt))
-		.limit(30);
+		.limit(50);
 
-	return {
-		currentMeMd: user.meMd ?? null,
-		username: user.username,
-		versions
-	};
+	return json({ versions });
 };

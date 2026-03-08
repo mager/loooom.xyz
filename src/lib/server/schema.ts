@@ -86,3 +86,13 @@ export const waitlist = pgTable('waitlist', {
 	email: text('email').notNull().unique(),
 	createdAt: timestamp('created_at').notNull().defaultNow()
 });
+
+export const meMdVersions = pgTable('me_md_versions', {
+	id: uuid('id').primaryKey().defaultRandom(),
+	userId: uuid('user_id').notNull().references(() => users.id),
+	content: text('content').notNull(),
+	versionNum: integer('version_num').notNull().default(1),
+	label: text('label'),
+	charCount: integer('char_count').notNull().default(0),
+	createdAt: timestamp('created_at').notNull().defaultNow()
+});
