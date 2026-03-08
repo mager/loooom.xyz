@@ -1,8 +1,50 @@
 <script lang="ts">
 	import YarnLogo from '$lib/components/YarnLogo.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+	import { parseMeMd, generateInjectionPrompt, KNOWN_SECTIONS } from '$lib/memd';
 
 	let { data } = $props();
+
+	const handle = data.profile.username;
+	const profileUrl = `https://loooom.xyz/me/${handle}`;
+	const rawUrl = `https://loooom.xyz/me/${handle}/raw`;
+
+	const parsed = $derived(data.profile.meMd ? parseMeMd(data.profile.meMd) : null);
+	const hasMeMd = $derived(!!data.profile.meMd);
+
+	const agentCount = $derived(parsed?.frontmatter.agents?.length ?? 0);
+	const sectionCount = $derived(parsed?.sections.length ?? 0);
+	const tagsCount = $derived(parsed?.frontmatter.tags?.length ?? 0);
+	const lastUpdated = $derived(parsed?.frontmatter.updated ?? null);
+
+	const filledSections = $derived(
+		KNOWN_SECTIONS.filter(s =>
+			parsed?.sections.some(ps => ps.id === s.id && ps.content.trim().length > 0)
+		)
+	);
+
+	let copiedUrl = $state(false);
+	let copiedRaw = $state(false);
+	let copiedPrompt = $state(false);
+
+	function copyProfileUrl() {
+		navigator.clipboard.writeText(profileUrl);
+		copiedUrl = true;
+		setTimeout(() => (copiedUrl = false), 2000);
+	}
+
+	function copyRawUrl() {
+		navigator.clipboard.writeText(rawUrl);
+		copiedRaw = true;
+		setTimeout(() => (copiedRaw = false), 2000);
+	}
+
+	function copyInjectionPrompt() {
+		const prompt = generateInjectionPrompt(`@${handle}`, rawUrl);
+		navigator.clipboard.writeText(prompt);
+		copiedPrompt = true;
+		setTimeout(() => (copiedPrompt = false), 2000);
+	}
 </script>
 
 <svelte:head>
@@ -14,6 +56,7 @@
 	<div class="orb orb-2"></div>
 </div>
 
+<!-- Nav -->
 <nav>
 	<div class="nav-inner">
 		<a href="/" class="logo">
@@ -28,195 +71,358 @@
 				{:else}
 					<span class="user-chip-initial">{data.profile.displayName[0]}</span>
 				{/if}
-				<span class="user-chip-name">{data.profile.displayName}</span>
+				<span class="user-chip-name">@{handle}</span>
 			</div>
 		</div>
 	</div>
 </nav>
 
-<main class="page">
-	<div class="card">
-		<div class="badge">Early Access</div>
+<main class="dashboard">
+	<div class="dashboard-inner">
 
-		<div class="avatar-wrap">
-			{#if data.profile.avatarUrl}
-				<img src={data.profile.avatarUrl} alt={data.profile.displayName} class="avatar" />
-			{:else}
-				<div class="avatar-fallback">{data.profile.displayName[0]}</div>
+		<!-- Header -->
+		<header class="dash-header">
+			<div class="dash-greeting">
+				<h1>Hey, {data.profile.displayName.split(' ')[0]}. 👋</h1>
+				<p class="dash-sub">Your ME.md is your context. Keep it sharp.</p>
+			</div>
+			<a href="/me/edit" class="btn-primary">
+				{hasMeMd ? 'Edit ME.md →' : 'Write your ME.md →'}
+			</a>
+		</header>
+
+		{#if hasMeMd}
+			<!-- ME.md Status Card -->
+			<section class="me-card">
+				<div class="me-card-top">
+					<div class="me-title-row">
+						<span class="me-badge">ME.md</span>
+						<span class="me-handle">@{handle}</span>
+						{#if lastUpdated}
+							<span class="me-updated">updated {lastUpdated}</span>
+						{/if}
+					</div>
+					<div class="me-stats">
+						<div class="stat">
+							<span class="stat-num">{agentCount}</span>
+							<span class="stat-label">agent{agentCount !== 1 ? 's' : ''}</span>
+						</div>
+						<div class="stat-divider"></div>
+						<div class="stat">
+							<span class="stat-num">{sectionCount}</span>
+							<span class="stat-label">sections</span>
+						</div>
+						<div class="stat-divider"></div>
+						<div class="stat">
+							<span class="stat-num">{tagsCount}</span>
+							<span class="stat-label">tags</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- Section completeness -->
+				<div class="sections-check">
+					{#each KNOWN_SECTIONS as s}
+						{@const filled = filledSections.some(fs => fs.id === s.id)}
+						<div class="section-pill" class:filled>
+							<span>{s.icon}</span>
+							<span class="pill-name">{s.title}</span>
+							<span class="pill-check">{filled ? '✓' : '◎'}</span>
+						</div>
+					{/each}
+				</div>
+
+				<!-- URLs / Actions -->
+				<div class="me-actions">
+					<div class="url-row">
+						<code class="url-display">{profileUrl}</code>
+						<button class="btn-copy" onclick={copyProfileUrl}>
+							{copiedUrl ? '✓' : 'Copy'}
+						</button>
+						<a href={profileUrl} target="_blank" rel="noopener" class="btn-copy">View ↗</a>
+					</div>
+					<div class="url-row">
+						<code class="url-display">{rawUrl}</code>
+						<button class="btn-copy" onclick={copyRawUrl}>
+							{copiedRaw ? '✓' : 'Copy raw'}
+						</button>
+					</div>
+					<div class="prompt-row">
+						<div class="prompt-label">
+							<span class="prompt-icon">🤖</span>
+							<span>Injection prompt — paste into any AI system prompt</span>
+						</div>
+						<button class="btn-inject" onclick={copyInjectionPrompt}>
+							{copiedPrompt ? '✓ Copied!' : 'Copy injection prompt'}
+						</button>
+					</div>
+				</div>
+			</section>
+
+			<!-- Agent Fleet -->
+			{#if agentCount > 0}
+				<section class="fleet-section">
+					<h2 class="section-title">🤖 Your Fleet</h2>
+					<div class="fleet-grid">
+						{#each parsed?.frontmatter.agents ?? [] as agent}
+							<div class="agent-card">
+								<div class="agent-emoji">{agent.emoji ?? '🤖'}</div>
+								<div class="agent-info">
+									<span class="agent-id">{agent.id}</span>
+									{#if agent.role}<span class="agent-role">{agent.role}</span>{/if}
+									{#if agent.model}<span class="agent-model">{agent.model}</span>{/if}
+								</div>
+								{#if agent.channel}
+									<span class="agent-channel">{agent.channel}</span>
+								{/if}
+							</div>
+						{/each}
+					</div>
+				</section>
 			{/if}
-			<div class="avatar-badge" title="GitHub connected">
-				<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-					<path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-				</svg>
-			</div>
-		</div>
 
-		<h1 class="heading">You're on the list, {data.profile.displayName.split(' ')[0]}.</h1>
-		<p class="sub">
-			Loooom is in early access. We're heads-down building creator tools — the skill editor,
-			publishing flow, and community features. You'll hear from us first when it opens up.
-		</p>
+		{:else}
+			<!-- Empty state -->
+			<section class="empty-state">
+				<div class="empty-icon">📄</div>
+				<h2>You don't have a ME.md yet.</h2>
+				<p>
+					One file at a public URL. Any AI can fetch it. Every tool you use will know who you are
+					before you say a word.
+				</p>
+				<a href="/me/edit" class="btn-primary">Write your ME.md →</a>
+				<a href="/me" class="btn-ghost">Learn more about ME.md</a>
+			</section>
+		{/if}
 
-		<div class="checks">
-			<div class="check-row">
-				<span class="check-icon">✓</span>
-				<span>GitHub account connected</span>
-			</div>
-			<div class="check-row">
-				<span class="check-icon">✓</span>
-				<span>Spot reserved as <code>@{data.profile.username}</code></span>
-			</div>
-			<div class="check-row pending">
-				<span class="check-icon pending">◎</span>
-				<span>Creator tools — coming soon</span>
-			</div>
-		</div>
+		<!-- Quick links -->
+		<section class="quick-links">
+			<a href="/me/edit" class="quick-link">
+				<span class="ql-icon">✏️</span>
+				<span class="ql-text">Edit ME.md</span>
+			</a>
+			<a href={`/me/${handle}`} target="_blank" class="quick-link">
+				<span class="ql-icon">👤</span>
+				<span class="ql-text">View profile</span>
+			</a>
+			<a href="/me/spec" class="quick-link">
+				<span class="ql-icon">📐</span>
+				<span class="ql-text">ME.md spec</span>
+			</a>
+			<a href={rawUrl} target="_blank" class="quick-link">
+				<span class="ql-icon">⚡</span>
+				<span class="ql-text">Raw (for AIs)</span>
+			</a>
+		</section>
 
-		<div class="actions">
-			<a href="/browse" class="btn-primary">Browse skills →</a>
-			<a
-				href="https://github.com/mager/loooom"
-				target="_blank"
-				rel="noopener"
-				class="btn-secondary"
-			>Star us on GitHub</a>
-		</div>
 	</div>
 </main>
 
 <style>
-	.ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-	.orb { position: absolute; border-radius: 50%; filter: blur(140px); opacity: 0.06; }
-	:global(html[data-theme="dark"]) .orb { opacity: 0.12; }
-	.orb-1 { width: 500px; height: 500px; background: var(--accent); top: -100px; right: -100px; animation: drift 25s ease-in-out infinite; }
-	.orb-2 { width: 400px; height: 400px; background: var(--ocean); bottom: 10%; left: -100px; animation: drift 30s ease-in-out infinite reverse; }
-	@keyframes drift { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(30px, -20px); } }
+	/* ─── Ambient ─────────────────────────────────────────────────────────── */
+	.ambient {
+		position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+	}
+	.orb {
+		position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.13;
+	}
+	.orb-1 {
+		width: 500px; height: 500px;
+		background: radial-gradient(circle, var(--violet) 0%, transparent 70%);
+		top: -100px; left: -50px;
+	}
+	.orb-2 {
+		width: 400px; height: 400px;
+		background: radial-gradient(circle, var(--ocean) 0%, transparent 70%);
+		bottom: 10%; right: -100px;
+	}
 
+	/* ─── Nav ─────────────────────────────────────────────────────────────── */
 	nav {
-		position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-		backdrop-filter: blur(20px); background: var(--nav-bg);
+		position: sticky; top: 0; z-index: 100;
+		background: var(--nav-bg); backdrop-filter: blur(12px);
 		border-bottom: 1px solid var(--border);
 	}
 	.nav-inner {
-		max-width: 1200px; margin: 0 auto; padding: 0 2rem;
-		height: 64px; display: flex; align-items: center; justify-content: space-between;
+		max-width: 900px; margin: 0 auto; padding: 14px 32px;
+		display: flex; align-items: center; justify-content: space-between;
 	}
-	.logo { display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary); text-decoration: none; }
-	.logo-text { font-family: var(--font-handwriting); font-size: 1.3rem; font-weight: 100; letter-spacing: 0.02em; }
-	.nav-right { display: flex; align-items: center; gap: 1rem; }
-
+	.logo {
+		display: flex; align-items: center; gap: 8px;
+		text-decoration: none; color: var(--text-primary);
+	}
+	.logo-text { font-family: var(--font-handwriting); font-size: 1.2rem; font-weight: 200; }
+	.nav-right { display: flex; align-items: center; gap: 16px; }
 	.user-chip {
-		display: flex; align-items: center; gap: 0.5rem;
+		display: flex; align-items: center; gap: 8px;
 		background: var(--bg-card); border: 1px solid var(--border);
-		padding: 0.35rem 1rem 0.35rem 0.35rem; border-radius: 100px;
+		padding: 5px 12px 5px 6px; border-radius: 999px;
+	}
+	.user-chip-avatar { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; }
+	.user-chip-initial {
+		width: 22px; height: 22px; border-radius: 50%;
+		background: var(--accent-glow); border: 1px solid var(--accent-bright);
+		color: var(--accent); font-size: 0.75rem; font-weight: 700;
+		display: flex; align-items: center; justify-content: center;
+	}
+	.user-chip-name { font-size: 0.85rem; color: var(--text-secondary); }
+
+	/* ─── Dashboard ───────────────────────────────────────────────────────── */
+	.dashboard { position: relative; z-index: 1; padding: 48px 32px 80px; }
+	.dashboard-inner { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+
+	/* ─── Header ──────────────────────────────────────────────────────────── */
+	.dash-header {
+		display: flex; align-items: center; justify-content: space-between; gap: 20px;
+	}
+	.dash-header h1 { font-size: 2rem; margin: 0 0 4px; }
+	.dash-sub { color: var(--text-secondary); margin: 0; font-size: 1rem; }
+
+	/* ─── Buttons ─────────────────────────────────────────────────────────── */
+	.btn-primary {
+		background: var(--gradient-cta); color: white;
+		padding: 12px 24px; border-radius: 999px;
+		font-weight: 600; font-size: 0.95rem;
+		text-decoration: none; display: inline-block;
+		transition: opacity 0.2s; border: none; cursor: pointer; white-space: nowrap;
+	}
+	.btn-primary:hover { opacity: 0.88; }
+	.btn-ghost {
+		background: none; border: 1px solid var(--border); color: var(--text-secondary);
+		padding: 10px 20px; border-radius: 999px; font-size: 0.9rem;
+		cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block;
+	}
+	.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+	.btn-copy {
+		background: var(--bg-secondary); border: 1px solid var(--border);
+		color: var(--text-secondary); padding: 5px 12px;
+		border-radius: 6px; font-size: 0.8rem; cursor: pointer;
+		transition: all 0.2s; white-space: nowrap; text-decoration: none;
+		display: inline-block;
+	}
+	.btn-copy:hover { border-color: var(--accent); color: var(--accent); }
+	.btn-inject {
+		background: var(--accent-glow); border: 1px solid var(--accent-bright);
+		color: var(--accent); padding: 8px 16px;
+		border-radius: 8px; font-size: 0.85rem; font-weight: 600;
+		cursor: pointer; transition: all 0.2s; white-space: nowrap;
+	}
+	.btn-inject:hover { background: var(--accent); color: white; }
+
+	/* ─── ME.md Card ──────────────────────────────────────────────────────── */
+	.me-card {
+		background: var(--bg-card); border: 1px solid var(--border);
+		border-radius: var(--radius-lg); overflow: hidden;
+	}
+	.me-card-top {
+		padding: 24px 24px 20px;
+		border-bottom: 1px solid var(--border);
+		display: flex; align-items: center; justify-content: space-between; gap: 16px;
+		flex-wrap: wrap;
+	}
+	.me-title-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+	.me-badge {
+		font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700;
+		background: var(--accent-glow); border: 1px solid var(--accent-bright);
+		color: var(--accent); padding: 3px 10px; border-radius: 999px;
+	}
+	.me-handle { font-family: var(--font-mono); font-size: 1rem; color: var(--text-primary); }
+	.me-updated { font-size: 0.8rem; color: var(--text-muted); }
+	.me-stats { display: flex; align-items: center; gap: 16px; }
+	.stat { text-align: center; }
+	.stat-num { display: block; font-size: 1.5rem; font-weight: 700; color: var(--text-primary); line-height: 1; }
+	.stat-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+	.stat-divider { width: 1px; height: 32px; background: var(--border); }
+
+	/* ─── Section completeness ────────────────────────────────────────────── */
+	.sections-check {
+		padding: 16px 24px;
+		border-bottom: 1px solid var(--border);
+		display: flex; gap: 8px; flex-wrap: wrap;
+	}
+	.section-pill {
+		display: flex; align-items: center; gap: 5px;
+		background: var(--bg-secondary); border: 1px solid var(--border);
+		padding: 5px 10px; border-radius: 999px; font-size: 0.8rem;
+		color: var(--text-muted); transition: all 0.2s;
+	}
+	.section-pill.filled {
+		background: var(--accent-glow); border-color: var(--accent-bright);
 		color: var(--text-primary);
 	}
-	.user-chip-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
-	.user-chip-initial {
-		width: 28px; height: 28px; border-radius: 50%;
-		background: linear-gradient(135deg, var(--accent), var(--ocean));
-		display: flex; align-items: center; justify-content: center;
-		color: white; font-size: 0.75rem; font-weight: 600;
-	}
-	.user-chip-name { font-size: 0.85rem; font-weight: 500; }
+	.pill-check { font-size: 0.7rem; }
+	.section-pill.filled .pill-check { color: var(--accent); }
 
-	.page {
-		position: relative; z-index: 1;
-		min-height: 100vh;
-		display: flex; align-items: center; justify-content: center;
-		padding: 6rem 2rem 4rem;
+	/* ─── ME.md Actions ───────────────────────────────────────────────────── */
+	.me-actions { padding: 20px 24px; display: flex; flex-direction: column; gap: 12px; }
+	.url-row {
+		display: flex; align-items: center; gap: 8px;
+		background: var(--bg-secondary); border: 1px solid var(--border);
+		border-radius: 8px; padding: 8px 12px;
 	}
+	.url-display {
+		flex: 1; font-family: var(--font-mono); font-size: 0.8rem;
+		color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+	}
+	.prompt-row {
+		display: flex; align-items: center; justify-content: space-between; gap: 12px;
+		background: var(--bg-secondary); border: 1px solid var(--border);
+		border-radius: 8px; padding: 12px 16px; flex-wrap: wrap;
+	}
+	.prompt-label { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); }
+	.prompt-icon { font-size: 1rem; }
 
-	.card {
-		width: 100%; max-width: 480px;
+	/* ─── Fleet ───────────────────────────────────────────────────────────── */
+	.fleet-section {}
+	.section-title { font-size: 1.1rem; margin: 0 0 14px; color: var(--text-secondary); font-weight: 600; }
+	.fleet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+	.agent-card {
 		background: var(--bg-card); border: 1px solid var(--border);
-		border-radius: var(--radius-lg); padding: 3rem 2.5rem;
-		text-align: center;
-		box-shadow: 0 4px 40px rgba(0,0,0,0.06);
+		border-radius: var(--radius-md); padding: 16px;
+		display: flex; align-items: flex-start; gap: 12px;
+		transition: border-color 0.2s;
 	}
-	:global(html[data-theme="dark"]) .card {
-		box-shadow: 0 4px 40px rgba(0,0,0,0.3);
-	}
-
-	.badge {
-		display: inline-block;
-		font-family: var(--font-mono); font-size: 0.65rem; text-transform: uppercase;
-		letter-spacing: 0.12em; color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent);
-		border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
-		padding: 0.3rem 0.75rem; border-radius: 100px; margin-bottom: 2rem;
-	}
-
-	.avatar-wrap {
-		position: relative; display: inline-block; margin-bottom: 1.75rem;
-	}
-	.avatar {
-		width: 80px; height: 80px; border-radius: 50%; object-fit: cover;
-		border: 3px solid var(--border);
-	}
-	.avatar-fallback {
-		width: 80px; height: 80px; border-radius: 50%;
-		background: linear-gradient(135deg, var(--accent), var(--ocean));
-		display: flex; align-items: center; justify-content: center;
-		font-size: 2rem; color: white; font-weight: 700;
-		border: 3px solid var(--border);
-	}
-	.avatar-badge {
-		position: absolute; bottom: 2px; right: 2px;
-		width: 24px; height: 24px; border-radius: 50%;
-		background: var(--text-primary); color: var(--bg-primary);
-		display: flex; align-items: center; justify-content: center;
-		border: 2px solid var(--bg-card);
+	.agent-card:hover { border-color: var(--accent); }
+	.agent-emoji { font-size: 1.6rem; flex-shrink: 0; }
+	.agent-info { flex: 1; min-width: 0; }
+	.agent-id { display: block; font-family: var(--font-mono); font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
+	.agent-role { display: block; font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px; }
+	.agent-model { display: block; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; }
+	.agent-channel {
+		font-size: 0.72rem; color: var(--accent);
+		background: var(--accent-glow); border: 1px solid var(--accent-bright);
+		padding: 2px 8px; border-radius: 999px; white-space: nowrap; align-self: flex-start;
 	}
 
-	.heading {
-		font-family: var(--font-handwriting); font-weight: 100;
-		font-size: clamp(1.6rem, 4vw, 2.2rem);
-		color: var(--text-primary); margin-bottom: 1rem;
-	}
-	.sub {
-		font-size: 0.9rem; color: var(--text-secondary); line-height: 1.65;
-		margin-bottom: 2rem;
-	}
-
-	.checks {
-		display: flex; flex-direction: column; gap: 0.6rem;
-		text-align: left; margin-bottom: 2.5rem;
-		padding: 1.25rem 1.5rem;
-		background: var(--bg-primary); border-radius: var(--radius-md);
-		border: 1px solid var(--border);
-	}
-	.check-row {
-		display: flex; align-items: center; gap: 0.75rem;
-		font-size: 0.875rem; color: var(--text-primary);
-	}
-	.check-row.pending { color: var(--text-muted); }
-	.check-icon {
-		color: var(--emerald); font-weight: 700; flex-shrink: 0; width: 16px;
-	}
-	.check-icon.pending { color: var(--text-muted); }
-	code {
-		font-family: var(--font-mono); font-size: 0.8em;
+	/* ─── Empty state ─────────────────────────────────────────────────────── */
+	.empty-state {
 		background: var(--bg-card); border: 1px solid var(--border);
-		padding: 0.1em 0.4em; border-radius: 4px;
+		border-radius: var(--radius-lg); padding: 60px 32px;
+		text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px;
 	}
+	.empty-icon { font-size: 3rem; }
+	.empty-state h2 { margin: 0; font-size: 1.4rem; }
+	.empty-state p { color: var(--text-secondary); max-width: 400px; line-height: 1.6; margin: 0; }
 
-	.actions {
-		display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;
+	/* ─── Quick Links ─────────────────────────────────────────────────────── */
+	.quick-links {
+		display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px;
 	}
-	.btn-primary {
-		display: inline-flex; align-items: center; gap: 0.4rem;
-		padding: 0.75rem 1.5rem; background: var(--accent); color: white;
-		border: none; border-radius: var(--radius-md); font-family: var(--font-display);
-		font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: all 0.2s;
+	.quick-link {
+		background: var(--bg-card); border: 1px solid var(--border);
+		border-radius: var(--radius-md); padding: 16px;
+		text-decoration: none; display: flex; flex-direction: column; gap: 8px;
+		transition: all 0.2s;
 	}
-	.btn-primary:hover { background: var(--accent-bright); transform: translateY(-1px); color: white; }
-	:global(html[data-theme="dark"]) .btn-primary { color: var(--bg-primary); }
-	:global(html[data-theme="dark"]) .btn-primary:hover { color: var(--bg-primary); }
-	.btn-secondary {
-		display: inline-flex; align-items: center; gap: 0.4rem;
-		padding: 0.75rem 1.5rem; background: var(--bg-primary); color: var(--text-primary);
-		border: 1px solid var(--border); border-radius: var(--radius-md); font-family: var(--font-display);
-		font-size: 0.9rem; font-weight: 500; text-decoration: none; transition: all 0.2s;
+	.quick-link:hover { border-color: var(--accent); box-shadow: var(--card-shadow-hover); }
+	.ql-icon { font-size: 1.4rem; }
+	.ql-text { font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; }
+
+	/* ─── Responsive ──────────────────────────────────────────────────────── */
+	@media (max-width: 640px) {
+		.dashboard { padding: 32px 16px 60px; }
+		.dash-header { flex-direction: column; align-items: flex-start; }
+		.me-card-top { flex-direction: column; align-items: flex-start; }
+		.prompt-row { flex-direction: column; align-items: flex-start; }
 	}
-	.btn-secondary:hover { border-color: var(--text-secondary); color: var(--text-primary); }
 </style>
