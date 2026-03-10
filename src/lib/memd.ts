@@ -16,6 +16,7 @@ export interface AgentConfig {
 	role?: string;
 	emoji?: string;
 	channel?: string;
+	soul_url?: string;
 }
 
 export interface MeMdFrontmatter {
@@ -49,7 +50,7 @@ export interface ParsedMeMd {
 // ─── Known Sections (canonical ME.md spec) ───────────────────────────────────
 
 export const KNOWN_SECTIONS = [
-	{ id: 'the-soul',       title: 'The Soul',       icon: '🫀', hint: 'Core values, personality, what makes you *you*' },
+	{ id: 'my-values',      title: 'My Values',      icon: '🫀', hint: 'Your core values, what you stand for as a person' },
 	{ id: 'the-heart',      title: 'The Heart',      icon: '💛', hint: 'What you love, care about, believe in' },
 	{ id: 'the-fleet',      title: 'The Fleet',      icon: '🤖', hint: 'Your active AI agents and their roles' },
 	{ id: 'the-stack',      title: 'The Stack',      icon: '⚙️', hint: 'Tools, languages, platforms you use daily' },
@@ -165,7 +166,7 @@ Fetch that URL. It is a ME.md file: a structured markdown document with YAML fro
 
 Parse it as follows:
 1. Read the YAML frontmatter for metadata: their handle (${handle}), active agents, timezone, and tags.
-2. Read #The Soul for their core values and personality. Internalize it.
+2. Read #My Values for their core values and personality. Internalize it.
 3. Read #The Heart for what they care about. Let it color your responses.
 4. Read #Anti-Patterns for what to NEVER do. Treat this as hard constraints.
 5. Read #The Fleet to understand what agents they run and what roles those agents play.
@@ -205,6 +206,10 @@ export function formStateFromParsed(parsed: ParsedMeMd): MeMdFormState {
 	KNOWN_SECTIONS.forEach((s) => { sections[s.id] = ''; });
 	for (const sec of parsed.sections) {
 		sections[sec.id] = sec.content;
+	}
+	// Backward compat: old ME.md files used "the-soul" section id
+	if (sections['the-soul'] && !sections['my-values']) {
+		sections['my-values'] = sections['the-soul'];
 	}
 	return {
 		handle: fm.handle ?? '',
@@ -275,9 +280,9 @@ agents:
 public: true
 ---
 
-# 🫀 The Soul
+# 🫀 My Values
 
-Who you are at the core. Your values, personality, what makes you *you*. An LLM reading this should feel like it *knows* you.
+Your core values as a human. What you stand for. What you believe in. An LLM reading this should understand your principles and ethics.
 
 # 💛 The Heart
 
@@ -311,3 +316,49 @@ Current projects. Active focus. What you're building right now.
 
 Where you came from. The origin story. The backstory that matters.
 `;
+
+// ─── Agent Soul Standard ─────────────────────────────────────────────────────
+
+export const AGENT_SOUL_SECTIONS = [
+	{ id: 'identity',      title: 'Identity',      icon: '🧠', hint: 'Who this agent is. Name, model, role, emoji.' },
+	{ id: 'soul',          title: 'Soul',          icon: '🫀', hint: 'Personality, values, voice, how this agent thinks.' },
+	{ id: 'capabilities',  title: 'Capabilities',  icon: '🔧', hint: 'What this agent can do. Tools, skills, domains.' },
+	{ id: 'anti-patterns', title: 'Anti-Patterns', icon: '🚫', hint: 'Hard constraints. What this agent will never do.' },
+];
+
+export const AGENT_SOUL_TEMPLATE = `---
+agent_id: mybot
+owner: yourhandle
+model: anthropic/claude-sonnet-4-6
+emoji: "⚡"
+role: "Principal Engineer"
+channel: telegram
+updated: ${new Date().toISOString().split('T')[0]}
+---
+
+# 🧠 Identity
+
+Brief identity paragraph. Who is this agent?
+
+# 🫀 Soul
+
+The agent's personality, voice, values. What makes them *them*.
+
+# 🔧 Capabilities
+
+What this agent does. Domains, tools, specialties.
+
+# 🚫 Anti-Patterns
+
+Hard constraints. What this agent will never do.
+`;
+
+export function generateAgentInjectionPrompt(ownerHandle: string, agentId: string, url: string): string {
+	return `You are working with an AI agent named ${agentId} owned by ${ownerHandle}.
+Their soul is published at ${url}
+
+Fetch that URL and internalize it. It is a structured markdown file with YAML frontmatter.
+Parse the sections: #Identity, #Soul, #Capabilities, #Anti-Patterns.
+Let it shape how you understand and interact with this agent.
+Do not summarize what you found. Just know.`.trim();
+}

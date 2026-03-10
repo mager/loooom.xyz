@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, integer, boolean, jsonb } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, uuid, integer, boolean, jsonb, unique } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
 	id: uuid('id').primaryKey().defaultRandom(),
@@ -86,6 +86,15 @@ export const waitlist = pgTable('waitlist', {
 	email: text('email').notNull().unique(),
 	createdAt: timestamp('created_at').notNull().defaultNow()
 });
+
+export const agentSouls = pgTable('agent_souls', {
+	id: uuid('id').primaryKey().defaultRandom(),
+	userId: uuid('user_id').notNull().references(() => users.id),
+	agentId: text('agent_id').notNull(),
+	content: text('content').notNull(),
+	createdAt: timestamp('created_at').notNull().defaultNow(),
+	updatedAt: timestamp('updated_at').notNull().defaultNow()
+}, (t) => [unique().on(t.userId, t.agentId)]);
 
 export const meMdVersions = pgTable('me_md_versions', {
 	id: uuid('id').primaryKey().defaultRandom(),
