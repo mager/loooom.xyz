@@ -159,6 +159,28 @@ export const PLUGINS: Plugin[] = [
 		]
 	},
 
+	{
+		name: 'blog-seo',
+		title: 'Blog SEO',
+		description:
+			'Audit and fix SEO frontmatter for Astro blog posts. Runs spec compliance checks (missing keywords, empty heroImages, bad title format) and LLM-as-judge quality evals on descriptions and titles.',
+		version: '1.0.0',
+		author: 'mager',
+		authorDisplay: 'Mager',
+		category: 'marketing',
+		keywords: ['seo', 'blog', 'astro', 'frontmatter', 'evals', 'content', 'audit'],
+		homepage: 'https://loooom.xyz/p/mager/blog-seo',
+		repoPath: 'skills/blog-seo',
+		installCommand: '/plugin install blog-seo@loooom',
+		source: 'loooom',
+		emoji: '🔍',
+		skills: [
+			{ name: 'Spec Audit', description: 'Scans all posts for missing/empty required fields' },
+			{ name: 'Quality Evals', description: 'LLM-as-judge scores descriptions + titles 1–5' },
+			{ name: 'Batch Fix', description: 'Rewrites weak descriptions, infers keywords, suggests hero image prompts' }
+		]
+	},
+
 	// ─────────────────────────────────────────────
 	// GITHUB NATIVE — featured community skills
 	// ─────────────────────────────────────────────
