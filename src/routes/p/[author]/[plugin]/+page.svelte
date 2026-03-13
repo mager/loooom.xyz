@@ -14,8 +14,38 @@
 </script>
 
 <svelte:head>
-	<title>{data.plugin.title} — Loooom</title>
+	<title>{data.plugin.title} Skill for Claude Code — Loooom</title>
 	<meta name="description" content={data.plugin.description} />
+	<meta name="keywords" content={[...data.plugin.keywords, 'claude code', 'ai skill', 'loooom'].join(', ')} />
+	<link rel="canonical" href="https://loooom.xyz/p/{data.plugin.author}/{data.plugin.name}" />
+
+	<!-- Open Graph -->
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content="{data.plugin.title} Skill for Claude Code — Loooom" />
+	<meta property="og:description" content={data.plugin.description} />
+	<meta property="og:url" content="https://loooom.xyz/p/{data.plugin.author}/{data.plugin.name}" />
+	<meta property="og:site_name" content="Loooom" />
+	<meta property="og:image" content="https://loooom.xyz/og.png" />
+
+	<!-- Twitter / X -->
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="{data.plugin.title} Skill for Claude Code — Loooom" />
+	<meta name="twitter:description" content={data.plugin.description} />
+	<meta name="twitter:image" content="https://loooom.xyz/og.png" />
+	<meta name="twitter:site" content="@mager" />
+
+	<!-- JSON-LD -->
+	{@html `<script type="application/ld+json">${JSON.stringify({
+		"@context": "https://schema.org",
+		"@type": "SoftwareApplication",
+		"name": data.plugin.title + " — Claude Code Skill",
+		"description": data.plugin.description,
+		"applicationCategory": "DeveloperApplication",
+		"operatingSystem": "Any",
+		"url": "https://loooom.xyz/p/" + data.plugin.author + "/" + data.plugin.name,
+		"author": { "@type": "Person", "name": data.plugin.authorDisplay },
+		"offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+	})}</script>`}
 </svelte:head>
 
 <div class="ambient">

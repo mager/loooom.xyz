@@ -36,12 +36,12 @@ export const PLUGINS: Plugin[] = [
 		name: 'beginner-japanese',
 		title: 'Beginner Japanese',
 		description:
-			'Learn conversational Japanese for traveling in Japan. Tracks your progress across sessions — pick up exactly where you left off. Supports local file or mem0 cloud memory.',
+			'Learn Japanese with Claude Code — a stateful AI tutor that picks up exactly where you left off. Covers hiragana, katakana, survival phrases, and real conversations for traveling Japan.',
 		version: '2.1.0',
 		author: 'mager',
 		authorDisplay: 'Mager',
 		category: 'languages',
-		keywords: ['japanese', 'language', 'travel', 'japan'],
+		keywords: ['japanese', 'language', 'travel', 'japan', 'learn japanese', 'claude code japanese', 'hiragana', 'katakana'],
 		homepage: 'https://loooom.xyz/p/mager/beginner-japanese',
 		repoPath: 'plugins/beginner-japanese',
 		installCommand: '/plugin install beginner-japanese@loooom',
@@ -58,7 +58,7 @@ export const PLUGINS: Plugin[] = [
 		name: 'kana-ascii',
 		title: 'Kana ASCII',
 		description:
-			'Render hiragana, katakana, and kanji as ASCII art in the terminal. Teaches stroke order and vivid mnemonics. Backed by the kana-ascii npm package.',
+			'Render Japanese hiragana, katakana, and kanji as ASCII art inside Claude Code. Visual stroke order with [1][2] notation and sticky mnemonics — learn kana without leaving your terminal.',
 		version: '2.0.0',
 		author: 'mager',
 		authorDisplay: 'Mager',
@@ -79,7 +79,7 @@ export const PLUGINS: Plugin[] = [
 		name: 'learn-anything',
 		title: 'Learn Anything',
 		description:
-			"Benjamin Franklin's autodidact method for mastering any subject — spaced repetition, imitation writing, and the commonplace book.",
+			"Master any subject with Benjamin Franklin's autodidact method inside Claude Code. Spaced repetition, imitation writing, and commonplace books — the original self-directed learning OS.",
 		version: '1.0.0',
 		author: 'mager',
 		authorDisplay: 'Mager',

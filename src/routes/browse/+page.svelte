@@ -97,7 +97,20 @@
 </script>
 
 <svelte:head>
-	<title>Browse Skills{data.activeCategory ? ` — ${data.activeCategory}` : ''} — Loooom</title>
+	<title>Browse Claude Code Skills{data.activeCategory ? ` — ${data.activeCategory}` : ''} — Loooom</title>
+	<meta name="description" content="Discover Claude Code skills for learning languages, writing, design, thinking, and more. Install any skill in seconds and supercharge your AI agent." />
+	<meta name="keywords" content="claude code skills, AI skills, agent plugins, loooom marketplace, claude code plugins" />
+	<link rel="canonical" href="https://loooom.xyz/browse" />
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content="Browse Claude Code Skills — Loooom" />
+	<meta property="og:description" content="Discover Claude Code skills for learning languages, writing, design, thinking, and more. Install any skill in seconds." />
+	<meta property="og:url" content="https://loooom.xyz/browse" />
+	<meta property="og:image" content="https://loooom.xyz/og.png" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="Browse Claude Code Skills — Loooom" />
+	<meta name="twitter:description" content="Discover Claude Code skills for learning languages, writing, design, thinking, and more." />
+	<meta name="twitter:image" content="https://loooom.xyz/og.png" />
+	<meta name="twitter:site" content="@mager" />
 </svelte:head>
 
 <div class="ambient">
