@@ -35,6 +35,7 @@
 			<span class="logo-text">loooom</span>
 		</a>
 		<div class="nav-right">
+			<a href="/mcp" class="nav-link">MCP</a>
 			<a href="/me/spec" class="nav-link">Spec</a>
 			<a href="/browse" class="nav-link">Skills</a>
 			<a href="https://github.com/mager/loooom" target="_blank" rel="noopener" class="nav-link">GitHub</a>

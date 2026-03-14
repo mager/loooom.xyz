@@ -51,6 +51,7 @@
 			<span class="logo-text">loooom</span>
 		</a>
 		<div class="nav-right">
+			<a href="/mcp" class="nav-link">MCP</a>
 			<a href="/me" class="nav-link nav-link-memd">ME.md</a>
 			<a href="/browse" class="nav-link">Skills</a>
 			<a href="/AGENTS.md" class="nav-link nav-link-agents" target="_blank">AGENTS.md</a>
