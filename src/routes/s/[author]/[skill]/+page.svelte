@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
-	import YarnLogo from '$lib/components/YarnLogo.svelte';
+	import Nav from '$lib/components/Nav.svelte';
 
 	let { data } = $props();
 	let activeFile = $state(0);
@@ -69,23 +69,7 @@
 	<div class="orb orb-2"></div>
 </div>
 
-<nav>
-	<div class="nav-inner">
-		<a href="/" class="logo">
-			<YarnLogo size={28} />
-			<span class="logo-text">loooom</span>
-		</a>
-		<div class="nav-right">
-			<a href="/browse">Browse</a>
-			<ThemeToggle />
-			{#if data.user}
-				<a href="/u/{data.user.username}" class="btn-nav">{data.user.displayName}</a>
-			{:else}
-				<a href="/login" class="btn-nav">Sign In</a>
-			{/if}
-		</div>
-	</div>
-</nav>
+<Nav />
 
 <section class="skill-page">
 	<div class="skill-inner">

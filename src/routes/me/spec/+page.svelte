@@ -1,6 +1,5 @@
 <script lang="ts">
-	import YarnLogo from '$lib/components/YarnLogo.svelte';
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+	import Nav from '$lib/components/Nav.svelte';
 	import { KNOWN_SECTIONS } from '$lib/memd';
 
 	const SPEC_VERSION = '1.0';
@@ -103,21 +102,7 @@
 </div>
 
 <!-- Nav -->
-<nav>
-	<div class="nav-inner">
-		<a href="/" class="logo">
-			<YarnLogo size={22} />
-			<span class="logo-text">loooom</span>
-		</a>
-		<div class="nav-right">
-			<a href="/me" class="nav-link">ME.md</a>
-			<a href="/browse" class="nav-link">Skills</a>
-			<a href="https://github.com/mager/loooom" target="_blank" rel="noopener" class="nav-link">GitHub</a>
-			<ThemeToggle />
-			<a href="/login" class="btn-nav">Sign In</a>
-		</div>
-	</div>
-</nav>
+<Nav />
 
 <!-- Page header -->
 <header class="page-header">

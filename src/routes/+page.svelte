@@ -1,6 +1,5 @@
 <script lang="ts">
-	import YarnLogo from '$lib/components/YarnLogo.svelte';
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+	import Nav from '$lib/components/Nav.svelte';
 	import { MARKETPLACE_COMMAND } from '$lib/plugins';
 
 	let { data } = $props();
@@ -14,18 +13,11 @@
 	);
 
 	let copiedCurl = $state(false);
-	let copiedAgents = $state(false);
 
 	function copyCurl() {
 		navigator.clipboard.writeText('curl https://loooom.xyz/me/mager/raw');
 		copiedCurl = true;
 		setTimeout(() => (copiedCurl = false), 2000);
-	}
-
-	function copyAgents() {
-		navigator.clipboard.writeText('https://loooom.xyz/AGENTS.md');
-		copiedAgents = true;
-		setTimeout(() => (copiedAgents = false), 2000);
 	}
 </script>
 
@@ -43,29 +35,7 @@
 	<link rel="alternate" type="text/markdown" title="Agent Briefing" href="/AGENTS.md" />
 </svelte:head>
 
-<!-- Nav -->
-<nav>
-	<div class="nav-inner">
-		<a href="/" class="logo">
-			<YarnLogo size={22} />
-			<span class="logo-text">loooom</span>
-		</a>
-		<div class="nav-right">
-			<a href="/mcp" class="nav-link">MCP</a>
-			<a href="/me" class="nav-link nav-link-memd">ME.md</a>
-			<a href="/browse" class="nav-link">Skills</a>
-			<a href="/AGENTS.md" class="nav-link nav-link-agents" target="_blank">AGENTS.md</a>
-			<a
-				href="https://github.com/mager/loooom"
-				target="_blank"
-				rel="noopener"
-				class="nav-link">GitHub</a
-			>
-			<ThemeToggle />
-			<a href="/login" class="btn-nav">Sign In</a>
-		</div>
-	</div>
-</nav>
+<Nav />
 
 <!-- Hero: speaks to both humans and machines -->
 <section class="hero">
@@ -82,7 +52,7 @@
 		<h1>One URL.<br/>Every AI<br/>knows you.</h1>
 
 		<p class="hero-sub">
-			Stop re-introducing yourself every session. Your <strong>ME.md</strong> is a portable context file — plain markdown, always public, machine-readable by any AI.
+			Your <strong>ME.md</strong> is a plain markdown file at a permanent URL. Any AI can fetch it, any human can edit it. Write once, known everywhere.
 		</p>
 
 		<div class="hero-url-preview">
@@ -102,8 +72,8 @@
 	<div class="section-inner">
 		<div class="agent-section-header">
 			<div class="agent-badge">🤖 For AI Agents</div>
-			<h2>If you're a bot, start here.</h2>
-			<p class="agent-section-sub">Everything on Loooom is machine-readable by design. No scraping required. No API key. Just fetch.</p>
+			<h2>Machine-readable by design.</h2>
+			<p class="agent-section-sub">Everything on Loooom is open by default. No API key. No scraping. Just fetch.</p>
 		</div>
 
 		<div class="agent-cards">
@@ -131,19 +101,18 @@
 				<p>Full index with rawUrl per profile. Use it to build agent directories, context prefetchers, or human indexes.</p>
 			</div>
 
-			<!-- Card 3: AGENTS.md -->
+			<!-- Card 3: Docs -->
 			<div class="agent-card">
 				<div class="agent-card-num">03</div>
-				<h3>Read the full machine briefing</h3>
+				<h3>Read the full API reference</h3>
 				<div class="agent-code-block">
-					<div class="code-line"><span class="code-comment"># Complete protocol docs, written for LLMs</span></div>
-					<div class="code-line"><span class="code-cmd">GET</span> https://loooom.xyz/<span class="code-var">AGENTS.md</span></div>
-					<div class="code-line code-dim"><span class="code-comment"># API endpoints, schema, integration patterns</span></div>
+					<div class="code-line"><span class="code-comment"># ME.md spec, skills API, how to contribute</span></div>
+					<div class="code-line"><span class="code-cmd">GET</span> https://loooom.xyz/<span class="code-var">docs</span></div>
+					<div class="code-line code-dim"><span class="code-comment"># Human-readable docs, machine-friendly endpoints</span></div>
 				</div>
-				<p>The authoritative briefing for any AI working with Loooom. Schema, endpoints, examples, integration patterns.</p>
+				<p>Full spec: ME.md format, frontmatter fields, all REST endpoints, MCP server config, and how to add a skill.</p>
 				<div class="agent-card-links">
-					<a href="/AGENTS.md" target="_blank" class="agent-card-link-primary">Read AGENTS.md →</a>
-					<button class="agent-card-link-copy" onclick={copyAgents}>{copiedAgents ? '✓ copied' : 'Copy URL'}</button>
+					<a href="/docs" class="agent-card-link-primary">Read the docs →</a>
 				</div>
 			</div>
 		</div>
@@ -277,27 +246,12 @@ Building: my-app-v2</code></pre>
 <!-- Skills: secondary section -->
 <section class="skills-secondary">
 	<div class="section-inner">
-		<div class="skills-secondary-inner">
-			<div class="skills-secondary-text">
-				<p class="section-eyebrow">Also on Loooom</p>
-				<h2>AI Skills Marketplace</h2>
-				<p>Claude Code skills — plain markdown files that teach Claude new capabilities. Browse {loooomCount}+ originals, install with one command.</p>
-				<div class="skills-links">
-					<a href="/browse" class="link-cta">Browse skills →</a>
-					<a href="https://github.com/mager/loooom" target="_blank" rel="noopener" class="link-ghost">Contribute on GitHub</a>
-				</div>
-			</div>
-			<div class="skills-secondary-plugins">
-				{#each featuredPlugins as plugin}
-					<a href="/p/{plugin.author}/{plugin.name}" class="mini-plugin-card">
-						<span class="mini-plugin-emoji">{plugin.emoji}</span>
-						<div>
-							<div class="mini-plugin-title">{plugin.title}</div>
-							<div class="mini-plugin-author">@{plugin.author}</div>
-						</div>
-					</a>
-				{/each}
-			</div>
+		<p class="section-eyebrow">Also on Loooom</p>
+		<h2>AI Skills Marketplace</h2>
+		<p class="skills-desc">Claude Code skills — plain markdown files that teach Claude new behaviors. {loooomCount}+ originals, one-command install, open source.</p>
+		<div class="skills-links">
+			<a href="/browse" class="link-cta">Browse skills →</a>
+			<a href="/docs#add-skill" class="link-ghost">Add yours</a>
 		</div>
 	</div>
 </section>
@@ -306,11 +260,7 @@ Building: my-app-v2</code></pre>
 <footer>
 	<div class="footer-inner">
 		<div class="footer-brand">
-			<div class="footer-logo">
-				<YarnLogo size={20} />
-				<span class="footer-logo-text">loooom</span>
-			</div>
-			<p class="footer-note">Machine-first. Open source. Always free. Made in Chicago.</p>
+			<p class="footer-note">Machine-first. Open source. Free forever. Made in Chicago.</p>
 			<div class="footer-machine-links">
 				<a href="/AGENTS.md" class="footer-machine-link">AGENTS.md</a>
 				<a href="/llms.txt" class="footer-machine-link">llms.txt</a>
@@ -320,37 +270,25 @@ Building: my-app-v2</code></pre>
 		<div class="footer-links">
 			<div class="footer-col">
 				<h4>ME.md</h4>
-				<a href="/me">What is ME.md?</a>
-				<a href="/me/mager">See an example</a>
-				<a href="/me/mager/raw">Raw example ↗</a>
+				<a href="/me">Overview</a>
+				<a href="/me/mager">Example</a>
 				<a href="/login">Claim yours</a>
 			</div>
 			<div class="footer-col">
 				<h4>Skills</h4>
 				<a href="/browse">Browse</a>
-				<a href="/startweaving">Create</a>
+				<a href="/docs#add-skill">Add a skill</a>
 				<a href="/docs">Docs</a>
 			</div>
 			<div class="footer-col">
-				<h4>For Machines</h4>
-				<a href="/AGENTS.md" target="_blank">AGENTS.md</a>
-				<a href="/llms.txt" target="_blank">llms.txt</a>
-				<a href="/api/directory" target="_blank">Directory API</a>
-				<a href="/me-md-schema.json" target="_blank">JSON Schema</a>
-			</div>
-			<div class="footer-col">
 				<h4>Open Source</h4>
-				<a href="https://github.com/mager/loooom.xyz" target="_blank" rel="noopener">Website</a>
-				<a href="https://github.com/mager/loooom" target="_blank" rel="noopener">Catalog</a>
+				<a href="https://github.com/mager/loooom.xyz" target="_blank" rel="noopener">loooom.xyz</a>
+				<a href="https://github.com/mager/loooom" target="_blank" rel="noopener">catalog</a>
 			</div>
 		</div>
 	</div>
 	<div class="footer-bottom">
-		A weeknight project by <a href="https://x.com/mager" target="_blank" rel="noopener">@mager</a>
-		&amp;
-		<a href="https://x.com/mager" target="_blank" rel="noopener">@magerbot</a>.
-		&nbsp;·&nbsp;
-		<a href="/AGENTS.md">For bots: read AGENTS.md first.</a>
+		A weeknight project by <a href="https://x.com/mager" target="_blank" rel="noopener">@mager</a> &amp; <a href="https://x.com/mager" target="_blank" rel="noopener">@magerbot</a>.
 	</div>
 </footer>
 
@@ -369,89 +307,7 @@ Building: my-app-v2</code></pre>
 		letter-spacing: -0.025em;
 	}
 
-	/* ===== Nav ===== */
-	nav {
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		z-index: 100;
-		backdrop-filter: blur(20px);
-		background: var(--nav-bg);
-		border-bottom: 1px solid var(--border);
-	}
-	.nav-inner {
-		max-width: 1040px;
-		margin: 0 auto;
-		padding: 0 1.5rem;
-		height: 54px;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
-	.logo {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		color: var(--text-primary);
-		text-decoration: none;
-	}
-	.logo-text {
-		font-family: var(--font-handwriting);
-		font-size: 1.35rem;
-		font-weight: 100;
-		color: var(--text-primary);
-	}
-	.nav-right {
-		display: flex;
-		align-items: center;
-		gap: 1.25rem;
-	}
-	.nav-link {
-		font-size: 0.875rem;
-		font-weight: 500;
-		color: var(--text-secondary);
-		text-decoration: none;
-		transition: color 0.2s;
-	}
-	.nav-link:hover { color: var(--text-primary); }
-	.nav-link-memd {
-		background: linear-gradient(135deg, rgba(139, 92, 246, 0.12) 0%, rgba(6, 182, 212, 0.08) 100%);
-		border: 1px solid rgba(139, 92, 246, 0.25);
-		color: var(--violet) !important;
-		padding: 3px 10px;
-		border-radius: 999px;
-		font-weight: 600;
-		font-style: italic;
-	}
-	.nav-link-memd:hover {
-		background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(6, 182, 212, 0.15) 100%);
-	}
-	.nav-link-agents {
-		font-family: var(--font-mono);
-		font-size: 0.72rem !important;
-		color: var(--ocean) !important;
-		border: 1px solid color-mix(in srgb, var(--ocean) 30%, transparent);
-		padding: 3px 8px;
-		border-radius: 4px;
-	}
-	.nav-link-agents:hover {
-		background: color-mix(in srgb, var(--ocean) 8%, transparent);
-	}
-	.btn-nav {
-		font-size: 0.875rem;
-		font-weight: 600;
-		color: var(--text-primary) !important;
-		text-decoration: none;
-		padding: 0.4rem 1rem;
-		border: 1.5px solid var(--border);
-		border-radius: 6px;
-		transition: border-color 0.2s;
-		white-space: nowrap;
-		flex-shrink: 0;
-	}
-	.btn-nav:hover { border-color: var(--text-muted); }
-	.logo { flex-shrink: 0; }
+	/* Nav handled by Nav.svelte */
 
 	/* ===== Shared ===== */
 	.section-inner {
@@ -897,35 +753,13 @@ Building: my-app-v2</code></pre>
 
 	/* ===== Skills Secondary ===== */
 	.skills-secondary {
-		padding: 4rem 1.5rem;
+		padding: 3.5rem 1.5rem;
 		border-top: 1px solid var(--border);
 	}
-	.skills-secondary-inner {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 4rem;
-		align-items: start;
-	}
-	.skills-secondary-text h2 { margin-bottom: 0.75rem; font-size: 1.6rem; }
-	.skills-secondary-text p { color: var(--text-secondary); line-height: 1.65; margin: 0 0 1.5rem; font-size: 0.9rem; }
+	.skills-secondary .section-eyebrow { margin-bottom: 0.4rem; }
+	.skills-secondary h2 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; letter-spacing: -0.02em; line-height: 1.1; color: var(--text-primary); margin-bottom: 0.6rem; }
+	.skills-desc { color: var(--text-secondary); line-height: 1.65; margin: 0 0 1.25rem; font-size: 0.9rem; max-width: 520px; }
 	.skills-links { display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: center; }
-	.skills-secondary-plugins { display: flex; flex-direction: column; gap: 10px; }
-	.mini-plugin-card {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		background: var(--bg-card);
-		border: 1px solid var(--border);
-		border-radius: 10px;
-		padding: 12px 16px;
-		text-decoration: none;
-		color: inherit;
-		transition: border-color 0.2s, box-shadow 0.2s;
-	}
-	.mini-plugin-card:hover { border-color: var(--ocean); box-shadow: 0 4px 16px rgba(6,182,212,0.1); }
-	.mini-plugin-emoji { font-size: 1.4rem; flex-shrink: 0; }
-	.mini-plugin-title { font-size: 0.88rem; font-weight: 600; color: var(--text-primary); }
-	.mini-plugin-author { font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); }
 
 	/* ===== Shared CTAs ===== */
 	.link-cta {
