@@ -9,15 +9,35 @@
 	const { user, parsed, rawUrl } = data;
 	const { frontmatter, sections } = parsed;
 
+	let viewMode = $state<'rendered' | 'raw'>('rendered');
 	let copiedPrompt = $state(false);
 	let copiedRaw = $state(false);
 	let copiedContent = $state(false);
-	let activeSection = $state<string | null>(sections[0]?.id ?? null);
+	let rawContent = $state<string | null>(null);
+	let rawLoading = $state(false);
 
 	const injectionPrompt = generateInjectionPrompt(
 		frontmatter.handle,
 		`https://loooom.xyz${rawUrl}`
 	);
+
+	async function loadRaw() {
+		if (rawContent) return;
+		rawLoading = true;
+		try {
+			const res = await fetch(`/me/${user.username}/raw`);
+			rawContent = await res.text();
+		} catch {
+			rawContent = '# Error loading raw content';
+		} finally {
+			rawLoading = false;
+		}
+	}
+
+	async function switchToRaw() {
+		viewMode = 'raw';
+		await loadRaw();
+	}
 
 	function copyPrompt() {
 		navigator.clipboard.writeText(injectionPrompt);
@@ -25,23 +45,19 @@
 		setTimeout(() => (copiedPrompt = false), 2000);
 	}
 
+	async function copyContent() {
+		await loadRaw();
+		if (rawContent) {
+			await navigator.clipboard.writeText(rawContent);
+			copiedContent = true;
+			setTimeout(() => (copiedContent = false), 2500);
+		}
+	}
+
 	function copyRaw() {
 		navigator.clipboard.writeText(`https://loooom.xyz${rawUrl}`);
 		copiedRaw = true;
 		setTimeout(() => (copiedRaw = false), 2000);
-	}
-
-	async function copyContent() {
-		try {
-			const res = await fetch(`/me/${user.username}/raw`);
-			const text = await res.text();
-			await navigator.clipboard.writeText(text);
-			copiedContent = true;
-			setTimeout(() => (copiedContent = false), 2500);
-		} catch {
-			// fallback: open in new tab
-			window.open(`/me/${user.username}/raw`, '_blank');
-		}
 	}
 
 	function downloadMd() {
@@ -57,14 +73,8 @@
 		return marked(md) as string;
 	}
 
-	function scrollTo(id: string) {
-		activeSection = id;
-		document.getElementById(`section-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-	}
-
-	// Section icon map
 	const SECTION_ICONS: Record<string, string> = {
-		'the-soul': '🫀',
+		'the-soul': '🫀', 'my-values': '🫀',
 		'the-heart': '💛',
 		'the-fleet': '🤖',
 		'the-stack': '⚙️',
@@ -81,643 +91,552 @@
 <svelte:head>
 	<title>{frontmatter.handle} — ME.md on Loooom</title>
 	<meta name="description" content="{frontmatter.name ?? user.username}'s Portable Human Context. Fetch raw: https://loooom.xyz{rawUrl}" />
-
-	<!-- Machine-readable meta tags for AI agents -->
 	<meta name="me-md-raw" content="https://loooom.xyz{rawUrl}" />
 	<meta name="me-md-handle" content="{frontmatter.handle}" />
 	<meta name="me-md-version" content="{frontmatter.version ?? '1.0'}" />
-	{#if frontmatter.updated}
-		<meta name="me-md-updated" content="{frontmatter.updated}" />
-	{/if}
-	{#if frontmatter.timezone}
-		<meta name="me-md-timezone" content="{frontmatter.timezone}" />
-	{/if}
-
-	<!-- OpenGraph -->
+	{#if frontmatter.updated}<meta name="me-md-updated" content="{frontmatter.updated}" />{/if}
+	{#if frontmatter.timezone}<meta name="me-md-timezone" content="{frontmatter.timezone}" />{/if}
 	<meta property="og:title" content="{frontmatter.handle} — ME.md" />
-	<meta property="og:description" content="{frontmatter.name ?? user.username}'s portable human context. Any AI can read this. Raw: loooom.xyz{rawUrl}" />
-	<meta property="og:type" content="profile" />
-	<meta property="og:url" content="https://loooom.xyz/me/{user.username}" />
-
-	<!-- JSON-LD structured data for machines -->
-	{@html `<script type="application/ld+json">${JSON.stringify({
-		"@context": "https://schema.org",
-		"@type": "Person",
-		"identifier": frontmatter.handle,
-		"name": frontmatter.name ?? user.username,
-		"url": "https://loooom.xyz/me/" + user.username,
-		"description": "Portable human context profile (ME.md v" + (frontmatter.version ?? "1.0") + ")",
-		...(frontmatter.location ? { "address": { "@type": "PostalAddress", "addressLocality": frontmatter.location } } : {}),
-		...(frontmatter.timezone ? { "homeLocation": { "@type": "Place", "name": frontmatter.location ?? "", "containsPlace": { "name": frontmatter.timezone } } } : {}),
-		"sameAs": [],
-		"additionalProperty": [
-			{
-				"@type": "PropertyValue",
-				"name": "me-md-raw",
-				"value": "https://loooom.xyz" + rawUrl
-			},
-			{
-				"@type": "PropertyValue",
-				"name": "me-md-spec",
-				"value": "https://loooom.xyz/me/spec"
-			}
-		]
-	})}</script>`}
+	<meta property="og:description" content="{frontmatter.name ?? user.username}'s portable human context. Any AI can read this." />
 </svelte:head>
 
-<div class="ambient">
-	<div class="orb orb-1"></div>
-	<div class="orb orb-2"></div>
-</div>
-
-<!-- Nav -->
+<!-- NAV -->
 <nav>
 	<div class="nav-inner">
 		<a href="/" class="logo">
-			<YarnLogo size={22} />
+			<YarnLogo size={20} />
 			<span class="logo-text">loooom</span>
 		</a>
-		<div class="nav-center">
-			<span class="breadcrumb">ME.md</span>
-			<span class="breadcrumb-sep">/</span>
-			<span class="breadcrumb-handle">{frontmatter.handle}</span>
+		<div class="nav-breadcrumb">
+			<span class="bc-dim">me /</span>
+			<span class="bc-handle">{user.username}.md</span>
 		</div>
 		<div class="nav-right">
 			<ThemeToggle />
-			<a href="/me/{user.username}/raw" class="btn-ghost-sm" target="_blank">raw ↗</a>
-			<a href="/u/{user.username}" class="btn-nav">Skills</a>
+			<a href="/me/{user.username}/raw" class="btn-raw" target="_blank">raw ↗</a>
+			<a href="/u/{user.username}" class="btn-nav">Profile</a>
 		</div>
 	</div>
 </nav>
 
-<!-- Agent Banner: machine-first, always visible -->
-<div class="agent-banner">
-	<div class="agent-banner-inner">
-		<span class="agent-banner-label">🤖 For AI Agents</span>
-		<code class="agent-banner-url">curl https://loooom.xyz{rawUrl}</code>
-		<div class="agent-banner-actions">
-			<button class="agent-banner-btn" onclick={copyRaw}>{copiedRaw ? '✓ copied' : 'Copy URL'}</button>
-			<a href="{rawUrl}" target="_blank" class="agent-banner-link">Raw ↗</a>
+<!-- FILE HERO -->
+<header class="file-hero">
+	<div class="file-hero-inner">
+		<!-- File identity -->
+		<div class="file-identity">
+			<div class="file-icon-wrap">
+				<div class="file-icon">
+					<span class="file-icon-lines">
+						<span></span><span></span><span></span>
+					</span>
+					<span class="file-icon-ext">.md</span>
+				</div>
+			</div>
+			<div class="file-meta">
+				<h1 class="file-name">{user.username}.md</h1>
+				<div class="file-attrs">
+					<span class="file-attr"><span class="attr-key">handle</span><span class="attr-val">{frontmatter.handle}</span></span>
+					{#if frontmatter.location}<span class="file-attr-sep">·</span><span class="file-attr"><span class="attr-val">📍 {frontmatter.location}</span></span>{/if}
+					{#if frontmatter.updated}<span class="file-attr-sep">·</span><span class="file-attr"><span class="attr-key">updated</span><span class="attr-val">{frontmatter.updated}</span></span>{/if}
+					<span class="file-attr-sep">·</span><span class="file-attr"><span class="attr-key">ME.md</span><span class="attr-val">v{frontmatter.version}</span></span>
+				</div>
+				{#if frontmatter.tags?.length}
+					<div class="file-tags">
+						{#each frontmatter.tags as tag}<span class="ftag">#{tag}</span>{/each}
+					</div>
+				{/if}
+			</div>
 		</div>
+
+		<!-- Action bar -->
+		<div class="file-actions">
+			<button class="faction-btn faction-primary" onclick={copyPrompt}>
+				{copiedPrompt ? '✓ Copied!' : '⚡ Copy injection prompt'}
+			</button>
+			<button class="faction-btn faction-ghost" onclick={copyContent}>
+				{copiedContent ? '✓ Copied!' : '📋 Copy ME.md'}
+			</button>
+			<button class="faction-btn faction-ghost" onclick={copyRaw}>
+				{copiedRaw ? '✓' : '🔗'}
+			</button>
+			<button class="faction-btn faction-ghost" onclick={downloadMd}>⬇</button>
+		</div>
+
+		<!-- Machine fetch bar -->
+		<div class="fetch-bar">
+			<span class="fetch-prompt">$</span>
+			<code class="fetch-cmd">curl https://loooom.xyz{rawUrl}</code>
+			<button class="fetch-copy" onclick={copyRaw}>{copiedRaw ? '✓' : 'copy'}</button>
+		</div>
+	</div>
+</header>
+
+<!-- VIEW TOGGLE -->
+<div class="view-toggle-bar">
+	<div class="view-toggle-inner">
+		<div class="view-tabs">
+			<button class="vtab" class:active={viewMode === 'rendered'} onclick={() => viewMode = 'rendered'}>
+				<span class="vtab-icon">◉</span> Rendered
+			</button>
+			<button class="vtab" class:active={viewMode === 'raw'} onclick={switchToRaw}>
+				<span class="vtab-icon">⌥</span> Raw markdown
+			</button>
+		</div>
+		{#if frontmatter.agents?.length}
+			<div class="fleet-pills">
+				{#each frontmatter.agents as agent}
+					<div class="fleet-pill">
+						<span>{agent.emoji ?? '🤖'}</span>
+						<span class="fleet-id">{agent.id}</span>
+					</div>
+				{/each}
+			</div>
+		{/if}
 	</div>
 </div>
 
-<!-- Layout: sidebar + content -->
-<div class="layout">
+<!-- MAIN CONTENT -->
+<div class="page-body">
 
-	<!-- Sidebar -->
-	<aside class="sidebar">
-		<!-- Identity card -->
-		<div class="identity-card">
-			<div class="avatar">
-				{#if user.avatarUrl}
-					<img src={user.avatarUrl} alt={user.displayName} />
-				{:else}
-					<span class="avatar-letter">{(frontmatter.name ?? user.username)[0].toUpperCase()}</span>
-				{/if}
-			</div>
-			<div class="identity-meta">
-				<h2 class="handle">{frontmatter.handle}</h2>
-				{#if frontmatter.name}
-					<p class="real-name">{frontmatter.name}</p>
-				{/if}
-				{#if frontmatter.location}
-					<p class="location">📍 {frontmatter.location}</p>
-				{/if}
-				{#if frontmatter.timezone}
-					<p class="timezone">🕐 {frontmatter.timezone}</p>
-				{/if}
+	<!-- RAW VIEW: show the actual markdown file -->
+	{#if viewMode === 'raw'}
+		<div class="raw-view">
+			<div class="raw-window">
+				<div class="raw-window-bar">
+					<span class="win-dot r"></span>
+					<span class="win-dot y"></span>
+					<span class="win-dot g"></span>
+					<span class="win-filename">{user.username}.md</span>
+					<span class="win-badge">UTF-8 · Markdown</span>
+				</div>
+				<div class="raw-window-body">
+					{#if rawLoading}
+						<div class="raw-loading">Loading...</div>
+					{:else if rawContent}
+						<pre class="raw-content">{rawContent}</pre>
+					{/if}
+				</div>
 			</div>
 		</div>
 
-		<!-- Tags -->
-		{#if frontmatter.tags && frontmatter.tags.length > 0}
-			<div class="sidebar-block">
-				<h4 class="sidebar-label">Tags</h4>
-				<div class="tags">
-					{#each frontmatter.tags as tag}
-						<span class="tag">{tag}</span>
-					{/each}
+	<!-- RENDERED VIEW -->
+	{:else}
+		<div class="rendered-layout">
+			<!-- Sidebar -->
+			<aside class="sidebar">
+				<!-- Avatar + identity -->
+				<div class="sidebar-identity">
+					<div class="sid-avatar">
+						{#if user.avatarUrl}
+							<img src={user.avatarUrl} alt={user.displayName} />
+						{:else}
+							{(frontmatter.name ?? user.username)[0].toUpperCase()}
+						{/if}
+					</div>
+					<div>
+						<div class="sid-handle">{frontmatter.handle}</div>
+						{#if frontmatter.name}<div class="sid-name">{frontmatter.name}</div>{/if}
+						{#if frontmatter.timezone}<div class="sid-tz">🕐 {frontmatter.timezone}</div>{/if}
+					</div>
 				</div>
-			</div>
-		{/if}
 
-		<!-- Agent Fleet -->
-		{#if frontmatter.agents && frontmatter.agents.length > 0}
-			<div class="sidebar-block">
-				<h4 class="sidebar-label">Agent Fleet</h4>
-				<div class="agents">
-					{#each frontmatter.agents as agent}
-						<div class="agent-card">
-							<span class="agent-emoji">{agent.emoji ?? '🤖'}</span>
-							<div class="agent-info">
-								<span class="agent-id">{agent.id}</span>
-								{#if agent.role}
-									<span class="agent-role">{agent.role}</span>
-								{/if}
-								{#if agent.model}
-									<span class="agent-model">{agent.model}</span>
-								{/if}
+				<!-- Agent fleet -->
+				{#if frontmatter.agents?.length}
+					<div class="sb-block">
+						<div class="sb-label">🤖 The Fleet</div>
+						<div class="sb-agents">
+							{#each frontmatter.agents as agent}
+								<div class="sb-agent">
+									<span class="sb-agent-emoji">{agent.emoji ?? '🤖'}</span>
+									<div class="sb-agent-info">
+										<span class="sb-agent-id">{agent.id}</span>
+										{#if agent.role}<span class="sb-agent-role">{agent.role}</span>{/if}
+									</div>
+								</div>
+							{/each}
+						</div>
+					</div>
+				{/if}
+
+				<!-- Section nav -->
+				{#if sections.length}
+					<div class="sb-block">
+						<div class="sb-label">Sections</div>
+						<nav class="sb-nav">
+							{#each sections as sec}
+								<a href="#section-{sec.id}" class="sb-nav-item">
+									<span>{sectionIcon(sec.id, sec.icon)}</span>
+									<span>{sec.title}</span>
+								</a>
+							{/each}
+						</nav>
+					</div>
+				{/if}
+
+				<!-- Quick actions -->
+				<div class="sb-block">
+					<button class="sb-action primary" onclick={copyPrompt}>{copiedPrompt ? '✓ Copied!' : '⚡ Copy injection prompt'}</button>
+					<button class="sb-action" onclick={() => switchToRaw()}>View raw markdown →</button>
+				</div>
+
+				<div class="sb-version">ME.md v{frontmatter.version}{#if frontmatter.updated} · {frontmatter.updated}{/if}</div>
+			</aside>
+
+			<!-- Sections -->
+			<main class="sections-main">
+				{#each sections as section}
+					<div id="section-{section.id}" class="section-card">
+						<div class="section-card-header">
+							<div class="section-card-label">
+								<span class="sc-icon">{sectionIcon(section.id, section.icon)}</span>
+								<h2 class="sc-title">{section.title}</h2>
+							</div>
+							<!-- Raw snippet toggle per section -->
+							<div class="sc-raw-pill">
+								<code class="sc-raw-id">#{section.id}</code>
 							</div>
 						</div>
-					{/each}
+						<div class="section-body prose">
+							{@html renderMarkdown(section.content)}
+						</div>
+					</div>
+				{/each}
+
+				<!-- Injection prompt card -->
+				<div class="injection-card">
+					<div class="injection-card-header">
+						<span class="inj-badge">⚡ Injection Prompt</span>
+						<p class="inj-hint">Paste this into any AI system prompt to auto-load this context.</p>
+					</div>
+					<pre class="inj-code">{injectionPrompt}</pre>
+					<button class="inj-copy-btn" onclick={copyPrompt}>{copiedPrompt ? '✓ Copied!' : 'Copy prompt'}</button>
 				</div>
-			</div>
-		{/if}
-
-		<!-- Section nav -->
-		{#if sections.length > 0}
-			<div class="sidebar-block">
-				<h4 class="sidebar-label">Sections</h4>
-				<nav class="section-nav">
-					{#each sections as section}
-						<button
-							class="section-nav-item"
-							class:active={activeSection === section.id}
-							onclick={() => scrollTo(section.id)}
-						>
-							<span class="nav-icon">{sectionIcon(section.id, section.icon)}</span>
-							<span class="nav-title">{section.title}</span>
-						</button>
-					{/each}
-				</nav>
-			</div>
-		{/if}
-
-		<!-- Actions -->
-		<div class="sidebar-block">
-			<h4 class="sidebar-label">Use this context</h4>
-			<div class="actions">
-				<button class="action-btn" onclick={copyPrompt}>
-					{copiedPrompt ? '✓ Copied!' : '⚡ Copy injection prompt'}
-				</button>
-				<button class="action-btn action-btn-secondary" onclick={copyContent}>
-					{copiedContent ? '✓ Copied!' : '📋 Copy ME.md'}
-				</button>
-				<button class="action-btn action-btn-secondary" onclick={downloadMd}>
-					⬇ Download .md
-				</button>
-				<button class="action-btn action-btn-secondary" onclick={copyRaw}>
-					{copiedRaw ? '✓ Copied!' : '🔗 Copy raw URL'}
-				</button>
-			</div>
+			</main>
 		</div>
-
-		<!-- Version / metadata -->
-		<div class="sidebar-meta">
-			<span class="meta-badge">ME.md v{frontmatter.version}</span>
-			{#if frontmatter.updated}
-				<span class="meta-updated">Updated {frontmatter.updated}</span>
-			{/if}
-		</div>
-	</aside>
-
-	<!-- Main content -->
-	<main class="content">
-		<!-- Header -->
-		<div class="content-header">
-			<h1 class="content-title">
-				<span class="title-handle">{frontmatter.handle}</span>
-				<span class="title-suffix">'s context</span>
-			</h1>
-			<p class="content-tagline">Portable Human Context · ME.md v{frontmatter.version}</p>
-		</div>
-
-		<!-- Sections -->
-		{#each sections as section}
-			<div id="section-{section.id}" class="section-block" data-section={section.id}>
-				<div class="section-header">
-					{#if section.icon}
-						<span class="section-h-icon">{section.icon}</span>
-					{/if}
-					<h2 class="section-h2">{section.title}</h2>
-				</div>
-				<div class="section-body prose">
-					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-					{@html renderMarkdown(section.content)}
-				</div>
-			</div>
-		{/each}
-
-		<!-- Injection prompt panel -->
-		<div class="injection-panel">
-			<div class="injection-header">
-				<h3>⚡ Injection Prompt</h3>
-				<p>Paste into any AI system prompt to load this context automatically.</p>
-			</div>
-			<pre class="injection-code">{injectionPrompt}</pre>
-			<button class="copy-prompt-btn" onclick={copyPrompt}>
-				{copiedPrompt ? '✓ Copied!' : 'Copy prompt'}
-			</button>
-		</div>
-	</main>
+	{/if}
 </div>
 
 <style>
-	/* ─── Agent Banner ────────────────────────────────────────────────────── */
-	.agent-banner {
-		position: sticky;
-		top: 54px; /* below nav */
-		z-index: 90;
-		background: color-mix(in srgb, var(--ocean) 8%, var(--bg-primary));
-		border-bottom: 1px solid color-mix(in srgb, var(--ocean) 30%, transparent);
-		padding: 0.5rem 1.5rem;
-	}
-	.agent-banner-inner {
-		max-width: 1200px;
-		margin: 0 auto;
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		flex-wrap: wrap;
-	}
-	.agent-banner-label {
-		font-family: var(--font-mono);
-		font-size: 0.7rem;
-		font-weight: 700;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		color: var(--ocean);
-		flex-shrink: 0;
-	}
-	.agent-banner-url {
-		font-family: var(--font-mono);
-		font-size: 0.78rem;
-		color: var(--text-secondary);
-		background: var(--bg-secondary);
-		border: 1px solid var(--border);
-		padding: 2px 10px;
-		border-radius: 4px;
-		flex: 1;
-		min-width: 0;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-	.agent-banner-actions {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		flex-shrink: 0;
-	}
-	.agent-banner-btn {
-		font-family: var(--font-mono);
-		font-size: 0.72rem;
-		font-weight: 600;
-		background: var(--ocean);
-		color: white;
-		border: none;
-		padding: 3px 10px;
-		border-radius: 4px;
-		cursor: pointer;
-		transition: opacity 0.2s;
-	}
-	.agent-banner-btn:hover { opacity: 0.85; }
-	.agent-banner-link {
-		font-family: var(--font-mono);
-		font-size: 0.72rem;
-		font-weight: 600;
-		color: var(--ocean);
-		text-decoration: none;
-		padding: 3px 8px;
-		border: 1px solid color-mix(in srgb, var(--ocean) 40%, transparent);
-		border-radius: 4px;
-		transition: all 0.2s;
-	}
-	.agent-banner-link:hover {
-		background: color-mix(in srgb, var(--ocean) 10%, transparent);
-	}
-
-	/* ─── Ambient ─────────────────────────────────────────────────────────── */
-	.ambient {
-		position: fixed; inset: 0;
-		pointer-events: none; z-index: 0; overflow: hidden;
-	}
-	.orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.12; }
-	.orb-1 {
-		width: 500px; height: 500px;
-		background: radial-gradient(circle, var(--violet) 0%, transparent 70%);
-		top: -100px; right: -100px;
-	}
-	.orb-2 {
-		width: 400px; height: 400px;
-		background: radial-gradient(circle, var(--ocean) 0%, transparent 70%);
-		bottom: 20%; left: -100px;
-	}
-
-	/* ─── Nav ────────────────────────────────────────────────────────────── */
+	/* ===== NAV ===== */
 	nav {
 		position: sticky; top: 0; z-index: 100;
-		background: var(--nav-bg); backdrop-filter: blur(12px);
+		background: var(--bg-primary);
 		border-bottom: 1px solid var(--border);
+		backdrop-filter: blur(12px);
 	}
 	.nav-inner {
-		max-width: 1300px; margin: 0 auto;
-		padding: 12px 32px;
+		max-width: 1280px; margin: 0 auto;
+		padding: 0 2rem; height: 52px;
 		display: flex; align-items: center; justify-content: space-between;
+		gap: 1rem;
 	}
-	.logo {
-		display: flex; align-items: center; gap: 8px;
-		text-decoration: none; color: var(--text-primary);
-		flex-shrink: 0;
-	}
-	.logo-text { font-family: var(--font-handwriting); font-size: 1.1rem; font-weight: 200; }
-	.nav-center {
-		display: flex; align-items: center; gap: 8px;
-		font-family: var(--font-mono); font-size: 0.85rem;
-	}
-	.breadcrumb { color: var(--text-muted); }
-	.breadcrumb-sep { color: var(--border); }
-	.breadcrumb-handle { color: var(--accent); }
-	.nav-right { display: flex; align-items: center; gap: 12px; }
-	.btn-ghost-sm {
-		font-size: 0.82rem; color: var(--text-muted);
-		font-family: var(--font-mono);
-		text-decoration: none;
-		padding: 4px 10px; border-radius: 6px;
-		border: 1px solid var(--border);
-		transition: all 0.2s;
-	}
-	.btn-ghost-sm:hover { color: var(--accent); border-color: var(--accent); }
-	.btn-nav {
-		background: var(--bg-card); border: 1px solid var(--border);
-		color: var(--text-primary); padding: 6px 16px; border-radius: 999px;
-		font-size: 0.85rem; cursor: pointer; text-decoration: none;
-		transition: all 0.2s;
-	}
-	.btn-nav:hover { border-color: var(--accent); color: var(--accent); }
+	.logo { display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary); text-decoration: none; flex-shrink: 0; }
+	.logo-text { font-family: var(--font-handwriting); font-size: 1rem; font-weight: 200; }
+	.nav-breadcrumb { display: flex; align-items: center; gap: 0.4rem; font-family: var(--font-mono); font-size: 0.82rem; }
+	.bc-dim { color: var(--text-muted); }
+	.bc-handle { color: var(--text-primary); font-weight: 700; }
+	.nav-right { display: flex; align-items: center; gap: 0.75rem; }
+	.btn-raw { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); text-decoration: none; padding: 3px 10px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.15s; }
+	.btn-raw:hover { color: var(--violet); border-color: var(--violet); }
+	.btn-nav { font-size: 0.82rem; color: var(--text-secondary); text-decoration: none; padding: 5px 14px; border: 1px solid var(--border); border-radius: 999px; transition: all 0.15s; background: var(--bg-card); }
+	.btn-nav:hover { border-color: var(--violet); color: var(--violet); }
 
-	/* ─── Layout ─────────────────────────────────────────────────────────── */
-	.layout {
-		display: grid;
-		grid-template-columns: 280px 1fr;
-		max-width: 1300px;
-		margin: 0 auto;
-		min-height: calc(100vh - 57px);
-		position: relative; z-index: 1;
-	}
-
-	/* ─── Sidebar ────────────────────────────────────────────────────────── */
-	.sidebar {
-		border-right: 1px solid var(--border);
-		padding: 32px 24px;
-		position: sticky;
-		top: 57px;
-		height: calc(100vh - 57px);
-		overflow-y: auto;
-		display: flex;
-		flex-direction: column;
-		gap: 24px;
-	}
-
-	.identity-card {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		text-align: center;
-		gap: 12px;
-		padding-bottom: 24px;
+	/* ===== FILE HERO ===== */
+	.file-hero {
+		background: var(--bg-secondary);
 		border-bottom: 1px solid var(--border);
+		padding: 2.5rem 2rem;
 	}
-	.avatar {
-		width: 72px; height: 72px;
-		border-radius: 50%;
-		overflow: hidden;
+	.file-hero-inner {
+		max-width: 1280px; margin: 0 auto;
+		display: flex; flex-direction: column; gap: 1.5rem;
+	}
+	.file-identity { display: flex; align-items: flex-start; gap: 1.5rem; }
+	.file-icon-wrap { flex-shrink: 0; }
+	.file-icon {
+		width: 56px; height: 70px;
+		background: var(--bg-card);
 		border: 2px solid var(--border);
-		display: flex; align-items: center; justify-content: center;
-		background: var(--bg-secondary);
-		font-size: 2rem;
+		border-radius: 8px;
+		display: flex; flex-direction: column; align-items: center; justify-content: center;
+		gap: 4px;
+		position: relative;
 	}
-	.avatar img { width: 100%; height: 100%; object-fit: cover; }
-	.avatar-letter { font-weight: 700; color: var(--accent); }
-	.identity-meta { width: 100%; }
-	.handle {
+	.file-icon::after {
+		content: '';
+		position: absolute; top: -2px; right: -2px;
+		width: 14px; height: 14px;
+		background: var(--bg-secondary);
+		border-bottom: 2px solid var(--border);
+		border-left: 2px solid var(--border);
+		border-radius: 0 6px 0 6px;
+	}
+	.file-icon-lines { display: flex; flex-direction: column; gap: 3px; margin-bottom: 4px; }
+	.file-icon-lines span { display: block; height: 2px; border-radius: 1px; background: var(--text-muted); }
+	.file-icon-lines span:nth-child(1) { width: 28px; }
+	.file-icon-lines span:nth-child(2) { width: 22px; }
+	.file-icon-lines span:nth-child(3) { width: 18px; }
+	.file-icon-ext { font-family: var(--font-mono); font-size: 0.62rem; font-weight: 800; color: var(--violet); letter-spacing: 0.05em; }
+
+	.file-meta { flex: 1; min-width: 0; }
+	.file-name {
 		font-family: var(--font-mono);
-		font-size: 1.1rem;
-		color: var(--accent);
-		margin: 0 0 4px;
-	}
-	.real-name { color: var(--text-primary); font-weight: 600; margin: 0 0 4px; font-size: 0.9rem; }
-	.location, .timezone { color: var(--text-muted); font-size: 0.8rem; margin: 0; }
-
-	.sidebar-block { display: flex; flex-direction: column; gap: 10px; }
-	.sidebar-label {
-		font-size: 0.7rem;
-		text-transform: uppercase;
-		letter-spacing: 0.12em;
-		color: var(--text-muted);
-		font-weight: 600;
-		margin: 0;
-	}
-	.tags { display: flex; flex-wrap: wrap; gap: 6px; }
-	.tag {
-		background: var(--accent-glow);
-		border: 1px solid var(--accent-bright);
-		color: var(--accent);
-		padding: 2px 10px;
-		border-radius: 999px;
-		font-size: 0.75rem;
-		font-weight: 500;
-	}
-	.agents { display: flex; flex-direction: column; gap: 8px; }
-	.agent-card {
-		display: flex; align-items: flex-start; gap: 10px;
-		background: var(--bg-secondary);
-		border: 1px solid var(--border);
-		border-radius: var(--radius-sm);
-		padding: 10px 12px;
-	}
-	.agent-emoji { font-size: 1.2rem; flex-shrink: 0; }
-	.agent-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-	.agent-id { font-family: var(--font-mono); font-size: 0.82rem; color: var(--text-primary); font-weight: 600; }
-	.agent-role { font-size: 0.78rem; color: var(--text-secondary); }
-	.agent-model { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); }
-
-	/* Section nav */
-	.section-nav { display: flex; flex-direction: column; gap: 2px; }
-	.section-nav-item {
-		display: flex; align-items: center; gap: 8px;
-		padding: 7px 10px;
-		border-radius: var(--radius-sm);
-		background: none; border: none; cursor: pointer;
-		text-align: left; width: 100%;
-		color: var(--text-secondary); font-size: 0.85rem;
-		transition: all 0.15s;
-	}
-	.section-nav-item:hover {
-		background: var(--bg-secondary);
+		font-size: clamp(1.5rem, 4vw, 2.25rem);
+		font-weight: 800;
+		letter-spacing: -0.02em;
 		color: var(--text-primary);
+		margin: 0 0 0.5rem;
 	}
-	.section-nav-item.active {
-		background: var(--accent-glow);
-		color: var(--accent);
+	.file-attrs {
+		display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+		font-family: var(--font-mono); font-size: 0.75rem; margin-bottom: 0.75rem;
 	}
-	.nav-icon { font-size: 0.9rem; flex-shrink: 0; }
-	.nav-title { flex: 1; }
+	.file-attr { display: flex; align-items: center; gap: 0.3rem; }
+	.attr-key { color: var(--text-muted); }
+	.attr-val { color: var(--text-secondary); font-weight: 600; }
+	.file-attr-sep { color: var(--border); }
+	.file-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+	.ftag { font-family: var(--font-mono); font-size: 0.68rem; color: var(--violet); background: color-mix(in srgb, var(--violet) 10%, transparent); border: 1px solid color-mix(in srgb, var(--violet) 25%, transparent); padding: 2px 8px; border-radius: 999px; }
 
-	/* Actions */
-	.actions { display: flex; flex-direction: column; gap: 8px; }
-	.action-btn {
-		width: 100%;
-		background: var(--gradient-cta);
-		border: none; color: white;
-		padding: 9px 16px;
+	.file-actions {
+		display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+	}
+	.faction-btn, .faction-primary {
+		padding: 0.55rem 1.25rem;
 		border-radius: 999px;
 		font-size: 0.82rem;
 		font-weight: 600;
 		cursor: pointer;
-		transition: opacity 0.2s;
+		transition: all 0.15s;
+		border: none;
 	}
-	.action-btn:hover { opacity: 0.85; }
-	.action-btn-secondary {
-		background: var(--bg-secondary);
-		border: 1px solid var(--border);
+	.faction-primary { background: var(--violet); color: white; }
+	.faction-primary:hover { opacity: 0.88; }
+	.faction-ghost {
+		background: var(--bg-card);
+		border: 1.5px solid var(--border) !important;
 		color: var(--text-secondary);
 	}
-	.action-btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
-	.action-link {
-		text-align: center;
-		color: var(--text-muted);
-		font-size: 0.78rem;
-		text-decoration: none;
-	}
-	.action-link:hover { color: var(--accent); }
+	.faction-ghost:hover { border-color: var(--violet) !important; color: var(--violet); }
+	.faction-btn { background: var(--bg-card); border: 1.5px solid var(--border); color: var(--text-secondary); }
+	.faction-btn:hover { border-color: var(--violet); color: var(--violet); }
+	/* Also used as primary in the hero */
+	.faction-btn.faction-primary { background: var(--violet); color: white; border: none; }
 
-	.sidebar-meta {
-		margin-top: auto;
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
-	}
-	.meta-badge {
+	.fetch-bar {
+		display: inline-flex; align-items: center; gap: 0.75rem;
+		background: #0d0d14;
+		border: 1px solid #2a2a3e;
+		border-radius: 10px;
+		padding: 0.6rem 1rem;
 		font-family: var(--font-mono);
-		font-size: 0.72rem;
-		color: var(--text-muted);
-		background: var(--bg-secondary);
-		border: 1px solid var(--border);
-		padding: 3px 8px;
-		border-radius: 6px;
-		display: inline-block;
-		width: fit-content;
+		max-width: 520px;
+		width: 100%;
 	}
-	.meta-updated { font-size: 0.72rem; color: var(--text-muted); }
+	.fetch-prompt { color: #6366f1; font-weight: 700; flex-shrink: 0; }
+	.fetch-cmd { color: #a5b4fc; font-size: 0.82rem; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+	.fetch-copy { background: none; border: 1px solid #2a2a3e; color: #6366f1; font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; cursor: pointer; transition: all 0.15s; flex-shrink: 0; }
+	.fetch-copy:hover { background: rgba(99,102,241,0.15); }
 
-	/* ─── Main Content ───────────────────────────────────────────────────── */
-	.content {
-		padding: 48px 64px;
-		max-width: 800px;
-		display: flex;
-		flex-direction: column;
-		gap: 0;
-	}
-	.content-header { margin-bottom: 48px; }
-	.content-title { font-size: 2.4rem; margin: 0 0 8px; line-height: 1.1; }
-	.title-handle {
-		background: var(--gradient-hero);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-clip: text;
-	}
-	.title-suffix { color: var(--text-muted); font-weight: 400; }
-	.content-tagline { color: var(--text-muted); font-family: var(--font-mono); font-size: 0.85rem; margin: 0; }
-
-	/* Section blocks */
-	.section-block {
-		padding: 40px 0;
+	/* ===== VIEW TOGGLE BAR ===== */
+	.view-toggle-bar {
 		border-bottom: 1px solid var(--border);
-		scroll-margin-top: 80px;
+		background: var(--bg-primary);
+		position: sticky;
+		top: 52px;
+		z-index: 90;
 	}
-	.section-block:last-of-type { border-bottom: none; }
-	.section-header {
-		display: flex; align-items: center; gap: 12px;
-		margin-bottom: 24px;
+	.view-toggle-inner {
+		max-width: 1280px; margin: 0 auto;
+		padding: 0 2rem;
+		display: flex; align-items: center; justify-content: space-between;
+		gap: 1rem;
 	}
-	.section-h-icon { font-size: 1.6rem; }
-	.section-h2 { font-size: 1.5rem; margin: 0; }
+	.view-tabs { display: flex; gap: 0; }
+	.vtab {
+		display: flex; align-items: center; gap: 0.4rem;
+		padding: 0.7rem 1.1rem;
+		background: none; border: none;
+		border-bottom: 2px solid transparent;
+		font-family: var(--font-mono);
+		font-size: 0.78rem; font-weight: 600;
+		color: var(--text-muted);
+		cursor: pointer; transition: all 0.15s;
+	}
+	.vtab.active { color: var(--violet); border-bottom-color: var(--violet); }
+	.vtab:hover:not(.active) { color: var(--text-secondary); }
+	.vtab-icon { font-size: 0.7rem; }
+	.fleet-pills { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; padding: 0.5rem 0; }
+	.fleet-pill { display: flex; align-items: center; gap: 0.35rem; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 999px; padding: 0.2rem 0.7rem; font-size: 0.75rem; }
+	.fleet-id { font-family: var(--font-mono); font-weight: 700; color: var(--text-secondary); font-size: 0.72rem; }
 
-	/* Prose rendering */
-	.prose :global(p) { color: var(--text-secondary); line-height: 1.75; margin: 0 0 1em; }
-	.prose :global(h3) { color: var(--text-primary); margin: 1.5em 0 0.5em; }
-	.prose :global(ul), .prose :global(ol) {
-		color: var(--text-secondary);
-		padding-left: 1.5em;
-		margin: 0 0 1em;
-		line-height: 1.7;
+	/* ===== PAGE BODY ===== */
+	.page-body { max-width: 1280px; margin: 0 auto; }
+
+	/* ===== RAW VIEW ===== */
+	.raw-view { padding: 2rem; }
+	.raw-window {
+		border: 1px solid var(--border);
+		border-radius: 14px;
+		overflow: hidden;
+		box-shadow: 0 8px 40px rgba(0,0,0,0.12);
 	}
+	.raw-window-bar {
+		background: #1a1a2a;
+		border-bottom: 1px solid #2a2a3e;
+		padding: 10px 16px;
+		display: flex; align-items: center; gap: 8px;
+	}
+	.win-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+	.win-dot.r { background: #ff5f57; }
+	.win-dot.y { background: #febc2e; }
+	.win-dot.g { background: #28c840; }
+	.win-filename { font-family: var(--font-mono); font-size: 0.78rem; color: #a5b4fc; font-weight: 700; margin-left: 8px; }
+	.win-badge { margin-left: auto; font-family: var(--font-mono); font-size: 0.65rem; color: #4a4a6a; }
+	.raw-window-body { background: #0d0d14; max-height: 80vh; overflow-y: auto; }
+	.raw-loading { color: #4a4a6a; font-family: var(--font-mono); font-size: 0.85rem; padding: 2rem; }
+	.raw-content {
+		margin: 0;
+		padding: 2rem;
+		font-family: var(--font-mono);
+		font-size: 0.82rem;
+		line-height: 1.75;
+		color: #c8c8e8;
+		white-space: pre-wrap;
+		word-break: break-word;
+		tab-size: 2;
+		/* Subtle YAML/MD syntax coloring via text */
+	}
+
+	/* ===== RENDERED LAYOUT ===== */
+	.rendered-layout {
+		display: grid;
+		grid-template-columns: 260px 1fr;
+		gap: 0;
+		min-height: 80vh;
+	}
+
+	/* ===== SIDEBAR ===== */
+	.sidebar {
+		border-right: 1px solid var(--border);
+		padding: 2rem 1.5rem;
+		position: sticky;
+		top: 96px; /* nav + toggle bar */
+		height: calc(100vh - 96px);
+		overflow-y: auto;
+		display: flex; flex-direction: column; gap: 1.75rem;
+	}
+	.sidebar-identity {
+		display: flex; align-items: center; gap: 1rem;
+		padding-bottom: 1.5rem;
+		border-bottom: 1px solid var(--border);
+	}
+	.sid-avatar {
+		width: 48px; height: 48px; border-radius: 50%;
+		background: linear-gradient(135deg, var(--violet), var(--ocean));
+		display: flex; align-items: center; justify-content: center;
+		font-weight: 800; font-size: 1.1rem; color: white;
+		overflow: hidden; flex-shrink: 0;
+	}
+	.sid-avatar img { width: 100%; height: 100%; object-fit: cover; }
+	.sid-handle { font-family: var(--font-mono); font-size: 0.88rem; font-weight: 800; color: var(--violet); }
+	.sid-name { font-size: 0.82rem; color: var(--text-secondary); margin-top: 2px; }
+	.sid-tz { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; font-family: var(--font-mono); }
+
+	.sb-block { display: flex; flex-direction: column; gap: 0.75rem; }
+	.sb-label { font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); }
+	.sb-agents { display: flex; flex-direction: column; gap: 0.5rem; }
+	.sb-agent { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0.75rem; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; }
+	.sb-agent-emoji { font-size: 1rem; }
+	.sb-agent-info { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+	.sb-agent-id { font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; color: var(--text-primary); }
+	.sb-agent-role { font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+	.sb-nav { display: flex; flex-direction: column; gap: 2px; }
+	.sb-nav-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.45rem 0.6rem; border-radius: 6px; font-size: 0.82rem; color: var(--text-secondary); text-decoration: none; transition: all 0.12s; }
+	.sb-nav-item:hover { background: var(--bg-secondary); color: var(--text-primary); }
+
+	.sb-action { width: 100%; padding: 0.6rem 1rem; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.15s; background: var(--bg-secondary); border: 1.5px solid var(--border); color: var(--text-secondary); }
+	.sb-action:hover { border-color: var(--violet); color: var(--violet); }
+	.sb-action.primary { background: var(--violet); border-color: var(--violet); color: white; }
+	.sb-action.primary:hover { opacity: 0.88; }
+	.sb-version { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); margin-top: auto; }
+
+	/* ===== SECTIONS ===== */
+	.sections-main { padding: 2.5rem 3rem; display: flex; flex-direction: column; gap: 2rem; max-width: 780px; }
+
+	.section-card {
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: 14px;
+		overflow: hidden;
+	}
+	.section-card-header {
+		display: flex; align-items: center; justify-content: space-between;
+		padding: 1rem 1.5rem;
+		background: var(--bg-secondary);
+		border-bottom: 1px solid var(--border);
+	}
+	.section-card-label { display: flex; align-items: center; gap: 0.75rem; }
+	.sc-icon { font-size: 1.2rem; }
+	.sc-title { font-size: 1rem; font-weight: 700; margin: 0; color: var(--text-primary); letter-spacing: -0.01em; }
+	.sc-raw-pill { }
+	.sc-raw-id { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); background: var(--bg-card); padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border); }
+
+	.section-body { padding: 1.5rem; }
+
+	/* Prose */
+	.prose :global(p) { color: var(--text-secondary); line-height: 1.75; margin: 0 0 1em; font-size: 0.925rem; }
+	.prose :global(h3) { color: var(--text-primary); margin: 1.5em 0 0.5em; font-size: 0.95rem; }
+	.prose :global(ul), .prose :global(ol) { color: var(--text-secondary); padding-left: 1.5em; margin: 0 0 1em; line-height: 1.7; font-size: 0.925rem; }
 	.prose :global(li) { margin-bottom: 0.3em; }
 	.prose :global(strong) { color: var(--text-primary); }
-	.prose :global(code) {
-		font-family: var(--font-mono);
-		font-size: 0.85em;
-		background: var(--bg-secondary);
-		padding: 2px 6px;
-		border-radius: 4px;
-		color: var(--accent);
-	}
-	.prose :global(table) { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-	.prose :global(th) {
-		background: var(--bg-secondary);
-		border: 1px solid var(--border);
-		padding: 8px 16px;
-		text-align: left;
-		font-size: 0.8rem;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		color: var(--text-muted);
-	}
-	.prose :global(td) {
-		border: 1px solid var(--border);
-		padding: 10px 16px;
-		color: var(--text-secondary);
-	}
-	.prose :global(blockquote) {
-		border-left: 3px solid var(--accent);
-		margin: 0 0 1em;
-		padding-left: 16px;
-		color: var(--text-secondary);
-		font-style: italic;
-	}
+	.prose :global(code) { font-family: var(--font-mono); font-size: 0.82em; background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; color: var(--violet); }
+	.prose :global(pre) { background: #0d0d14; border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+	.prose :global(pre code) { background: none; padding: 0; color: #a5b4fc; }
+	.prose :global(table) { width: 100%; border-collapse: collapse; font-size: 0.875rem; margin: 1rem 0; }
+	.prose :global(th) { background: var(--bg-secondary); border: 1px solid var(--border); padding: 8px 14px; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+	.prose :global(td) { border: 1px solid var(--border); padding: 9px 14px; color: var(--text-secondary); font-size: 0.875rem; }
+	.prose :global(blockquote) { border-left: 3px solid var(--violet); margin: 1em 0; padding-left: 1rem; color: var(--text-secondary); font-style: italic; }
 
-	/* Injection panel */
-	.injection-panel {
-		margin-top: 48px;
+	/* ===== INJECTION CARD ===== */
+	.injection-card {
 		background: var(--bg-secondary);
 		border: 1px solid var(--border);
-		border-radius: var(--radius-lg);
-		padding: 28px;
+		border-radius: 14px;
+		overflow: hidden;
 	}
-	.injection-header { margin-bottom: 20px; }
-	.injection-header h3 { margin: 0 0 6px; font-size: 1rem; }
-	.injection-header p { color: var(--text-muted); font-size: 0.85rem; margin: 0; }
-	.injection-code {
+	.injection-card-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); }
+	.inj-badge { display: inline-block; font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; color: var(--violet); margin-bottom: 0.4rem; }
+	.inj-hint { font-size: 0.82rem; color: var(--text-muted); margin: 0; }
+	.inj-code {
 		font-family: var(--font-mono);
 		font-size: 0.78rem;
-		line-height: 1.65;
-		color: var(--text-secondary);
-		background: var(--bg-primary);
-		border: 1px solid var(--border);
-		border-radius: var(--radius-sm);
-		padding: 16px;
-		margin: 0 0 16px;
+		line-height: 1.7;
+		color: #c8c8e8;
+		background: #0d0d14;
+		margin: 0;
+		padding: 1.5rem;
 		overflow-x: auto;
 		white-space: pre-wrap;
+		border-bottom: 1px solid var(--border);
 	}
-	.copy-prompt-btn {
-		background: var(--gradient-cta);
-		border: none; color: white;
-		padding: 9px 24px;
-		border-radius: 999px;
-		font-size: 0.85rem;
-		font-weight: 600;
-		cursor: pointer;
-		transition: opacity 0.2s;
-	}
-	.copy-prompt-btn:hover { opacity: 0.85; }
+	.inj-copy-btn { margin: 1rem 1.5rem; padding: 0.5rem 1.25rem; background: var(--violet); border: none; color: white; border-radius: 999px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: opacity 0.15s; }
+	.inj-copy-btn:hover { opacity: 0.88; }
 
-	/* ─── Responsive ────────────────────────────────────────────────────── */
+	/* ===== RESPONSIVE ===== */
 	@media (max-width: 900px) {
-		.layout { grid-template-columns: 1fr; }
+		.rendered-layout { grid-template-columns: 1fr; }
 		.sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
-		.content { padding: 32px 24px; max-width: 100%; }
+		.sections-main { padding: 1.5rem; }
+		.fleet-pills { display: none; }
+	}
+	@media (max-width: 640px) {
+		.file-hero { padding: 1.5rem 1rem; }
+		.file-name { font-size: 1.5rem; }
+		.file-icon { display: none; }
+		.fetch-bar { max-width: 100%; }
+		.raw-view { padding: 1rem; }
+		.view-toggle-inner { padding: 0 1rem; }
 	}
 </style>
