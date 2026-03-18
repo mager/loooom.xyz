@@ -1,33 +1,60 @@
 <script lang="ts">
 	import Nav from '$lib/components/Nav.svelte';
-	import { MARKETPLACE_COMMAND } from '$lib/plugins';
 
 	let { data } = $props();
 
-	const featuredPlugins = $derived(
-		data.plugins.filter((p: { source: string }) => p.source === 'loooom').slice(0, 3)
-	);
+	const featuredSkills = $derived(data.featuredSkills ?? []);
+	const totalCount = $derived(data.totalCount ?? 0);
 
-	const loooomCount = $derived(
-		data.plugins.filter((p: { source: string }) => p.source === 'loooom').length
-	);
+	type Skill = {
+		name: string;
+		title: string;
+		description: string | null;
+		category: string | null;
+		installs: number;
+		version: string;
+		authorUsername: string;
+		authorDisplayName: string;
+		authorAvatarUrl: string | null;
+		link: string;
+	};
 
-	let copiedCurl = $state(false);
+	let copiedCommand = $state<string | null>(null);
+	function copyCommand(cmd: string) {
+		navigator.clipboard.writeText(cmd);
+		copiedCommand = cmd;
+		setTimeout(() => (copiedCommand = null), 2000);
+	}
 
-	function copyCurl() {
-		navigator.clipboard.writeText('curl https://loooom.xyz/me/mager/raw');
-		copiedCurl = true;
-		setTimeout(() => (copiedCurl = false), 2000);
+	const categoryColors: Record<string, string> = {
+		writing: '#e8a598',
+		music: '#a8c5da',
+		cooking: '#c8b89a',
+		engineering: '#98b4d4',
+		art: '#d4a8c4',
+		research: '#a8d4b8',
+		design: '#d4c4a8',
+		education: '#b8a8d4',
+		health: '#a8d4c8',
+		business: '#d4b8a8',
+		languages: '#a8c8d4',
+		productivity: '#c4d4a8',
+		life: '#d4a8b8',
+		coding: '#a8acd4',
+		default: '#c4b8d4'
+	};
+
+	function categoryColor(cat: string | null): string {
+		return categoryColors[(cat ?? '').toLowerCase()] ?? categoryColors.default;
 	}
 </script>
 
 <svelte:head>
-	<title>Loooom — Machine-First Human Context</title>
+	<title>Loooom — Skills Marketplace for AI Agents</title>
 	<meta
 		name="description"
-		content="Publish your ME.md — one URL that tells every AI who you are. Machine-readable. Always public. No re-prompting."
+		content="Discover, publish, and share skills with any AI. The open marketplace for Claude Code skills — written by humans, used by agents."
 	/>
-	<!-- Machine meta -->
 	<meta name="loooom-agents" content="https://loooom.xyz/AGENTS.md" />
 	<meta name="loooom-directory" content="https://loooom.xyz/api/directory" />
 	<meta name="loooom-llms" content="https://loooom.xyz/llms.txt" />
@@ -37,230 +64,179 @@
 
 <Nav />
 
-<!-- Hero: speaks to both humans and machines -->
+<!-- ===== HERO ===== -->
 <section class="hero">
 	<div class="hero-inner">
-		<!-- Machine eyebrow — the real CTA for bots -->
-		<div class="machine-eyebrow">
-			<span class="machine-eyebrow-prompt">$</span>
-			<code class="machine-eyebrow-cmd">curl https://loooom.xyz/me/<span class="cmd-handle">mager</span>/raw</code>
-			<button class="machine-eyebrow-copy" onclick={copyCurl} aria-label="Copy curl command">
-				{copiedCurl ? '✓' : 'copy'}
-			</button>
+		<div class="hero-eyebrow">
+			<span class="eyebrow-dot"></span>
+			<span class="eyebrow-text">Open skills marketplace</span>
 		</div>
 
-		<h1>One URL.<br/>Every AI<br/>knows you.</h1>
+		<h1>Skills for<br/><span class="h1-accent">any AI.</span></h1>
 
 		<p class="hero-sub">
-			Your <strong>ME.md</strong> is a plain markdown file at a permanent URL. Any AI can fetch it, any human can edit it. Write once, known everywhere.
+			Discover and publish skills that teach Claude Code new behaviors.
+			Plain markdown. Free forever. Anyone can contribute.
 		</p>
 
-		<div class="hero-url-preview">
-			<span class="url-prefix">loooom.xyz/me/</span><span class="url-handle">you</span><span class="url-suffix">/raw</span>
+		<div class="hero-count">
+			<span class="count-num">{totalCount}+</span>
+			<span class="count-label">skills and growing</span>
 		</div>
 
 		<div class="hero-actions">
-			<a href="/login" class="btn-primary-hero">Claim your ME.md →</a>
-			<a href="/me/mager" class="btn-ghost-hero">See an example</a>
+			<a href="/browse" class="btn-primary">Browse Skills →</a>
+			<a href="/create" class="btn-ghost">Publish a Skill</a>
 		</div>
-		<p class="hero-hint">Free. No signup to browse. Raw markdown always CORS-open.</p>
 	</div>
 </section>
 
-<!-- Machine-first: the agent quickstart section -->
-<section class="agent-section">
+<!-- ===== FEATURED SKILLS ===== -->
+<section class="featured">
 	<div class="section-inner">
-		<div class="agent-section-header">
-			<div class="agent-badge">🤖 For AI Agents</div>
-			<h2>Machine-readable by design.</h2>
-			<p class="agent-section-sub">Everything on Loooom is open by default. No API key. No scraping. Just fetch.</p>
+		<div class="section-header">
+			<p class="eyebrow">Featured Skills</p>
+			<h2>Built by the community</h2>
+			<a href="/browse" class="see-all">See all →</a>
 		</div>
 
-		<div class="agent-cards">
-			<!-- Card 1: Fetch any human -->
-			<div class="agent-card">
-				<div class="agent-card-num">01</div>
-				<h3>Fetch any human's context</h3>
-				<div class="agent-code-block">
-					<div class="code-line"><span class="code-comment"># Get a human's full context in one command</span></div>
-					<div class="code-line"><span class="code-cmd">curl</span> https://loooom.xyz/me/<span class="code-var">mager</span>/raw</div>
-					<div class="code-line code-dim"><span class="code-comment"># Returns plain markdown — parse or inject directly</span></div>
-				</div>
-				<p>CORS-open. No auth. Works from any LLM, any HTTP client, any language.</p>
-			</div>
-
-			<!-- Card 2: Directory -->
-			<div class="agent-card">
-				<div class="agent-card-num">02</div>
-				<h3>Discover all public profiles</h3>
-				<div class="agent-code-block">
-					<div class="code-line"><span class="code-comment"># JSON directory of every ME.md on Loooom</span></div>
-					<div class="code-line"><span class="code-cmd">curl</span> https://loooom.xyz/api/directory</div>
-					<div class="code-line code-dim"><span class="code-comment"># [{'{'} username, rawUrl, tags, timezone... {'}'}]</span></div>
-				</div>
-				<p>Full index with rawUrl per profile. Use it to build agent directories, context prefetchers, or human indexes.</p>
-			</div>
-
-			<!-- Card 3: Docs -->
-			<div class="agent-card">
-				<div class="agent-card-num">03</div>
-				<h3>Read the full API reference</h3>
-				<div class="agent-code-block">
-					<div class="code-line"><span class="code-comment"># ME.md spec, skills API, how to contribute</span></div>
-					<div class="code-line"><span class="code-cmd">GET</span> https://loooom.xyz/<span class="code-var">docs</span></div>
-					<div class="code-line code-dim"><span class="code-comment"># Human-readable docs, machine-friendly endpoints</span></div>
-				</div>
-				<p>Full spec: ME.md format, frontmatter fields, all REST endpoints, MCP server config, and how to add a skill.</p>
-				<div class="agent-card-links">
-					<a href="/docs" class="agent-card-link-primary">Read the docs →</a>
-				</div>
-			</div>
+		<div class="skills-grid">
+			{#each featuredSkills as skill (skill.name + skill.authorUsername)}
+				<a href={skill.link} class="skill-card">
+					<div class="skill-card-top">
+						{#if skill.category}
+							<span class="category-chip" style="background: {categoryColor(skill.category)}22; color: {categoryColor(skill.category)}; border-color: {categoryColor(skill.category)}44;">
+								{skill.category}
+							</span>
+						{/if}
+						<span class="installs">{skill.installs.toLocaleString()} uses</span>
+					</div>
+					<h3 class="skill-title">{skill.title}</h3>
+					{#if skill.description}
+						<p class="skill-desc">{skill.description}</p>
+					{/if}
+					<div class="skill-card-footer">
+						<div class="author">
+							<div class="author-avatar">
+								{#if skill.authorAvatarUrl}
+									<img src={skill.authorAvatarUrl} alt={skill.authorDisplayName} />
+								{:else}
+									{skill.authorDisplayName[0]}
+								{/if}
+							</div>
+							<span class="author-name">{skill.authorDisplayName}</span>
+						</div>
+						<span class="skill-version">v{skill.version}</span>
+					</div>
+				</a>
+			{/each}
 		</div>
+	</div>
+</section>
 
-		<!-- Machine endpoints table -->
-		<div class="endpoints-table">
-			<div class="endpoints-title">Machine-Readable Endpoints</div>
-			<div class="endpoints-grid">
-				<div class="ep-row ep-header">
-					<span>Endpoint</span>
-					<span>Format</span>
-					<span>Auth</span>
-					<span>Use for</span>
+<!-- ===== HOW IT WORKS ===== -->
+<section class="how">
+	<div class="section-inner how-inner">
+		<div class="how-text">
+			<p class="eyebrow">Anyone can publish</p>
+			<h2>Got a skill?<br/>Share it.</h2>
+			<p class="how-sub">
+				Skills are plain markdown files that teach Claude new behaviors.
+				If you know how to do something — write it down and share it.
+				No coding required.
+			</p>
+			<a href="/create" class="btn-primary">Start writing →</a>
+		</div>
+		<div class="how-steps">
+			<div class="step">
+				<div class="step-num">01</div>
+				<div class="step-content">
+					<h3>Sign in</h3>
+					<p>Create your Loooom profile. It's free.</p>
 				</div>
-				<div class="ep-row">
-					<code>/me/{'{username}'}/raw</code>
-					<span class="ep-badge ep-md">Markdown</span>
-					<span class="ep-none">None</span>
-					<span>Inject human context into AI sessions</span>
+			</div>
+			<div class="step-line"></div>
+			<div class="step">
+				<div class="step-num">02</div>
+				<div class="step-content">
+					<h3>Write your SKILL.md</h3>
+					<p>Describe what your skill teaches. Use our editor with live preview.</p>
 				</div>
-				<div class="ep-row">
-					<code>/api/directory</code>
-					<span class="ep-badge ep-json">JSON</span>
-					<span class="ep-none">None</span>
-					<span>Enumerate all public ME.md profiles</span>
-				</div>
-				<div class="ep-row">
-					<code>/AGENTS.md</code>
-					<span class="ep-badge ep-md">Markdown</span>
-					<span class="ep-none">None</span>
-					<span>Full protocol briefing for AI agents</span>
-				</div>
-				<div class="ep-row">
-					<code>/llms.txt</code>
-					<span class="ep-badge ep-txt">Text</span>
-					<span class="ep-none">None</span>
-					<span>LLM indexing (llms.txt standard)</span>
-				</div>
-				<div class="ep-row">
-					<code>/me-md-schema.json</code>
-					<span class="ep-badge ep-json">JSON Schema</span>
-					<span class="ep-none">None</span>
-					<span>Validate ME.md frontmatter</span>
+			</div>
+			<div class="step-line"></div>
+			<div class="step">
+				<div class="step-num">03</div>
+				<div class="step-content">
+					<h3>Publish for free</h3>
+					<p>Your skill gets a permanent URL and install command. Always open.</p>
 				</div>
 			</div>
 		</div>
 	</div>
 </section>
 
-<!-- For humans: How ME.md works -->
-<section class="how-memd">
-	<div class="section-inner">
-		<p class="section-eyebrow">How it works</p>
-		<h2>Three steps. Done forever.</h2>
-		<div class="steps-memd">
-			<div class="step-memd">
-				<div class="step-num-memd">01</div>
-				<div class="step-content">
-					<h3>Write your ME.md</h3>
-					<p>Seven canonical sections. Plain markdown. Start with your values, stack, and a hard list of what you hate. Takes 10 minutes.</p>
-				</div>
-			</div>
-			<div class="step-memd">
-				<div class="step-num-memd">02</div>
-				<div class="step-content">
-					<h3>Publish on Loooom</h3>
-					<p>Your context lives at <code>loooom.xyz/me/you</code>. Raw markdown at <code>/me/you/raw</code>. CORS-open so any AI can fetch it directly.</p>
-				</div>
-			</div>
-			<div class="step-memd">
-				<div class="step-num-memd">03</div>
-				<div class="step-content">
-					<h3>Paste once. Known everywhere.</h3>
-					<p>One injection prompt in your system prompt. Every AI session starts already knowing you. No more re-introducing yourself to Claude, GPT, Gemini.</p>
-				</div>
-			</div>
-		</div>
-	</div>
-</section>
-
-<!-- Format demo -->
-<section class="demo-section">
+<!-- ===== INSTALL DEMO ===== -->
+<section class="install-demo">
 	<div class="section-inner">
 		<div class="demo-grid">
-			<div class="demo-text">
-				<p class="section-eyebrow">The format</p>
-				<h2>Frontmatter for machines.<br/>Markdown for humans.</h2>
-				<p>YAML frontmatter carries your identity: handle, timezone, agent fleet. Markdown sections carry your soul: values, preferences, anti-patterns.</p>
-				<p>Any AI can read it. Any human can edit it. One file to rule every context window.</p>
-				<div class="demo-text-links">
-					<a href="/me" class="link-cta">Explore the ME.md spec →</a>
-					<a href="/me/mager/raw" target="_blank" class="link-ghost">See raw example ↗</a>
-				</div>
+			<div class="demo-copy">
+				<p class="eyebrow">One command away</p>
+				<h2>Skills install in seconds.</h2>
+				<p class="demo-sub">
+					Any skill on Loooom installs directly into Claude Code.
+					No config. No setup. Just run the command and it works.
+				</p>
+				<button
+					class="copy-install-btn"
+					onclick={() => copyCommand('/plugin marketplace add mager/loooom')}
+				>
+					{copiedCommand === '/plugin marketplace add mager/loooom' ? '✓ Copied!' : 'Copy install command'}
+				</button>
 			</div>
-			<div class="demo-code">
-				<div class="code-win">
-					<div class="code-win-bar">
-						<span class="win-dot r"></span>
-						<span class="win-dot y"></span>
-						<span class="win-dot g"></span>
-						<span class="win-label">me.md</span>
-					</div>
-					<pre class="code-win-body"><code>---
-version: "1.0"
-handle: "@you"
-timezone: "America/Chicago"
-agents:
-  - id: mybot
-    role: "Principal Engineer"
-    emoji: "⚡"
-tags: [coding, music, coffee]
----
-
-# 🫀 The Soul
-Ship fast. Refactor ruthlessly.
-First principles over best practices.
-
-# 🚫 Anti-Patterns
-- Never pad a response
-- Never explain what I can see
-- Never ask — just do it
-
-# 📍 Context
-Building: my-app-v2</code></pre>
+			<div class="code-window">
+				<div class="code-bar">
+					<span class="dot r"></span>
+					<span class="dot y"></span>
+					<span class="dot g"></span>
+					<span class="code-label">Terminal</span>
+				</div>
+				<div class="code-body">
+					<div class="code-line"><span class="prompt">$</span> <span class="cmd">/plugin marketplace add</span> <span class="arg">mager/loooom</span></div>
+					<div class="code-line output">✓ Adding marketplace: mager/loooom</div>
+					<div class="code-line output">✓ Fetching catalog...</div>
+					<div class="code-line output">✓ 12 skills available</div>
+					<div class="code-line"><span class="prompt">$</span> <span class="cmd">/skill use</span> <span class="arg">beginner-japanese</span></div>
+					<div class="code-line output">✓ Skill loaded. Ready to teach.</div>
+					<div class="code-line blink"><span class="prompt">$</span> <span class="cursor">▌</span></div>
 				</div>
 			</div>
 		</div>
 	</div>
 </section>
 
-<!-- Skills: secondary section -->
-<section class="skills-secondary">
+<!-- ===== ME.MD (secondary) ===== -->
+<section class="memd-section">
 	<div class="section-inner">
-		<p class="section-eyebrow">Also on Loooom</p>
-		<h2>AI Skills Marketplace</h2>
-		<p class="skills-desc">Claude Code skills — plain markdown files that teach Claude new behaviors. {loooomCount}+ originals, one-command install, open source.</p>
-		<div class="skills-links">
-			<a href="/browse" class="link-cta">Browse skills →</a>
-			<a href="/docs#add-skill" class="link-ghost">Add yours</a>
+		<div class="memd-inner">
+			<div class="memd-badge">📄 Also on Loooom</div>
+			<h2>Let every AI know who you are.</h2>
+			<p class="memd-sub">
+				<strong>ME.md</strong> is your portable identity file — a permanent URL that any AI can fetch.
+				Write once, known everywhere. No re-introducing yourself to Claude, GPT, or Gemini.
+			</p>
+			<div class="memd-actions">
+				<a href="/me" class="btn-memd-primary">Learn about ME.md →</a>
+				<a href="/me/mager" class="btn-memd-ghost">See an example</a>
+			</div>
 		</div>
 	</div>
 </section>
 
-<!-- Footer -->
+<!-- ===== FOOTER ===== -->
 <footer>
 	<div class="footer-inner">
 		<div class="footer-brand">
-			<p class="footer-note">Machine-first. Open source. Free forever. Made in Chicago.</p>
+			<p class="footer-note">Open source. Free forever. Made in Chicago.</p>
 			<div class="footer-machine-links">
 				<a href="/AGENTS.md" class="footer-machine-link">AGENTS.md</a>
 				<a href="/llms.txt" class="footer-machine-link">llms.txt</a>
@@ -269,16 +245,16 @@ Building: my-app-v2</code></pre>
 		</div>
 		<div class="footer-links">
 			<div class="footer-col">
+				<h4>Skills</h4>
+				<a href="/browse">Browse</a>
+				<a href="/create">Publish</a>
+				<a href="/docs">Docs</a>
+			</div>
+			<div class="footer-col">
 				<h4>ME.md</h4>
 				<a href="/me">Overview</a>
 				<a href="/me/mager">Example</a>
 				<a href="/login">Claim yours</a>
-			</div>
-			<div class="footer-col">
-				<h4>Skills</h4>
-				<a href="/browse">Browse</a>
-				<a href="/docs#add-skill">Add a skill</a>
-				<a href="/docs">Docs</a>
 			</div>
 			<div class="footer-col">
 				<h4>Open Source</h4>
@@ -293,434 +269,407 @@ Building: my-app-v2</code></pre>
 </footer>
 
 <style>
-	/* ===== Base ===== */
-	:global(html),
-	:global(body) {
+	:global(html), :global(body) {
 		overflow-x: hidden;
 		max-width: 100vw;
 	}
 
-	h1, h2, h3 {
-		font-family: var(--font-display);
-		font-weight: 700;
-		line-height: 1.1;
-		letter-spacing: -0.025em;
-	}
-
-	/* Nav handled by Nav.svelte */
-
-	/* ===== Shared ===== */
 	.section-inner {
 		max-width: 1040px;
 		margin: 0 auto;
 		padding: 0 1.5rem;
 	}
-	.section-eyebrow {
+
+	.eyebrow {
 		font-family: var(--font-mono);
 		font-size: 0.65rem;
-		font-weight: 400;
-		letter-spacing: 0.12em;
+		font-weight: 600;
+		letter-spacing: 0.14em;
 		text-transform: uppercase;
 		color: var(--ocean);
-		margin-bottom: 0.5rem;
+		margin-bottom: 0.6rem;
 	}
 
-	/* ===== Hero ===== */
+	/* ===== HERO ===== */
 	.hero {
-		padding: 7rem 1.5rem 5rem;
+		padding: 8rem 1.5rem 5rem;
 		text-align: center;
 	}
 	.hero-inner {
-		max-width: 580px;
+		max-width: 600px;
 		margin: 0 auto;
 	}
-
-	/* Machine eyebrow — the command prompt */
-	.machine-eyebrow {
+	.hero-eyebrow {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
-		background: var(--bg-secondary);
-		border: 1px solid color-mix(in srgb, var(--ocean) 40%, transparent);
-		border-radius: 6px;
-		padding: 0.45rem 0.85rem;
 		margin-bottom: 2rem;
 		font-family: var(--font-mono);
-		font-size: 0.78rem;
-		max-width: 100%;
-		box-sizing: border-box;
-		overflow: hidden;
+		font-size: 0.72rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--text-muted);
 	}
-	.machine-eyebrow-prompt {
-		color: var(--ocean);
-		font-weight: 700;
-		flex-shrink: 0;
+	.eyebrow-dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: #22c55e;
+		box-shadow: 0 0 6px #22c55e;
+		animation: pulse 2s ease-in-out infinite;
 	}
-	.machine-eyebrow-cmd {
-		color: var(--text-secondary);
-		font-family: inherit;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		min-width: 0;
+	@keyframes pulse {
+		0%, 100% { opacity: 1; }
+		50% { opacity: 0.5; }
 	}
-	.cmd-handle {
-		color: var(--violet);
-		font-weight: 700;
-	}
-	.machine-eyebrow-copy {
-		background: none;
-		border: none;
-		color: var(--ocean);
-		font-family: var(--font-mono);
-		font-size: 0.7rem;
-		font-weight: 600;
-		cursor: pointer;
-		padding: 0;
-		opacity: 0.7;
-		transition: opacity 0.2s;
-		flex-shrink: 0;
-	}
-	.machine-eyebrow-copy:hover { opacity: 1; }
+	.eyebrow-text { color: var(--text-muted); }
 
 	h1 {
-		font-size: clamp(3rem, 10vw, 5.5rem);
+		font-family: var(--font-display);
+		font-size: clamp(3.5rem, 10vw, 6rem);
+		font-weight: 800;
+		line-height: 1;
+		letter-spacing: -0.035em;
 		color: var(--text-primary);
 		margin-bottom: 1.5rem;
-		line-height: 1;
 	}
+	.h1-accent {
+		color: var(--violet);
+		position: relative;
+	}
+	.h1-accent::after {
+		content: '';
+		position: absolute;
+		bottom: 0.05em;
+		left: 0;
+		right: 0;
+		height: 4px;
+		background: linear-gradient(90deg, var(--violet), var(--ocean));
+		border-radius: 2px;
+		opacity: 0.4;
+	}
+
 	.hero-sub {
-		font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+		font-size: clamp(0.95rem, 2.5vw, 1.15rem);
 		color: var(--text-secondary);
 		line-height: 1.65;
 		max-width: 480px;
-		margin: 0 auto 2rem;
+		margin: 0 auto 1.75rem;
 		font-weight: 300;
 	}
-	.hero-sub strong { color: var(--text-primary); }
-	.hero-url-preview {
+
+	.hero-count {
 		display: inline-flex;
-		align-items: center;
-		background: var(--bg-card);
+		align-items: baseline;
+		gap: 0.5rem;
+		background: var(--bg-secondary);
 		border: 1px solid var(--border);
-		border-radius: 10px;
-		padding: 0.65rem 1.25rem;
-		font-family: var(--font-mono);
-		font-size: 1rem;
+		border-radius: 999px;
+		padding: 0.4rem 1.1rem;
 		margin-bottom: 2rem;
+		font-family: var(--font-mono);
 	}
-	.url-prefix { color: var(--text-muted); }
-	.url-handle {
-		color: var(--violet);
+	.count-num {
+		font-size: 1rem;
 		font-weight: 700;
+		color: var(--violet);
 	}
-	.url-suffix { color: var(--ocean); }
+	.count-label {
+		font-size: 0.75rem;
+		color: var(--text-muted);
+	}
+
 	.hero-actions {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		gap: 1rem;
 		flex-wrap: wrap;
-		margin-bottom: 1.25rem;
 	}
-	.btn-primary-hero {
-		background: linear-gradient(135deg, var(--violet) 0%, var(--ocean) 100%);
+	.btn-primary {
+		background: var(--violet);
 		color: white;
 		font-weight: 700;
 		font-size: 0.95rem;
-		padding: 0.8rem 1.75rem;
+		padding: 0.85rem 1.85rem;
 		border-radius: 999px;
 		text-decoration: none;
 		transition: opacity 0.2s, transform 0.2s;
+		white-space: nowrap;
 	}
-	.btn-primary-hero:hover { opacity: 0.9; transform: translateY(-1px); }
-	.btn-ghost-hero {
+	.btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+	.btn-ghost {
 		background: none;
 		border: 1.5px solid var(--border);
 		color: var(--text-secondary);
 		font-size: 0.9rem;
-		padding: 0.8rem 1.5rem;
+		font-weight: 500;
+		padding: 0.85rem 1.5rem;
 		border-radius: 999px;
 		text-decoration: none;
 		transition: all 0.2s;
+		white-space: nowrap;
 	}
-	.btn-ghost-hero:hover { border-color: var(--violet); color: var(--violet); }
-	.hero-hint {
-		font-size: 0.78rem;
-		color: var(--text-muted);
-		margin: 0;
-	}
+	.btn-ghost:hover { border-color: var(--violet); color: var(--violet); }
 
-	/* ===== Agent Section ===== */
-	.agent-section {
-		padding: 5rem 1.5rem;
-		background: var(--bg-secondary);
+	/* ===== FEATURED SKILLS ===== */
+	.featured {
+		padding: 4.5rem 1.5rem;
 		border-top: 1px solid var(--border);
-		border-bottom: 1px solid var(--border);
 	}
-	.agent-section-header {
-		text-align: center;
-		margin-bottom: 3rem;
+	.section-header {
+		display: flex;
+		align-items: baseline;
+		gap: 1.5rem;
+		margin-bottom: 2.5rem;
+		flex-wrap: wrap;
 	}
-	.agent-badge {
-		display: inline-block;
-		background: color-mix(in srgb, var(--ocean) 12%, transparent);
-		border: 1px solid color-mix(in srgb, var(--ocean) 35%, transparent);
-		color: var(--ocean);
-		font-family: var(--font-mono);
-		font-size: 0.7rem;
+	.section-header h2 {
+		font-family: var(--font-display);
 		font-weight: 700;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		padding: 4px 14px;
-		border-radius: 999px;
-		margin-bottom: 1rem;
+		font-size: clamp(1.5rem, 4vw, 2rem);
+		letter-spacing: -0.025em;
+		line-height: 1.1;
+		color: var(--text-primary);
+		margin: 0;
+		flex: 1;
+		min-width: 0;
 	}
-	.agent-section-header h2 {
-		font-size: clamp(1.6rem, 4vw, 2.4rem);
-		margin-bottom: 0.75rem;
+	.see-all {
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: var(--ocean);
+		text-decoration: none;
+		white-space: nowrap;
+		transition: opacity 0.2s;
 	}
-	.agent-section-sub {
-		color: var(--text-secondary);
-		max-width: 520px;
-		margin: 0 auto;
-		line-height: 1.65;
-		font-size: 0.95rem;
-	}
+	.see-all:hover { opacity: 0.75; }
 
-	/* Agent cards */
-	.agent-cards {
+	.skills-grid {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
 		gap: 1.25rem;
-		margin-bottom: 2.5rem;
 	}
-	.agent-card {
-		background: var(--bg-primary);
+	.skill-card {
+		background: var(--bg-card);
 		border: 1px solid var(--border);
-		border-radius: 12px;
-		padding: 1.5rem;
+		border-radius: 14px;
+		padding: 1.4rem;
 		display: flex;
 		flex-direction: column;
-		gap: 0.85rem;
+		gap: 0.75rem;
+		text-decoration: none;
+		transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
 	}
-	.agent-card-num {
+	.skill-card:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+		border-color: var(--text-muted);
+	}
+	.skill-card-top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
+	}
+	.category-chip {
 		font-family: var(--font-mono);
-		font-size: 0.65rem;
+		font-size: 0.62rem;
 		font-weight: 700;
-		letter-spacing: 0.1em;
-		color: var(--ocean);
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		padding: 3px 9px;
+		border-radius: 999px;
+		border: 1px solid;
 	}
-	.agent-card h3 {
-		font-size: 1rem;
+	.installs {
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		color: var(--text-muted);
+	}
+	.skill-title {
+		font-family: var(--font-display);
 		font-weight: 700;
+		font-size: 1.05rem;
+		line-height: 1.2;
+		color: var(--text-primary);
 		margin: 0;
-		line-height: 1.25;
 	}
-	.agent-card p {
+	.skill-desc {
 		font-size: 0.85rem;
 		color: var(--text-secondary);
-		line-height: 1.6;
-		margin: 0;
-	}
-
-	/* Agent code blocks */
-	.agent-code-block {
-		background: var(--bg-secondary);
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		padding: 0.85rem 1rem;
-		display: flex;
-		flex-direction: column;
-		gap: 3px;
-		overflow-x: auto;
-		max-width: 100%;
-	}
-	.code-line {
-		font-family: var(--font-mono);
-		font-size: 0.75rem;
 		line-height: 1.5;
-		color: var(--text-primary);
-		white-space: nowrap;
+		margin: 0;
+		flex: 1;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
 		overflow: hidden;
-		text-overflow: ellipsis;
-		max-width: 100%;
 	}
-	.code-dim { opacity: 0.6; }
-	.code-comment { color: var(--text-muted); }
-	.code-cmd { color: var(--ocean); font-weight: 700; }
-	.code-var { color: var(--violet); }
-
-	.agent-card-links {
+	.skill-card-footer {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding-top: 0.75rem;
+		border-top: 1px solid var(--border);
+		margin-top: auto;
+	}
+	.author {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		flex-wrap: wrap;
 	}
-	.agent-card-link-primary {
-		font-size: 0.82rem;
-		font-weight: 700;
-		color: var(--ocean);
-		text-decoration: none;
-		transition: opacity 0.2s;
-	}
-	.agent-card-link-primary:hover { opacity: 0.8; }
-	.agent-card-link-copy {
-		font-size: 0.75rem;
-		font-family: var(--font-mono);
-		background: none;
-		border: 1px solid var(--border);
-		color: var(--text-muted);
-		padding: 2px 8px;
-		border-radius: 4px;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-	.agent-card-link-copy:hover { border-color: var(--ocean); color: var(--ocean); }
-
-	/* Endpoints table */
-	.endpoints-table {
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		overflow: hidden;
-		overflow-x: auto;
-		-webkit-overflow-scrolling: touch;
-	}
-	.endpoints-title {
-		background: var(--bg-primary);
-		border-bottom: 1px solid var(--border);
-		padding: 0.75rem 1.25rem;
-		font-family: var(--font-mono);
-		font-size: 0.7rem;
-		font-weight: 700;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		color: var(--text-muted);
-	}
-	.endpoints-grid {
-		display: flex;
-		flex-direction: column;
-		min-width: 560px;
-	}
-	.ep-row {
-		display: grid;
-		grid-template-columns: 2fr 1fr 0.6fr 2fr;
-		gap: 1rem;
-		padding: 0.65rem 1.25rem;
-		font-size: 0.82rem;
-		border-bottom: 1px solid var(--border);
-		align-items: center;
-	}
-	.ep-row:last-child { border-bottom: none; }
-	.ep-header {
-		background: var(--bg-secondary);
-		font-family: var(--font-mono);
-		font-size: 0.65rem;
-		font-weight: 700;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		color: var(--text-muted);
-	}
-	.ep-row code {
-		font-family: var(--font-mono);
-		font-size: 0.78rem;
-		color: var(--violet);
-		word-break: break-all;
-	}
-	.ep-row span:not(.ep-badge):not(.ep-none) {
-		color: var(--text-secondary);
-		font-size: 0.8rem;
-	}
-	.ep-badge {
-		display: inline-block;
-		font-family: var(--font-mono);
-		font-size: 0.65rem;
-		font-weight: 700;
-		padding: 2px 7px;
-		border-radius: 4px;
-	}
-	.ep-md { background: color-mix(in srgb, var(--violet) 12%, transparent); color: var(--violet); }
-	.ep-json { background: color-mix(in srgb, var(--ocean) 12%, transparent); color: var(--ocean); }
-	.ep-txt { background: color-mix(in srgb, var(--text-muted) 12%, transparent); color: var(--text-muted); }
-	.ep-none {
-		font-family: var(--font-mono);
-		font-size: 0.7rem;
-		color: #22c55e;
-	}
-
-	/* ===== How ME.md Works ===== */
-	.how-memd {
-		padding: 5rem 1.5rem;
-	}
-	.how-memd h2 { margin-bottom: 3rem; }
-	.steps-memd {
-		display: flex;
-		flex-direction: column;
-		gap: 0;
-		border-left: 2px solid var(--border);
-		padding-left: 2.5rem;
-		margin-left: 2rem;
-		max-width: 640px;
-	}
-	.step-memd {
-		display: flex;
-		gap: 1.5rem;
-		padding-bottom: 2.5rem;
-		position: relative;
-	}
-	.step-memd::before {
-		content: '';
-		position: absolute;
-		left: -2.85rem;
-		top: 5px;
-		width: 10px; height: 10px;
+	.author-avatar {
+		width: 24px;
+		height: 24px;
 		border-radius: 50%;
-		background: var(--violet);
-		border: 2px solid var(--bg-primary);
-	}
-	.step-num-memd {
-		font-family: var(--font-mono);
-		font-size: 0.7rem;
-		color: var(--violet);
+		background: linear-gradient(135deg, var(--violet), var(--ocean));
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 0.65rem;
 		font-weight: 700;
-		letter-spacing: 0.1em;
-		padding-top: 4px;
+		color: white;
+		overflow: hidden;
 		flex-shrink: 0;
 	}
-	.step-content h3 { font-size: 1.05rem; margin: 0 0 0.4rem; }
-	.step-content p { color: var(--text-secondary); line-height: 1.65; margin: 0; font-size: 0.9rem; }
-	.step-content code {
+	.author-avatar img { width: 100%; height: 100%; object-fit: cover; }
+	.author-name {
+		font-size: 0.78rem;
+		color: var(--text-muted);
+		font-weight: 500;
+	}
+	.skill-version {
 		font-family: var(--font-mono);
-		font-size: 0.82em;
-		background: var(--bg-secondary);
-		border: 1px solid var(--border);
-		padding: 1px 6px;
-		border-radius: 4px;
-		color: var(--violet);
+		font-size: 0.68rem;
+		color: var(--text-muted);
 	}
 
-	/* ===== Demo Section ===== */
-	.demo-section {
+	/* ===== HOW IT WORKS ===== */
+	.how {
 		padding: 5rem 1.5rem;
 		background: var(--bg-secondary);
 		border-top: 1px solid var(--border);
+		border-bottom: 1px solid var(--border);
 	}
-	.demo-grid {
+	.how-inner {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: 4rem;
 		align-items: center;
 	}
-	.demo-text h2 { margin-bottom: 1rem; }
-	.demo-text p { color: var(--text-secondary); line-height: 1.65; margin: 0 0 0.85rem; font-size: 0.95rem; }
-	.demo-text-links { display: flex; gap: 1.25rem; flex-wrap: wrap; align-items: center; margin-top: 1.25rem; }
-	.code-win {
-		border: 1px solid var(--border);
-		border-radius: 16px;
-		overflow: hidden;
-		box-shadow: var(--card-shadow);
+	.how-text h2 {
+		font-family: var(--font-display);
+		font-weight: 800;
+		font-size: clamp(2rem, 4vw, 2.75rem);
+		letter-spacing: -0.03em;
+		line-height: 1.05;
+		color: var(--text-primary);
+		margin-bottom: 1rem;
 	}
-	.code-win-bar {
+	.how-sub {
+		font-size: 0.95rem;
+		color: var(--text-secondary);
+		line-height: 1.65;
+		margin-bottom: 2rem;
+		max-width: 380px;
+	}
+	.how-steps {
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+	}
+	.step {
+		display: flex;
+		gap: 1.25rem;
+		align-items: flex-start;
+	}
+	.step-line {
+		height: 24px;
+		width: 2px;
+		background: var(--border);
+		margin-left: 18px;
+	}
+	.step-num {
+		width: 36px;
+		height: 36px;
+		border-radius: 50%;
+		background: var(--bg-primary);
+		border: 2px solid var(--border);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-family: var(--font-mono);
+		font-size: 0.65rem;
+		font-weight: 700;
+		color: var(--violet);
+		flex-shrink: 0;
+	}
+	.step-content { padding-top: 0.4rem; padding-bottom: 0.5rem; }
+	.step-content h3 {
+		font-family: var(--font-display);
+		font-weight: 700;
+		font-size: 0.95rem;
+		color: var(--text-primary);
+		margin: 0 0 0.2rem;
+	}
+	.step-content p {
+		font-size: 0.85rem;
+		color: var(--text-secondary);
+		line-height: 1.5;
+		margin: 0;
+	}
+
+	/* ===== INSTALL DEMO ===== */
+	.install-demo {
+		padding: 5rem 1.5rem;
+	}
+	.demo-grid {
+		display: grid;
+		grid-template-columns: 1fr 1.1fr;
+		gap: 4rem;
+		align-items: center;
+	}
+	.demo-copy h2 {
+		font-family: var(--font-display);
+		font-weight: 800;
+		font-size: clamp(1.6rem, 3.5vw, 2.25rem);
+		letter-spacing: -0.03em;
+		line-height: 1.1;
+		color: var(--text-primary);
+		margin-bottom: 0.85rem;
+	}
+	.demo-sub {
+		font-size: 0.9rem;
+		color: var(--text-secondary);
+		line-height: 1.65;
+		margin-bottom: 1.5rem;
+		max-width: 360px;
+	}
+	.copy-install-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.7rem 1.5rem;
+		background: var(--bg-secondary);
+		border: 1.5px solid var(--border);
+		border-radius: 8px;
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+		font-weight: 600;
+		color: var(--text-secondary);
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+	.copy-install-btn:hover { border-color: var(--violet); color: var(--violet); }
+
+	.code-window {
+		border: 1px solid var(--border);
+		border-radius: 14px;
+		overflow: hidden;
+		box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+	}
+	.code-bar {
 		background: var(--bg-secondary);
 		border-bottom: 1px solid var(--border);
 		padding: 10px 14px;
@@ -728,60 +677,100 @@ Building: my-app-v2</code></pre>
 		align-items: center;
 		gap: 6px;
 	}
-	.win-dot { width: 10px; height: 10px; border-radius: 50%; }
-	.win-dot.r { background: #ff5f57; }
-	.win-dot.y { background: #febc2e; }
-	.win-dot.g { background: #28c840; }
-	.win-label {
+	.dot { width: 10px; height: 10px; border-radius: 50%; }
+	.dot.r { background: #ff5f57; }
+	.dot.y { background: #febc2e; }
+	.dot.g { background: #28c840; }
+	.code-label {
 		margin-left: 8px;
 		font-family: var(--font-mono);
-		font-size: 0.75rem;
+		font-size: 0.72rem;
 		color: var(--text-muted);
 	}
-	.code-win-body {
-		margin: 0;
+	.code-body {
 		padding: 1.25rem 1.5rem;
+		background: #0d0d14;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+	.code-line {
 		font-family: var(--font-mono);
-		font-size: 0.78rem;
-		line-height: 1.65;
-		color: var(--text-secondary);
-		background: var(--bg-primary);
-		overflow-x: auto;
-		white-space: pre;
-		-webkit-overflow-scrolling: touch;
+		font-size: 0.82rem;
+		line-height: 1.6;
 	}
+	.prompt { color: #6366f1; margin-right: 0.5rem; }
+	.cmd { color: #a5b4fc; }
+	.arg { color: #34d399; }
+	.output { color: #4ade80; padding-left: 1.25rem; }
+	.cursor { animation: blink 1s step-end infinite; }
+	@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+	.blink { color: #6366f1; }
 
-	/* ===== Skills Secondary ===== */
-	.skills-secondary {
-		padding: 3.5rem 1.5rem;
+	/* ===== ME.MD SECTION ===== */
+	.memd-section {
+		padding: 4rem 1.5rem;
+		background: var(--bg-secondary);
 		border-top: 1px solid var(--border);
+		border-bottom: 1px solid var(--border);
 	}
-	.skills-secondary .section-eyebrow { margin-bottom: 0.4rem; }
-	.skills-secondary h2 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; letter-spacing: -0.02em; line-height: 1.1; color: var(--text-primary); margin-bottom: 0.6rem; }
-	.skills-desc { color: var(--text-secondary); line-height: 1.65; margin: 0 0 1.25rem; font-size: 0.9rem; max-width: 520px; }
-	.skills-links { display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: center; }
-
-	/* ===== Shared CTAs ===== */
-	.link-cta {
+	.memd-inner {
+		max-width: 680px;
+		margin: 0 auto;
+		text-align: center;
+	}
+	.memd-badge {
+		display: inline-block;
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: 999px;
+		padding: 0.3rem 0.9rem;
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		color: var(--text-muted);
+		margin-bottom: 1.25rem;
+	}
+	.memd-inner h2 {
+		font-family: var(--font-display);
+		font-weight: 800;
+		font-size: clamp(1.5rem, 3.5vw, 2rem);
+		letter-spacing: -0.025em;
+		color: var(--text-primary);
+		margin-bottom: 0.85rem;
+	}
+	.memd-sub {
+		font-size: 0.95rem;
+		color: var(--text-secondary);
+		line-height: 1.65;
+		margin-bottom: 1.75rem;
+	}
+	.memd-sub strong { color: var(--text-primary); }
+	.memd-actions {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 1rem;
+		flex-wrap: wrap;
+	}
+	.btn-memd-primary {
 		font-size: 0.9rem;
 		font-weight: 600;
-		color: var(--text-primary) !important;
+		color: var(--text-primary);
 		text-decoration: none;
-		display: inline-flex;
-		align-items: center;
 		transition: color 0.2s;
 	}
-	.link-cta:hover { color: var(--ocean) !important; }
-	.link-ghost {
+	.btn-memd-primary:hover { color: var(--ocean); }
+	.btn-memd-ghost {
 		font-size: 0.875rem;
-		font-weight: 500;
-		color: var(--text-muted) !important;
+		color: var(--text-muted);
 		text-decoration: none;
 		transition: color 0.2s;
 	}
-	.link-ghost:hover { color: var(--text-secondary) !important; }
+	.btn-memd-ghost:hover { color: var(--text-secondary); }
 
-	/* ===== Footer ===== */
+	/* ===== FOOTER ===== */
 	footer {
 		border-top: 1px solid var(--border);
 		padding: 2.5rem 1.5rem 1.5rem;
@@ -793,18 +782,6 @@ Building: my-app-v2</code></pre>
 		justify-content: space-between;
 		gap: 2rem;
 		flex-wrap: wrap;
-	}
-	.footer-logo {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		margin-bottom: 0.5rem;
-	}
-	.footer-logo-text {
-		font-family: var(--font-handwriting);
-		font-size: 1.2rem;
-		font-weight: 100;
-		color: var(--text-primary);
 	}
 	.footer-note {
 		font-size: 0.78rem;
@@ -829,18 +806,9 @@ Building: my-app-v2</code></pre>
 		border-radius: 4px;
 		transition: all 0.2s;
 	}
-	.footer-machine-link:hover {
-		background: color-mix(in srgb, var(--ocean) 15%, transparent);
-	}
-	.footer-links {
-		display: flex;
-		gap: 3rem;
-	}
-	.footer-col {
-		display: flex;
-		flex-direction: column;
-		gap: 0.6rem;
-	}
+	.footer-machine-link:hover { background: color-mix(in srgb, var(--ocean) 15%, transparent); }
+	.footer-links { display: flex; gap: 3rem; }
+	.footer-col { display: flex; flex-direction: column; gap: 0.6rem; }
 	.footer-col h4 {
 		font-family: var(--font-display);
 		font-size: 0.7rem;
@@ -868,56 +836,21 @@ Building: my-app-v2</code></pre>
 		color: var(--text-muted);
 		font-weight: 300;
 	}
-	.footer-bottom a {
-		color: var(--text-muted);
-		text-decoration: none;
-	}
+	.footer-bottom a { color: var(--text-muted); text-decoration: none; }
 	.footer-bottom a:hover { color: var(--text-primary); }
 
-	/* ===== Responsive ===== */
+	/* ===== RESPONSIVE ===== */
 	@media (max-width: 900px) {
-		.agent-cards {
-			grid-template-columns: 1fr;
-		}
-		.ep-row {
-			grid-template-columns: 1.5fr 0.8fr 0.6fr 1.5fr;
-		}
-	}
-	@media (max-width: 720px) {
-		.demo-grid,
-		.skills-secondary-inner {
-			grid-template-columns: 1fr;
-			gap: 2rem;
-		}
-		.footer-inner {
-			flex-direction: column;
-		}
-		.footer-links {
-			gap: 2rem;
-			flex-wrap: wrap;
-		}
-		.ep-row {
-			grid-template-columns: 1fr 1fr;
-			gap: 0.5rem;
-		}
-		.ep-row span:last-child {
-			display: none;
-		}
+		.skills-grid { grid-template-columns: repeat(2, 1fr); }
+		.how-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+		.demo-grid { grid-template-columns: 1fr; gap: 2.5rem; }
 	}
 	@media (max-width: 640px) {
-		h1 { font-size: 2.75rem; }
-		.hero { padding: 5.5rem 1rem 3rem; }
+		.hero { padding: 6rem 1rem 3.5rem; }
+		h1 { font-size: 3rem; }
+		.skills-grid { grid-template-columns: 1fr; }
 		.hero-actions { flex-direction: column; align-items: center; }
-		.machine-eyebrow { font-size: 0.68rem; max-width: calc(100vw - 2rem); }
-		.nav-link { display: none; }
-		.nav-link-memd { display: none; }
-		.nav-link-agents { display: none; }
-		.agent-section { padding: 3rem 1rem; }
-		.agent-card { padding: 1.25rem; }
-		.section-inner { padding: 0 1rem; }
-		.how-memd { padding: 3.5rem 1rem; }
-		.demo-section { padding: 3.5rem 1rem; }
-		.skills-secondary { padding: 3rem 1rem; }
-		.hero-url-preview { font-size: 0.85rem; max-width: calc(100vw - 2rem); }
+		.footer-inner { flex-direction: column; }
+		.footer-links { gap: 2rem; flex-wrap: wrap; }
 	}
 </style>

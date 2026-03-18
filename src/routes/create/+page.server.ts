@@ -1,16 +1,32 @@
 import type { Actions, PageServerLoad } from './$types';
-import { redirect, fail } from '@sveltejs/kit';
-
-export const load: PageServerLoad = async () => {
-	throw redirect(302, '/dashboard');
-};
+import { fail } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { skills, skillVersions } from '$lib/server/schema';
+import { skills, skillVersions, users } from '$lib/server/schema';
+import { eq } from 'drizzle-orm';
 import crypto from 'crypto';
 
+export const load: PageServerLoad = async ({ cookies }) => {
+	const sessionId = cookies.get('session');
+	if (!sessionId) {
+		return { user: null };
+	}
+
+	const [user] = await db
+		.select({
+			id: users.id,
+			username: users.username,
+			displayName: users.displayName,
+			avatarUrl: users.avatarUrl
+		})
+		.from(users)
+		.where(eq(users.id, sessionId))
+		.limit(1);
+
+	return { user: user ?? null };
+};
+
 export const actions: Actions = {
-	default: async ({ request, locals, cookies }) => {
-		// Check auth via cookie (same pattern as layout)
+	default: async ({ request, cookies }) => {
 		const sessionId = cookies.get('session');
 		if (!sessionId) {
 			return fail(401, { error: 'You must be signed in to publish a skill.' });
@@ -45,19 +61,22 @@ export const actions: Actions = {
 		}
 
 		// Generate content hash
-		const concatenated = files.map(f => f.content).join('');
+		const concatenated = files.map((f) => f.content).join('');
 		const contentHash = 'sha256:' + crypto.createHash('sha256').update(concatenated).digest('hex');
 
 		// Insert skill
-		const [skill] = await db.insert(skills).values({
-			authorId: sessionId,
-			name,
-			title,
-			description: description || null,
-			category: category || null,
-			currentVersion: '1.0.0',
-			isPublished: true
-		}).returning({ id: skills.id });
+		const [skill] = await db
+			.insert(skills)
+			.values({
+				authorId: sessionId,
+				name,
+				title,
+				description: description || null,
+				category: category || null,
+				currentVersion: '1.0.0',
+				isPublished: true
+			})
+			.returning({ id: skills.id });
 
 		// Insert version
 		await db.insert(skillVersions).values({
@@ -68,13 +87,17 @@ export const actions: Actions = {
 		});
 
 		// Get username for redirect
-		const { users } = await import('$lib/server/schema');
-		const { eq } = await import('drizzle-orm');
-		const [user] = await db.select({ username: users.username }).from(users).where(eq(users.id, sessionId)).limit(1);
+		const [user] = await db
+			.select({ username: users.username })
+			.from(users)
+			.where(eq(users.id, sessionId))
+			.limit(1);
 
-		if (user) {
-			throw redirect(303, `/u/${user.username}`);
-		}
-		throw redirect(303, '/');
+		// Return success data instead of redirect so we can show celebration screen
+		return {
+			success: true,
+			username: user?.username ?? null,
+			skillName: name
+		};
 	}
 };

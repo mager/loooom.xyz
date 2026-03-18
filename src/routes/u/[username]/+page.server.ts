@@ -4,6 +4,7 @@ import { users, skills, skillVersions } from '$lib/server/schema';
 import { eq } from 'drizzle-orm';
 import { error } from '@sveltejs/kit';
 import { PLUGINS } from '$lib/plugins';
+import { parseMeMd } from '$lib/memd';
 
 // Map skill categories → human-readable topic labels
 const CATEGORY_TOPICS: Record<string, string> = {
@@ -22,13 +23,13 @@ const CATEGORY_TOPICS: Record<string, string> = {
 	cooking: 'cooking'
 };
 
-function topicsFromSkills(skillList: { category: string; keywords?: string[] }[]): string[] {
+function topicsFromSkills(skillList: { category: string | null; keywords?: string[] }[]): string[] {
 	const seen = new Set<string>();
 	const topics: string[] = [];
 	for (const s of skillList) {
 		if (topics.length >= 4) break;
-		const label = CATEGORY_TOPICS[s.category] ?? s.category;
-		if (!seen.has(label)) { seen.add(label); topics.push(label); }
+		const label = CATEGORY_TOPICS[s.category ?? ''] ?? s.category ?? '';
+		if (label && !seen.has(label)) { seen.add(label); topics.push(label); }
 	}
 	return topics;
 }
@@ -61,7 +62,9 @@ const EXTERNAL_MARKETPLACES: Record<string, { url: string; description: string }
 	}
 };
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params, cookies }) => {
+	const sessionId = cookies.get('session');
+
 	// First try database (Loooom native users)
 	const [dbUser] = await db.select().from(users).where(eq(users.username, params.username));
 
@@ -95,7 +98,7 @@ export const load: PageServerLoad = async ({ params }) => {
 			})
 		);
 
-		// Merge static catalog plugins for this user that aren't already in the DB
+		// Merge static catalog plugins for this user
 		const dbSkillNames = new Set(skillsWithFiles.map((s) => s.name));
 		const catalogPlugins = PLUGINS.filter(
 			(p) => p.author === dbUser.username && p.source === 'loooom' && !dbSkillNames.has(p.name)
@@ -116,6 +119,17 @@ export const load: PageServerLoad = async ({ params }) => {
 		}));
 
 		const allSkills = [...skillsWithFiles, ...catalogPlugins];
+		const totalInstalls = allSkills.reduce((sum, s) => sum + (s.installs || 0), 0);
+
+		// Parse ME.md if present
+		let parsedMeMd: ReturnType<typeof parseMeMd> | null = null;
+		if (dbUser.meMd) {
+			try {
+				parsedMeMd = parseMeMd(dbUser.meMd);
+			} catch {}
+		}
+
+		const isOwnProfile = sessionId === dbUser.id;
 
 		return {
 			user: {
@@ -128,20 +142,22 @@ export const load: PageServerLoad = async ({ params }) => {
 					? topicsFromSkills(allSkills)
 					: (dbUser.topics ?? []) as string[],
 				source: 'loooom' as const,
-				hasMeMd: !!dbUser.meMd
+				hasMeMd: !!dbUser.meMd,
+				totalInstalls,
+				isOwnProfile
 			},
 			skills: allSkills,
+			meMd: parsedMeMd,
 			externalMarketplace: null
 		};
 	}
 
-	// Fallback: check if this is an external skills.sh author
+	// Fallback: external skills.sh author
 	const authorSkills = PLUGINS.filter((p) => p.author === params.username && p.source === 'skills.sh');
 
 	if (authorSkills.length > 0) {
 		const authorDisplay = authorSkills[0].authorDisplay;
 		const topics = topicsFromSkills(authorSkills);
-
 		const marketplace = EXTERNAL_MARKETPLACES[params.username];
 
 		return {
@@ -152,7 +168,10 @@ export const load: PageServerLoad = async ({ params }) => {
 				avatarUrl: null,
 				verified: true,
 				topics,
-				source: 'skills.sh' as const
+				source: 'skills.sh' as const,
+				hasMeMd: false,
+				totalInstalls: authorSkills.reduce((sum, s) => sum + (s.installs ?? 0), 0),
+				isOwnProfile: false
 			},
 			skills: authorSkills.map((s) => ({
 				name: s.name,
@@ -161,7 +180,7 @@ export const load: PageServerLoad = async ({ params }) => {
 				category: s.category,
 				installs: s.installs ?? 0,
 				version: s.version,
-				updatedAt: new Date().toISOString(), // skills.sh doesn't expose this
+				updatedAt: new Date().toISOString(),
 				contentHash: '',
 				files: [] as { name: string; content: string }[],
 				source: 'skills.sh' as const,
@@ -169,6 +188,7 @@ export const load: PageServerLoad = async ({ params }) => {
 				installCommand: s.installCommandSkillsSh || s.installCommand,
 				emoji: s.emoji
 			})),
+			meMd: null,
 			externalMarketplace: marketplace || null
 		};
 	}
