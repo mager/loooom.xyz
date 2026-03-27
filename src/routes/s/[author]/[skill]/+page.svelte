@@ -1,12 +1,20 @@
 <script lang="ts">
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import Nav from '$lib/components/Nav.svelte';
+	import { marked } from 'marked';
 
 	let { data } = $props();
 	let activeFile = $state(0);
 	let showInstall = $state(false);
 	let copiedSkill = $state(false);
 	let copiedCli = $state(false);
+
+	// Find the primary SKILL.md file
+	const skillMdIndex = data.skill.files.findIndex((f: { name: string }) => f.name === 'SKILL.md');
+	const hasSkillMd = skillMdIndex !== -1;
+	const renderedSkillMd = hasSkillMd ? marked.parse(data.skill.files[skillMdIndex].content) : '';
+	// Non-SKILL.md files for the raw code viewer
+	const otherFiles = data.skill.files.filter((_: unknown, i: number) => i !== skillMdIndex);
 
 	function relativeTime(iso: string): string {
 		const diff = Date.now() - new Date(iso).getTime();
@@ -115,12 +123,53 @@
 			</div>
 		</div>
 
-		<!-- Files - moved up front -->
+		<!-- Install button -->
 		{#if data.skill.files.length > 0}
+			<div class="install-bar">
+				<div class="install-wrap">
+					<button class="btn-install" onclick={() => showInstall = !showInstall}>
+						Install
+						<svg class="install-arrow" class:open={showInstall} viewBox="0 0 12 12" width="12" height="12">
+							<path fill="currentColor" d="M6 8L1 3h10z"/>
+						</svg>
+					</button>
+					
+					{#if showInstall}
+						<div class="install-popover">
+							<div class="install-option">
+								<span class="install-label">CLI</span>
+								<button class="install-copy" onclick={copyCli}>
+									<code>npx loooom add {data.author.username}/{data.skill.name}</code>
+									<span class="copy-hint">{copiedCli ? '✓' : 'copy'}</span>
+								</button>
+							</div>
+							<div class="install-divider"></div>
+							<div class="install-option">
+								<span class="install-label">Manual</span>
+								<button class="install-copy" onclick={copySkillContent}>
+									<span>Copy SKILL.md content</span>
+									<span class="copy-hint">{copiedSkill ? '✓' : 'copy'}</span>
+								</button>
+							</div>
+						</div>
+					{/if}
+				</div>
+			</div>
+		{/if}
+
+		<!-- Rendered SKILL.md -->
+		{#if hasSkillMd}
+			<div class="prose">
+				{@html renderedSkillMd}
+			</div>
+		{/if}
+
+		<!-- Other files (raw code viewer) -->
+		{#if otherFiles.length > 0}
 			<div class="files-section">
 				<div class="files-header">
 					<div class="file-tabs">
-						{#each data.skill.files as file, i}
+						{#each otherFiles as file, i}
 							<button
 								class="file-tab"
 								class:active={activeFile === i}
@@ -131,46 +180,16 @@
 							</button>
 						{/each}
 					</div>
-					
-					<!-- Compact install dropdown -->
-					<div class="install-wrap">
-						<button class="btn-install" onclick={() => showInstall = !showInstall}>
-							Install
-							<svg class="install-arrow" class:open={showInstall} viewBox="0 0 12 12" width="12" height="12">
-								<path fill="currentColor" d="M6 8L1 3h10z"/>
-							</svg>
-						</button>
-						
-						{#if showInstall}
-							<div class="install-popover">
-								<div class="install-option">
-									<span class="install-label">CLI</span>
-									<button class="install-copy" onclick={copyCli}>
-										<code>npx loooom add {data.author.username}/{data.skill.name}</code>
-										<span class="copy-hint">{copiedCli ? '✓' : 'copy'}</span>
-									</button>
-								</div>
-								<div class="install-divider"></div>
-								<div class="install-option">
-									<span class="install-label">Manual</span>
-									<button class="install-copy" onclick={copySkillContent}>
-										<span>Copy SKILL.md content</span>
-										<span class="copy-hint">{copiedSkill ? '✓' : 'copy'}</span>
-									</button>
-								</div>
-							</div>
-						{/if}
-					</div>
 				</div>
 
 				<div class="code-viewer">
 					<div class="code-header">
-						<span class="code-filename">{data.skill.files[activeFile].name}</span>
-						<button class="code-copy" onclick={() => navigator.clipboard.writeText(data.skill.files[activeFile].content)}>
+						<span class="code-filename">{otherFiles[activeFile].name}</span>
+						<button class="code-copy" onclick={() => navigator.clipboard.writeText(otherFiles[activeFile].content)}>
 							Copy
 						</button>
 					</div>
-					<pre class="code-content"><code>{data.skill.files[activeFile].content}</code></pre>
+					<pre class="code-content"><code>{otherFiles[activeFile].content}</code></pre>
 				</div>
 			</div>
 		{/if}
@@ -232,7 +251,36 @@
 	.byline-edit { color: var(--ocean); text-decoration: none; }
 	.byline-edit:hover { text-decoration: underline; }
 
-	/* Files section - now primary content */
+	/* Install bar */
+	.install-bar { display: flex; justify-content: flex-end; margin-bottom: 2rem; }
+
+	/* Prose — rendered SKILL.md */
+	.prose { margin-bottom: 3rem; color: var(--text-secondary); line-height: 1.7; font-size: 1rem; }
+	.prose :global(h1) { font-family: var(--font-handwriting); font-weight: 100; font-size: 2rem; color: var(--text-primary); margin: 2.5rem 0 1rem; line-height: 1.15; }
+	.prose :global(h2) { font-size: 1.35rem; font-weight: 700; color: var(--text-primary); margin: 2.25rem 0 0.75rem; letter-spacing: -0.01em; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border); }
+	.prose :global(h3) { font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin: 1.75rem 0 0.5rem; }
+	.prose :global(p) { margin: 0 0 1rem; }
+	.prose :global(ul), .prose :global(ol) { margin: 0 0 1rem; padding-left: 1.5rem; }
+	.prose :global(li) { margin-bottom: 0.35rem; }
+	.prose :global(li > ul), .prose :global(li > ol) { margin-top: 0.35rem; margin-bottom: 0; }
+	.prose :global(strong) { color: var(--text-primary); font-weight: 600; }
+	.prose :global(a) { color: var(--ocean); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.2s; }
+	.prose :global(a:hover) { border-bottom-color: var(--ocean); }
+	.prose :global(hr) { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+	.prose :global(blockquote) { border-left: 3px solid var(--accent); margin: 1rem 0; padding: 0.5rem 1rem; background: var(--bg-card); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; color: var(--text-secondary); }
+	/* Inline code */
+	.prose :global(code) { font-family: var(--font-mono); font-size: 0.85em; background: var(--bg-card); border: 1px solid var(--border); padding: 0.15em 0.4em; border-radius: 4px; color: var(--text-primary); }
+	/* Code blocks */
+	.prose :global(pre) { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.25rem 1.5rem; overflow-x: auto; margin: 0 0 1.25rem; line-height: 1.5; }
+	.prose :global(pre code) { background: none; border: none; padding: 0; border-radius: 0; font-size: 0.85rem; color: var(--text-secondary); }
+	/* Tables */
+	.prose :global(table) { width: 100%; border-collapse: collapse; margin: 0 0 1.25rem; font-size: 0.9rem; overflow-x: auto; display: block; }
+	.prose :global(th), .prose :global(td) { padding: 0.6rem 1rem; border: 1px solid var(--border); text-align: left; }
+	.prose :global(th) { background: var(--bg-card); font-weight: 600; color: var(--text-primary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+	.prose :global(td) { background: var(--bg-primary); }
+	.prose :global(td code) { font-size: 0.8em; }
+
+	/* Files section — other files */
 	.files-section { margin-bottom: 1rem; }
 	.files-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
 	.file-tabs { display: flex; gap: 0; }
