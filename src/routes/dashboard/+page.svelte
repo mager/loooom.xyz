@@ -1,6 +1,7 @@
 <script lang="ts">
 	import YarnLogo from '$lib/components/YarnLogo.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+	import { enhance } from '$app/forms';
 	import { parseMeMd, generateInjectionPrompt, KNOWN_SECTIONS } from '$lib/memd';
 
 	let { data } = $props();
@@ -194,6 +195,64 @@
 				<a href="/me" class="btn-ghost">Learn more about ME.md</a>
 			</section>
 		{/if}
+
+		<!-- Skills Section -->
+		<section class="skills-section">
+			<div class="skills-header">
+				<h2 class="section-title">🧶 My Skills</h2>
+				<a href="/create" class="btn-new-skill">+ New Skill</a>
+			</div>
+
+			{#if data.skills.length === 0}
+				<div class="skills-empty">
+					<div class="skills-empty-icon">✍️</div>
+					<p>You haven't published any skills yet.</p>
+					<a href="/create" class="btn-primary">Write your first skill →</a>
+				</div>
+			{:else}
+				<div class="skills-list">
+					{#each data.skills as skill}
+						<div class="skill-row">
+							<div class="skill-row-left">
+								<div class="skill-name-row">
+									<a href="/s/{handle}/{skill.name}" class="skill-title-link">{skill.title}</a>
+									<span class="skill-slug">/{handle}/{skill.name}</span>
+								</div>
+								<div class="skill-meta-row">
+									{#if skill.category}
+										<span class="skill-cat-badge">{skill.category}</span>
+									{/if}
+									{#if skill.currentVersion}
+										<span class="skill-version">v{skill.currentVersion}</span>
+									{/if}
+									<span class="skill-installs">⬇ {skill.installs}</span>
+									<span class={`skill-status ${skill.isPublished ? 'published' : 'draft'}`}>
+										{skill.isPublished ? 'Live' : 'Draft'}
+									</span>
+								</div>
+								{#if skill.description}
+									<p class="skill-desc">{skill.description}</p>
+								{/if}
+							</div>
+							<div class="skill-row-actions">
+								<a href="/edit/{skill.id}" class="skill-action-btn">Edit</a>
+								<form method="POST" action="?/togglePublish" use:enhance>
+									<input type="hidden" name="skillId" value={skill.id} />
+									<button type="submit" class="skill-action-btn">
+										{skill.isPublished ? 'Unpublish' : 'Publish'}
+									</button>
+								</form>
+								<form method="POST" action="?/deleteSkill" use:enhance
+									onsubmit={(e) => { if (!confirm(`Delete "${skill.title}"? This can't be undone.`)) e.preventDefault(); }}>
+									<input type="hidden" name="skillId" value={skill.id} />
+									<button type="submit" class="skill-action-btn danger">Delete</button>
+								</form>
+							</div>
+						</div>
+					{/each}
+				</div>
+			{/if}
+		</section>
 
 		<!-- Quick links -->
 		<section class="quick-links">
@@ -418,11 +477,112 @@
 	.ql-icon { font-size: 1.4rem; }
 	.ql-text { font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; }
 
+	/* ─── Skills Section ─────────────────────────────────────────────────────── */
+	.skills-section {}
+
+	.skills-header {
+		display: flex; align-items: center; justify-content: space-between;
+		margin-bottom: 14px;
+	}
+
+	.btn-new-skill {
+		display: inline-flex; align-items: center; gap: 6px;
+		padding: 8px 18px;
+		background: var(--gradient-cta); color: white;
+		border-radius: 999px; font-weight: 700; font-size: 0.85rem;
+		text-decoration: none; transition: opacity 0.2s;
+		white-space: nowrap;
+	}
+	.btn-new-skill:hover { opacity: 0.88; }
+
+	.skills-empty {
+		background: var(--bg-card); border: 1px dashed var(--border);
+		border-radius: var(--radius-lg); padding: 40px 24px;
+		text-align: center; display: flex; flex-direction: column;
+		align-items: center; gap: 12px;
+	}
+	.skills-empty-icon { font-size: 2.5rem; }
+	.skills-empty p { color: var(--text-secondary); margin: 0; font-size: 0.95rem; }
+
+	.skills-list {
+		display: flex; flex-direction: column;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-lg);
+		overflow: hidden;
+	}
+
+	.skill-row {
+		display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+		padding: 16px 20px;
+		background: var(--bg-card);
+		transition: background 0.15s;
+	}
+	.skill-row + .skill-row { border-top: 1px solid var(--border); }
+	.skill-row:hover { background: var(--bg-secondary); }
+
+	.skill-row-left { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+
+	.skill-name-row { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+	.skill-title-link {
+		font-weight: 700; font-size: 0.95rem; color: var(--text-primary);
+		text-decoration: none; transition: color 0.15s;
+	}
+	.skill-title-link:hover { color: var(--accent); }
+	.skill-slug {
+		font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted);
+	}
+
+	.skill-meta-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+	.skill-cat-badge {
+		font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700;
+		text-transform: uppercase; letter-spacing: 0.07em;
+		background: var(--bg-secondary); border: 1px solid var(--border);
+		color: var(--text-muted); padding: 2px 8px; border-radius: 4px;
+	}
+	.skill-version {
+		font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted);
+	}
+	.skill-installs {
+		font-size: 0.72rem; color: var(--text-muted);
+	}
+	.skill-status {
+		font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700;
+		text-transform: uppercase; letter-spacing: 0.07em;
+		padding: 2px 8px; border-radius: 4px;
+	}
+	.skill-status.published {
+		color: #16a34a; background: rgba(22, 163, 74, 0.1); border: 1px solid rgba(22, 163, 74, 0.25);
+	}
+	.skill-status.draft {
+		color: var(--text-muted); background: var(--bg-secondary); border: 1px solid var(--border);
+	}
+	.skill-desc {
+		font-size: 0.82rem; color: var(--text-muted); margin: 0;
+		white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+	}
+
+	.skill-row-actions {
+		display: flex; align-items: center; gap: 6px; flex-shrink: 0; flex-wrap: wrap;
+	}
+	.skill-row-actions form { margin: 0; }
+	.skill-action-btn {
+		display: inline-block;
+		padding: 5px 12px;
+		background: var(--bg-secondary); border: 1px solid var(--border);
+		border-radius: 6px; font-size: 0.78rem; font-weight: 600;
+		color: var(--text-secondary); cursor: pointer;
+		text-decoration: none; transition: all 0.15s; white-space: nowrap;
+	}
+	.skill-action-btn:hover { border-color: var(--accent); color: var(--accent); }
+	.skill-action-btn.danger:hover { border-color: #ef4444; color: #ef4444; }
+
 	/* ─── Responsive ──────────────────────────────────────────────────────── */
 	@media (max-width: 640px) {
 		.dashboard { padding: 32px 16px 60px; }
 		.dash-header { flex-direction: column; align-items: flex-start; }
 		.me-card-top { flex-direction: column; align-items: flex-start; }
 		.prompt-row { flex-direction: column; align-items: flex-start; }
+		.skill-row { flex-direction: column; }
+		.skill-row-actions { width: 100%; justify-content: flex-start; }
 	}
 </style>

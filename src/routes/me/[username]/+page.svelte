@@ -332,10 +332,10 @@
 	}
 	.logo { display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary); text-decoration: none; flex-shrink: 0; }
 	.logo-text { font-family: var(--font-handwriting); font-size: 1rem; font-weight: 200; }
-	.nav-breadcrumb { display: flex; align-items: center; gap: 0.4rem; font-family: var(--font-mono); font-size: 0.82rem; }
-	.bc-dim { color: var(--text-muted); }
-	.bc-handle { color: var(--text-primary); font-weight: 700; }
-	.nav-right { display: flex; align-items: center; gap: 0.75rem; }
+	.nav-breadcrumb { display: flex; align-items: center; gap: 0.4rem; font-family: var(--font-mono); font-size: 0.82rem; min-width: 0; overflow: hidden; }
+	.bc-dim { color: var(--text-muted); flex-shrink: 0; }
+	.bc-handle { color: var(--text-primary); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+	.nav-right { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
 	.btn-raw { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); text-decoration: none; padding: 3px 10px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.15s; }
 	.btn-raw:hover { color: var(--violet); border-color: var(--violet); }
 	.btn-nav { font-size: 0.82rem; color: var(--text-secondary); text-decoration: none; padding: 5px 14px; border: 1px solid var(--border); border-radius: 999px; transition: all 0.15s; background: var(--bg-card); }
@@ -632,11 +632,50 @@
 		.fleet-pills { display: none; }
 	}
 	@media (max-width: 640px) {
-		.file-hero { padding: 1.5rem 1rem; }
-		.file-name { font-size: 1.5rem; }
+		.file-hero { padding: 1.25rem 1rem; }
+		.file-hero-inner { gap: 1.25rem; }
+		.file-name { font-size: 1.4rem; }
 		.file-icon { display: none; }
+		.file-identity { gap: 0; }
+
+		/* Stack attrs vertically — clean left edge */
+		.file-attrs {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.3rem;
+			margin-bottom: 0.75rem;
+		}
+		.file-attr-sep { display: none; }
+		.file-attr { gap: 0.45rem; }
+		.attr-key {
+			display: inline-block;
+			min-width: 3.5rem;
+		}
+
+		/* Action buttons: primary full-width, ghost row below */
+		.file-actions {
+			flex-wrap: wrap;
+			gap: 0.5rem;
+		}
+		/* "Copy injection prompt" — primary, full row */
+		.faction-btn.faction-primary {
+			width: 100%;
+			text-align: center;
+			order: 0;
+		}
+		/* "Copy ME.md" — grows to fill */
+		.faction-btn.faction-ghost:first-of-type {
+			flex: 1;
+		}
+
 		.fetch-bar { max-width: 100%; }
 		.raw-view { padding: 1rem; }
 		.view-toggle-inner { padding: 0 1rem; }
+
+		/* Nav: tighter padding, hide "raw ↗" text link, shrink profile button */
+		.nav-inner { padding: 0 1rem; gap: 0.5rem; }
+		.btn-raw { display: none; }
+		.btn-nav { padding: 4px 10px; font-size: 0.75rem; }
+		.nav-breadcrumb { font-size: 0.75rem; }
 	}
 </style>
