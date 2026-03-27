@@ -68,7 +68,7 @@
 			{:else if data.user.verified}<div class="verified-badge" title="Verified">✓</div>{/if}
 		</div>
 		<div class="intro">
-			<h1 class="handwriting">{data.user.displayName}<span class="writes"> writes skills about</span></h1>
+			<h1 class="handwriting">{data.user.displayName}&nbsp;<span class="writes">writes skills about</span></h1>
 			<div class="topics">
 				{#each data.user.topics as topic, i}<span class="topic">{topic}{#if i < data.user.topics.length - 1}<span class="topic-sep">,&nbsp;</span>{/if}</span>{/each}
 			</div>
