@@ -198,12 +198,23 @@ Any caveats, edge cases, or important considerations.
 			<p class="success-sub">Your skill is published and ready to be used by any AI.</p>
 
 			<div class="install-showcase">
-				<div class="install-label">Install command</div>
+				<div class="install-label">Claude Code — add the Loooom marketplace first</div>
 				<div class="install-command">
-					<code>/skill use {form.username}/{form.skillName}</code>
+					<code>/plugin marketplace add mager/loooom</code>
+					<button class="copy-btn" onclick={() => navigator.clipboard.writeText('/plugin marketplace add mager/loooom')}>Copy</button>
+				</div>
+				<div class="install-label install-label-secondary">Then use your skill</div>
+				<div class="install-command">
+					<code>/skill use {form.skillName}</code>
 					<button class="copy-btn" onclick={() => {
-						const cmd = `/skill use ${form.username}/${form.skillName}`;
-						navigator.clipboard.writeText(cmd);
+						navigator.clipboard.writeText(`/skill use ${form.skillName}`);
+					}}>Copy</button>
+				</div>
+				<div class="install-label install-label-secondary">Or install directly with npx</div>
+				<div class="install-command install-command-alt">
+					<code>npx loooom add {form.username}/{form.skillName}</code>
+					<button class="copy-btn" onclick={() => {
+						navigator.clipboard.writeText(`npx loooom add ${form.username}/${form.skillName}`);
 					}}>Copy</button>
 				</div>
 			</div>
@@ -456,6 +467,11 @@ Any caveats, edge cases, or important considerations.
 		color: var(--text-muted);
 		text-align: left;
 	}
+	.install-label-secondary {
+		border-top: 1px solid var(--border);
+		color: var(--text-muted);
+		opacity: 0.7;
+	}
 	.install-command {
 		display: flex;
 		align-items: center;
@@ -469,6 +485,9 @@ Any caveats, edge cases, or important considerations.
 		font-size: 0.88rem;
 		color: #a5b4fc;
 		background: none;
+	}
+	.install-command-alt code {
+		color: #6ee7b7;
 	}
 	.copy-btn {
 		background: var(--accent);

@@ -72,21 +72,39 @@
 			<span class="eyebrow-text">Open skills marketplace</span>
 		</div>
 
-		<h1>Skills for<br/><span class="h1-accent">any AI.</span></h1>
+		<h1>Teach your AI<br/><span class="h1-accent">anything.</span></h1>
 
 		<p class="hero-sub">
-			Discover and publish skills that teach Claude Code new behaviors.
-			Plain markdown. Free forever. Anyone can contribute.
+			Skills are markdown files that give Claude Code new superpowers.
+			Write one. Share it. The whole community benefits.
 		</p>
 
-		<div class="hero-count">
-			<span class="count-num">{totalCount}+</span>
-			<span class="count-label">skills and growing</span>
+		<div class="hero-install">
+			<div class="hero-install-inner">
+				<span class="install-pre">Claude Code</span>
+				<code class="install-cmd">/plugin marketplace add mager/loooom</code>
+				<button class="install-copy" onclick={() => copyCommand('/plugin marketplace add mager/loooom')}>
+					{copiedCommand === '/plugin marketplace add mager/loooom' ? '✓' : 'Copy'}
+				</button>
+			</div>
+			<p class="install-alt-note">or <code>npx loooom add mager/&lt;skill&gt;</code> — works anywhere</p>
 		</div>
 
-		<div class="hero-actions">
-			<a href="/browse" class="btn-primary">Browse Skills →</a>
-			<a href="/create" class="btn-ghost">Publish a Skill</a>
+		<div class="hero-stats">
+			<div class="hero-stat">
+				<span class="stat-num">{totalCount}+</span>
+				<span class="stat-label">skills</span>
+			</div>
+			<div class="hero-stat-divider"></div>
+			<div class="hero-stat">
+				<span class="stat-num">free</span>
+				<span class="stat-label">forever</span>
+			</div>
+			<div class="hero-stat-divider"></div>
+			<div class="hero-stat">
+				<span class="stat-num">open</span>
+				<span class="stat-label">source</span>
+			</div>
 		</div>
 	</div>
 </section>
@@ -95,21 +113,27 @@
 <section class="featured">
 	<div class="section-inner">
 		<div class="section-header">
-			<p class="eyebrow">Featured Skills</p>
-			<h2>Built by the community</h2>
-			<a href="/browse" class="see-all">See all →</a>
+			<div class="section-header-left">
+				<p class="eyebrow">Community picks</p>
+				<h2>Skills people love</h2>
+			</div>
+			<div class="section-header-right">
+				<a href="/browse" class="btn-browse">Browse all skills →</a>
+				<a href="/create" class="btn-publish-sm">+ Publish yours</a>
+			</div>
 		</div>
 
 		<div class="skills-grid">
 			{#each featuredSkills as skill (skill.name + skill.authorUsername)}
 				<a href={skill.link} class="skill-card">
+					<div class="skill-card-glow" style="background: radial-gradient(ellipse at top left, {categoryColor(skill.category)}18 0%, transparent 65%);"></div>
 					<div class="skill-card-top">
 						{#if skill.category}
-							<span class="category-chip" style="background: {categoryColor(skill.category)}22; color: {categoryColor(skill.category)}; border-color: {categoryColor(skill.category)}44;">
+							<span class="category-chip" style="background: {categoryColor(skill.category)}18; color: {categoryColor(skill.category)}; border-color: {categoryColor(skill.category)}40;">
 								{skill.category}
 							</span>
 						{/if}
-						<span class="installs">{skill.installs.toLocaleString()} uses</span>
+						<span class="installs">⬇ {skill.installs.toLocaleString()}</span>
 					</div>
 					<h3 class="skill-title">{skill.title}</h3>
 					{#if skill.description}
@@ -130,6 +154,12 @@
 					</div>
 				</a>
 			{/each}
+		</div>
+
+		<!-- CTA bar below grid -->
+		<div class="featured-cta">
+			<p>Got expertise? <strong>Turn it into a skill.</strong> Takes 10 minutes. Helps every AI that runs it forever.</p>
+			<a href="/create" class="btn-primary">Write a skill →</a>
 		</div>
 	</div>
 </section>
@@ -198,15 +228,18 @@
 					<span class="dot r"></span>
 					<span class="dot y"></span>
 					<span class="dot g"></span>
-					<span class="code-label">Terminal</span>
+					<span class="code-label">Claude Code</span>
 				</div>
 				<div class="code-body">
 					<div class="code-line"><span class="prompt">$</span> <span class="cmd">/plugin marketplace add</span> <span class="arg">mager/loooom</span></div>
-					<div class="code-line output">✓ Adding marketplace: mager/loooom</div>
-					<div class="code-line output">✓ Fetching catalog...</div>
-					<div class="code-line output">✓ 12 skills available</div>
+					<div class="code-line output">✓ Added marketplace: mager/loooom</div>
+					<div class="code-line output dim">  30 skills available</div>
+					<div class="code-line spacer"></div>
 					<div class="code-line"><span class="prompt">$</span> <span class="cmd">/skill use</span> <span class="arg">beginner-japanese</span></div>
-					<div class="code-line output">✓ Skill loaded. Ready to teach.</div>
+					<div class="code-line output">✓ Skill loaded: Beginner Japanese</div>
+					<div class="code-line output dim">  Stateful tutor. Picks up where you left off.</div>
+					<div class="code-line spacer"></div>
+					<div class="code-line alt-install"><span class="prompt-alt">or</span> <span class="cmd-alt">npx loooom add</span> <span class="arg-alt">mager/beginner-japanese</span></div>
 					<div class="code-line blink"><span class="prompt">$</span> <span class="cursor">▌</span></div>
 				</div>
 			</div>
@@ -292,11 +325,11 @@
 
 	/* ===== HERO ===== */
 	.hero {
-		padding: 8rem 1.5rem 5rem;
+		padding: 7rem 1.5rem 5rem;
 		text-align: center;
 	}
 	.hero-inner {
-		max-width: 600px;
+		max-width: 640px;
 		margin: 0 auto;
 	}
 	.hero-eyebrow {
@@ -354,38 +387,109 @@
 		color: var(--text-secondary);
 		line-height: 1.65;
 		max-width: 480px;
-		margin: 0 auto 1.75rem;
+		margin: 0 auto 2rem;
 		font-weight: 300;
 	}
 
-	.hero-count {
+	/* Hero install command */
+	.hero-install {
+		margin-bottom: 2.25rem;
+	}
+	.hero-install-inner {
 		display: inline-flex;
-		align-items: baseline;
-		gap: 0.5rem;
+		align-items: center;
+		gap: 0;
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: 10px;
+		overflow: hidden;
+		max-width: 100%;
+	}
+	.install-pre {
+		padding: 0.6rem 0.9rem;
+		background: var(--bg-secondary);
+		border-right: 1px solid var(--border);
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--text-muted);
+		white-space: nowrap;
+		flex-shrink: 0;
+	}
+	.install-cmd {
+		padding: 0.6rem 1rem;
+		font-family: var(--font-mono);
+		font-size: 0.82rem;
+		color: #a5b4fc;
+		background: #0d0d14;
+		flex: 1;
+		text-align: left;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.install-copy {
+		padding: 0.6rem 1rem;
+		background: var(--violet);
+		color: white;
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		font-weight: 700;
+		border: none;
+		cursor: pointer;
+		transition: opacity 0.2s;
+		white-space: nowrap;
+		flex-shrink: 0;
+	}
+	.install-copy:hover { opacity: 0.85; }
+	.install-alt-note {
+		margin: 0.55rem 0 0;
+		font-size: 0.78rem;
+		color: var(--text-muted);
+	}
+	.install-alt-note code {
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+		color: #6ee7b7;
+		background: none;
+	}
+
+	/* Hero stats */
+	.hero-stats {
+		display: inline-flex;
+		align-items: center;
+		gap: 1.5rem;
 		background: var(--bg-secondary);
 		border: 1px solid var(--border);
 		border-radius: 999px;
-		padding: 0.4rem 1.1rem;
-		margin-bottom: 2rem;
-		font-family: var(--font-mono);
+		padding: 0.6rem 1.75rem;
 	}
-	.count-num {
-		font-size: 1rem;
+	.hero-stat { text-align: center; }
+	.stat-num {
+		display: block;
+		font-family: var(--font-mono);
+		font-size: 0.95rem;
 		font-weight: 700;
 		color: var(--violet);
+		line-height: 1;
 	}
-	.count-label {
-		font-size: 0.75rem;
+	.stat-label {
+		font-family: var(--font-mono);
+		font-size: 0.6rem;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
 		color: var(--text-muted);
+		margin-top: 2px;
+		display: block;
+	}
+	.hero-stat-divider {
+		width: 1px;
+		height: 28px;
+		background: var(--border);
 	}
 
-	.hero-actions {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 1rem;
-		flex-wrap: wrap;
-	}
 	.btn-primary {
 		background: var(--violet);
 		color: white;
@@ -396,6 +500,9 @@
 		text-decoration: none;
 		transition: opacity 0.2s, transform 0.2s;
 		white-space: nowrap;
+		display: inline-block;
+		border: none;
+		cursor: pointer;
 	}
 	.btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
 	.btn-ghost {
@@ -414,15 +521,23 @@
 
 	/* ===== FEATURED SKILLS ===== */
 	.featured {
-		padding: 4.5rem 1.5rem;
+		padding: 4.5rem 1.5rem 3rem;
 		border-top: 1px solid var(--border);
 	}
 	.section-header {
 		display: flex;
-		align-items: baseline;
+		align-items: flex-end;
+		justify-content: space-between;
 		gap: 1.5rem;
-		margin-bottom: 2.5rem;
+		margin-bottom: 2rem;
 		flex-wrap: wrap;
+	}
+	.section-header-left { min-width: 0; }
+	.section-header-right {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		flex-shrink: 0;
 	}
 	.section-header h2 {
 		font-family: var(--font-display);
@@ -431,19 +546,50 @@
 		letter-spacing: -0.025em;
 		line-height: 1.1;
 		color: var(--text-primary);
-		margin: 0;
-		flex: 1;
-		min-width: 0;
+		margin: 0.2rem 0 0;
 	}
-	.see-all {
-		font-size: 0.875rem;
+	.btn-browse {
+		font-size: 0.85rem;
 		font-weight: 600;
 		color: var(--ocean);
 		text-decoration: none;
 		white-space: nowrap;
 		transition: opacity 0.2s;
 	}
-	.see-all:hover { opacity: 0.75; }
+	.btn-browse:hover { opacity: 0.75; }
+	.btn-publish-sm {
+		font-size: 0.8rem;
+		font-weight: 700;
+		color: white;
+		background: var(--violet);
+		padding: 0.45rem 1rem;
+		border-radius: 999px;
+		text-decoration: none;
+		white-space: nowrap;
+		transition: opacity 0.2s;
+	}
+	.btn-publish-sm:hover { opacity: 0.85; }
+
+	/* Featured CTA bar */
+	.featured-cta {
+		margin-top: 2.5rem;
+		padding: 1.5rem 2rem;
+		background: linear-gradient(135deg, color-mix(in srgb, var(--violet) 8%, transparent), color-mix(in srgb, var(--ocean) 6%, transparent));
+		border: 1px solid color-mix(in srgb, var(--violet) 25%, transparent);
+		border-radius: 14px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1.5rem;
+		flex-wrap: wrap;
+	}
+	.featured-cta p {
+		margin: 0;
+		font-size: 0.95rem;
+		color: var(--text-secondary);
+		line-height: 1.5;
+	}
+	.featured-cta strong { color: var(--text-primary); }
 
 	.skills-grid {
 		display: grid;
@@ -451,6 +597,7 @@
 		gap: 1.25rem;
 	}
 	.skill-card {
+		position: relative;
 		background: var(--bg-card);
 		border: 1px solid var(--border);
 		border-radius: 14px;
@@ -459,13 +606,23 @@
 		flex-direction: column;
 		gap: 0.75rem;
 		text-decoration: none;
-		transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+		transition: transform 0.22s cubic-bezier(0.4,0,0.2,1), box-shadow 0.22s ease, border-color 0.22s ease;
+		overflow: hidden;
 	}
 	.skill-card:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-		border-color: var(--text-muted);
+		transform: translateY(-3px);
+		box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+		border-color: color-mix(in srgb, var(--violet) 35%, transparent);
 	}
+	.skill-card-glow {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		opacity: 0;
+		transition: opacity 0.3s ease;
+		border-radius: inherit;
+	}
+	.skill-card:hover .skill-card-glow { opacity: 1; }
 	.skill-card-top {
 		display: flex;
 		align-items: center;
@@ -703,6 +860,12 @@
 	.cmd { color: #a5b4fc; }
 	.arg { color: #34d399; }
 	.output { color: #4ade80; padding-left: 1.25rem; }
+	.output.dim { color: #4ade8088; }
+	.code-line.spacer { height: 6px; }
+	.alt-install { padding-left: 0; opacity: 0.7; }
+	.prompt-alt { color: #9ca3af; margin-right: 0.5rem; font-style: italic; }
+	.cmd-alt { color: #6ee7b7; }
+	.arg-alt { color: #fde68a; }
 	.cursor { animation: blink 1s step-end infinite; }
 	@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 	.blink { color: #6366f1; }
