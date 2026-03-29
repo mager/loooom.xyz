@@ -12,7 +12,19 @@
 	// Find the primary SKILL.md file
 	const skillMdIndex = data.skill.files.findIndex((f: { name: string }) => f.name === 'SKILL.md');
 	const hasSkillMd = skillMdIndex !== -1;
-	const renderedSkillMd = hasSkillMd ? marked.parse(data.skill.files[skillMdIndex].content) : '';
+
+	// Strip frontmatter from SKILL.md before rendering (frontmatter is already shown in page header)
+	function stripFrontmatter(content: string): string {
+		const lines = content.split('\n');
+		if (lines[0]?.trim() === '---') {
+			const endIdx = lines.slice(1).findIndex(l => l.trim() === '---');
+			if (endIdx !== -1) {
+				return lines.slice(endIdx + 2).join('\n').trim();
+			}
+		}
+		return content;
+	}
+	const renderedSkillMd = hasSkillMd ? marked.parse(stripFrontmatter(data.skill.files[skillMdIndex].content)) : '';
 	// Non-SKILL.md files for the raw code viewer
 	const otherFiles = data.skill.files.filter((_: unknown, i: number) => i !== skillMdIndex);
 
