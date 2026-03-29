@@ -105,7 +105,14 @@
 			{#if data.skill.description}
 				<p class="skill-desc">{data.skill.description}</p>
 			{/if}
-			
+			{#if data.skill.tags && data.skill.tags.length > 0}
+				<div class="skill-tags">
+					{#each data.skill.tags as tag}
+						<a href="/browse?tag={encodeURIComponent(tag)}" class="skill-tag">#{tag}</a>
+					{/each}
+				</div>
+			{/if}
+
 			<!-- Author byline -->
 			<div class="byline">
 				<a href="/u/{data.author.username}" class="byline-author">
@@ -365,6 +372,24 @@
 	.hash-label { color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; font-family: var(--font-mono); font-size: 0.65rem; }
 	.hash-value { font-family: var(--font-mono); color: var(--text-secondary); background: var(--bg-card); padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid var(--border); }
 	.hash-sep { color: var(--text-muted); }
+
+	/* Skill tags */
+	.skill-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.75rem 0 1rem; }
+	.skill-tag {
+		display: inline-flex; align-items: center; gap: 0.25rem;
+		padding: 0.3rem 0.7rem;
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: 999px;
+		font-size: 0.78rem;
+		color: var(--text-secondary);
+		text-decoration: none;
+		transition: all 0.2s;
+	}
+	.skill-tag:hover {
+		border-color: var(--ocean);
+		color: var(--ocean);
+	}
 
 	@media (max-width: 768px) {
 		.files-header { flex-direction: column; align-items: stretch; }

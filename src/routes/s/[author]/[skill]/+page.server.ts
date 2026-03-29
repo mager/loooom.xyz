@@ -3,6 +3,7 @@ import { db } from '$lib/server/db';
 import { users, skills, skillVersions } from '$lib/server/schema';
 import { eq, and } from 'drizzle-orm';
 import { error } from '@sveltejs/kit';
+import matter from 'gray-matter';
 
 export const load: PageServerLoad = async ({ params, parent }) => {
 	const { user: sessionUser } = await parent();
@@ -22,6 +23,19 @@ export const load: PageServerLoad = async ({ params, parent }) => {
 		.where(eq(skillVersions.skillId, skill.id));
 
 	const latestVersion = versions.find((v) => v.version === skill.currentVersion) ?? versions[0];
+	const files = (latestVersion?.files ?? []) as { name: string; content: string }[];
+
+	// Extract tags from SKILL.md frontmatter
+	let tags: string[] = [];
+	const skillMdFile = files.find(f => f.name === 'SKILL.md');
+	if (skillMdFile) {
+		try {
+			const parsed = matter(skillMdFile.content);
+			tags = parsed.data.tags ?? [];
+		} catch {
+			// ignore parse errors
+		}
+	}
 
 	return {
 		author: {
@@ -37,10 +51,11 @@ export const load: PageServerLoad = async ({ params, parent }) => {
 			title: skill.title,
 			description: skill.description,
 			category: skill.category,
+			tags,
 			installs: skill.installs,
 			version: skill.currentVersion ?? '0.0.0',
 			contentHash: latestVersion?.contentHash ?? '',
-			files: (latestVersion?.files ?? []) as { name: string; content: string }[],
+			files,
 			updatedAt: skill.updatedAt.toISOString(),
 			createdAt: skill.createdAt.toISOString()
 		},

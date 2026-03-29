@@ -2,12 +2,21 @@
 	import { enhance } from '$app/forms';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import YarnLogo from '$lib/components/YarnLogo.svelte';
+	import { validateSkill, formatValidation, type ValidationResult } from '$lib/skill-validator';
 
 	let { data, form } = $props();
 
 	const DRAFT_KEY = 'loooom-skill-draft';
 
-	const DEFAULT_TEMPLATE = `# Skill Name
+	const DEFAULT_TEMPLATE = `---
+name: my-skill
+description: One sentence describing what this skill teaches Claude to do
+author: ${data.user?.username ?? 'your-handle'}
+version: 1.0.0
+tags: [example, tag]
+---
+
+# Skill Name
 
 One sentence: what does this skill teach an AI to do?
 
@@ -17,27 +26,19 @@ One sentence: what does this skill teach an AI to do?
 - Situation two
 - Situation three
 
-## Instructions
+## Agent Behavior
 
-Step-by-step guidance for the AI agent...
+When this skill is active, Claude should:
 
-### Step 1 — Context
-
-Explain the context or background the AI needs.
-
-### Step 2 — Process
-
-Describe the exact process to follow.
-
-### Step 3 — Output
-
-Define what a good output looks like.
+- Do this specific thing
+- Adopt this tone or approach
+- Follow these guidelines
 
 ## Examples
 
 ### Example 1
-**Input:** User asks for X
-**Output:** Agent responds with Y
+**User:** Input here
+**Claude:** Expected response
 
 ## Notes
 
@@ -82,8 +83,11 @@ Any caveats, edge cases, or important considerations.
 	let skillContent = $state(draft?.skillContent ?? DEFAULT_TEMPLATE);
 	let additionalFiles = $state<{ name: string; content: string }[]>([]);
 	let publishing = $state(false);
-	let activeTab = $state<'write' | 'preview'>('write');
+	let activeTab = $state<'write' | 'preview' | 'validate'>('write');
 	let editorEl = $state<HTMLTextAreaElement | null>(null);
+
+	// Live validation
+	let validation = $derived<ValidationResult>(validateSkill(skillContent));
 
 	// Word/char counts
 	const wordCount = $derived(skillContent.trim() ? skillContent.trim().split(/\s+/).length : 0);
@@ -320,6 +324,16 @@ Any caveats, edge cases, or important considerations.
 						<div class="editor-tabs">
 							<button type="button" class="etab" class:active={activeTab === 'write'} onclick={() => activeTab = 'write'}>Write</button>
 							<button type="button" class="etab" class:active={activeTab === 'preview'} onclick={() => activeTab = 'preview'}>Preview</button>
+							<button type="button" class="etab" class:active={activeTab === 'validate'} class:has-errors={validation.errors.length > 0} class:has-warnings={validation.warnings.length > 0 && validation.errors.length === 0} onclick={() => activeTab = 'validate'}>
+								Validate
+								{#if validation.errors.length > 0}
+									<span class="badge error">{validation.errors.length}</span>
+								{:else if validation.warnings.length > 0}
+									<span class="badge warn">{validation.warnings.length}</span>
+								{:else}
+									<span class="badge ok">✓</span>
+								{/if}
+							</button>
 						</div>
 					</div>
 
@@ -360,9 +374,50 @@ Any caveats, edge cases, or important considerations.
 							spellcheck="true"
 							placeholder="Write your skill in markdown..."
 						></textarea>
-					{:else}
+					{:else if activeTab === 'preview'}
 						<div class="md-preview">
 							{@html renderMarkdown(skillContent)}
+						</div>
+					{:else}
+						<div class="validation-panel">
+							{#if validation.errors.length === 0 && validation.warnings.length === 0 && validation.suggestions.length === 0}
+								<div class="validation-success">
+									<div class="success-icon">✅</div>
+									<h3>All checks passed!</h3>
+									<p>Your SKILL.md follows the Loooom v1.0 specification.</p>
+								</div>
+							{:else}
+								{#if validation.errors.length > 0}
+									<div class="validation-section errors">
+										<h4>❌ Errors</h4>
+										<ul>
+											{#each validation.errors as error}
+												<li><strong>{error.field || 'General'}:</strong> {error.message}</li>
+											{/each}
+										</ul>
+									</div>
+								{/if}
+								{#if validation.warnings.length > 0}
+									<div class="validation-section warnings">
+										<h4>⚠️ Warnings</h4>
+										<ul>
+											{#each validation.warnings as warning}
+												<li>{warning.message}</li>
+											{/each}
+										</ul>
+									</div>
+								{/if}
+								{#if validation.suggestions.length > 0}
+									<div class="validation-section suggestions">
+										<h4>💡 Suggestions</h4>
+										<ul>
+											{#each validation.suggestions as suggestion}
+												<li>{suggestion.message}</li>
+											{/each}
+										</ul>
+									</div>
+								{/if}
+							{/if}
 						</div>
 					{/if}
 				</div>
@@ -786,6 +841,92 @@ Any caveats, edge cases, or important considerations.
 		transition: color 0.2s;
 	}
 	.btn-clear-draft:hover { color: #ef4444; }
+
+	/* Validation panel */
+	.validation-panel {
+		min-height: 420px;
+		padding: 1.5rem;
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-top: none;
+		border-radius: 0 0 12px 12px;
+	}
+	.validation-success {
+		text-align: center;
+		padding: 3rem 1rem;
+	}
+	.success-icon { font-size: 3rem; margin-bottom: 1rem; }
+	.validation-success h3 {
+		font-family: var(--font-handwriting);
+		font-size: 1.5rem;
+		font-weight: 100;
+		color: var(--text-primary);
+		margin-bottom: 0.5rem;
+	}
+	.validation-success p { color: var(--text-secondary); font-size: 0.9rem; }
+
+	.validation-section {
+		margin-bottom: 1.5rem;
+		padding: 1rem 1.25rem;
+		border-radius: 10px;
+	}
+	.validation-section.errors {
+		background: rgba(239, 68, 68, 0.06);
+		border: 1px solid rgba(239, 68, 68, 0.25);
+	}
+	.validation-section.warnings {
+		background: rgba(245, 158, 11, 0.06);
+		border: 1px solid rgba(245, 158, 11, 0.25);
+	}
+	.validation-section.suggestions {
+		background: rgba(59, 130, 246, 0.06);
+		border: 1px solid rgba(59, 130, 246, 0.25);
+	}
+	.validation-section h4 {
+		font-size: 0.85rem;
+		font-weight: 700;
+		margin-bottom: 0.75rem;
+		color: var(--text-primary);
+	}
+	.validation-section ul {
+		margin: 0;
+		padding-left: 1.25rem;
+		font-size: 0.9rem;
+		color: var(--text-secondary);
+	}
+	.validation-section li {
+		margin-bottom: 0.4rem;
+		line-height: 1.5;
+	}
+
+	/* Tab badges */
+	.badge {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 18px;
+		height: 18px;
+		padding: 0 5px;
+		border-radius: 999px;
+		font-size: 0.65rem;
+		font-weight: 700;
+		margin-left: 0.35rem;
+	}
+	.badge.error {
+		background: #ef4444;
+		color: white;
+	}
+	.badge.warn {
+		background: #f59e0b;
+		color: white;
+	}
+	.badge.ok {
+		background: #10b981;
+		color: white;
+		font-size: 0.55rem;
+	}
+	.etab.has-errors { color: #ef4444; }
+	.etab.has-warnings { color: #f59e0b; }
 
 	@media (max-width: 768px) {
 		.form-grid { grid-template-columns: 1fr; }
