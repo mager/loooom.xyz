@@ -24,31 +24,31 @@ export const load: PageServerLoad = async ({ parent }) => {
 };
 
 export const actions: Actions = {
-	deleteSkill: async ({ request, parent }) => {
-		const { user } = await parent();
-		if (!user) return fail(401, { error: 'Not authenticated' });
+	deleteSkill: async ({ request, cookies }) => {
+		const sessionId = cookies.get('session');
+		if (!sessionId) return fail(401, { error: 'Not authenticated' });
 
 		const data = await request.formData();
 		const skillId = data.get('skillId')?.toString();
 		if (!skillId) return fail(400, { error: 'Missing skill ID' });
 
 		const [skill] = await db.select().from(skills).where(eq(skills.id, skillId)).limit(1);
-		if (!skill || skill.authorId !== user.id) return fail(403, { error: 'Forbidden' });
+		if (!skill || skill.authorId !== sessionId) return fail(403, { error: 'Forbidden' });
 
 		await db.delete(skills).where(eq(skills.id, skillId));
 		return { deleted: true };
 	},
 
-	togglePublish: async ({ request, parent }) => {
-		const { user } = await parent();
-		if (!user) return fail(401, { error: 'Not authenticated' });
+	togglePublish: async ({ request, cookies }) => {
+		const sessionId = cookies.get('session');
+		if (!sessionId) return fail(401, { error: 'Not authenticated' });
 
 		const data = await request.formData();
 		const skillId = data.get('skillId')?.toString();
 		if (!skillId) return fail(400, { error: 'Missing skill ID' });
 
 		const [skill] = await db.select().from(skills).where(eq(skills.id, skillId)).limit(1);
-		if (!skill || skill.authorId !== user.id) return fail(403, { error: 'Forbidden' });
+		if (!skill || skill.authorId !== sessionId) return fail(403, { error: 'Forbidden' });
 
 		await db.update(skills).set({ isPublished: !skill.isPublished }).where(eq(skills.id, skillId));
 		return { toggled: true };

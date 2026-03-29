@@ -35,7 +35,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			let frontmatter: Record<string, unknown> = {};
 			try {
 				const parsed = parseMeMd(row.meMd);
-				frontmatter = parsed.frontmatter as Record<string, unknown>;
+				frontmatter = parsed.frontmatter as unknown as Record<string, unknown>;
 			} catch {
 				// malformed ME.md — still include basic info
 			}
