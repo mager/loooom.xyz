@@ -4,6 +4,26 @@
 
 	const SPEC_VERSION = '1.0';
 	const SCHEMA_URL = 'https://loooom.xyz/me-md-schema.json';
+	const AJV_EXAMPLE = `import Ajv from 'ajv';
+import schema from './me-md-schema.json';
+import { parseMeMd } from '@loooom/memd'; // coming soon
+
+const ajv = new Ajv();
+const validate = ajv.compile(schema);
+
+const { frontmatter } = parseMeMd(rawMarkdown);
+const valid = validate(frontmatter);
+if (!valid) console.error(validate.errors);`;
+	const PARSER_EXAMPLE = `import { parseMeMd, generateInjectionPrompt } from '$lib/memd';
+
+const result = parseMeMd(rawMarkdown);
+// result.frontmatter  → structured metadata
+// result.sections     → array of { id, title, icon, content }
+// result.valid        → boolean
+// result.errors       → string[]
+
+const prompt = generateInjectionPrompt('@mager', 'https://loooom.xyz/me/mager/raw');
+// → ready-to-paste system prompt`;
 
 	const FRONTMATTER_FIELDS = [
 		{
@@ -379,16 +399,7 @@ This is their robots.txt for human consciousness.</code></pre>
 						<span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
 						<span class="code-label">validate with ajv (Node.js)</span>
 					</div>
-					<pre class="code"><code>import Ajv from 'ajv';
-import schema from './me-md-schema.json';
-import { parseMeMd } from '@loooom/memd'; // coming soon
-
-const ajv = new Ajv();
-const validate = ajv.compile(schema);
-
-const { frontmatter } = parseMeMd(rawMarkdown);
-const valid = validate(frontmatter);
-if (!valid) console.error(validate.errors);</code></pre>
+					<pre class="code"><code>{AJV_EXAMPLE}</code></pre>
 				</div>
 			</section>
 
@@ -403,16 +414,7 @@ if (!valid) console.error(validate.errors);</code></pre>
 						<span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
 						<span class="code-label">src/lib/memd.ts (reference implementation)</span>
 					</div>
-					<pre class="code"><code>import { parseMeMd, generateInjectionPrompt } from '$lib/memd';
-
-const result = parseMeMd(rawMarkdown);
-// result.frontmatter  → structured metadata
-// result.sections     → array of { id, title, icon, content }
-// result.valid        → boolean
-// result.errors       → string[]
-
-const prompt = generateInjectionPrompt('@mager', 'https://loooom.xyz/me/mager/raw');
-// → ready-to-paste system prompt</code></pre>
+					<pre class="code"><code>{PARSER_EXAMPLE}</code></pre>
 				</div>
 				<p>
 					The parser is <a href="https://github.com/mager/loooom.xyz/blob/main/src/lib/memd.ts" target="_blank" rel="noopener">available on GitHub</a>. A standalone <code>@loooom/memd</code> npm package is planned for v1.1.
