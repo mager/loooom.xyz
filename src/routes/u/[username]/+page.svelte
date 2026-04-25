@@ -44,6 +44,10 @@
 	function categoryColor(cat: string | null): string {
 		return categoryColors[(cat ?? '').toLowerCase()] ?? categoryColors.default;
 	}
+
+	const meMdValueSections = $derived(
+		data.meMd?.sections.filter((s) => s.id === 'my-values' || s.id === 'the-heart').slice(0, 1) ?? []
+	);
 </script>
 
 <svelte:head>
@@ -138,7 +142,12 @@
 					<div class="install-command-header"><span class="install-label">Install in Claude Code</span></div>
 					<div class="install-command">
 						<code>{data.skills[activeSkill].installCommand}</code>
-						<button class="copy-btn" onclick={() => copyCommand(data.skills[activeSkill].installCommand)}>{copiedCommand === data.skills[activeSkill].installCommand ? '✓ Copied' : 'Copy'}</button>
+						<button 
+							class="copy-btn"
+							onclick={() => copyCommand(data.skills[activeSkill].installCommand ?? '')}
+						>
+							{copiedCommand === data.skills[activeSkill].installCommand ? '✓ Copied' : 'Copy'}
+						</button>
 					</div>
 				</div>
 				<div class="external-note"><p>This skill is hosted externally on <a href="https://skills.sh" target="_blank" rel="noopener">skills.sh</a>.</p></div>
@@ -186,7 +195,7 @@
 				<div class="agent-chips">{#each data.meMd.frontmatter.agents as agent}<div class="agent-chip"><span class="agent-emoji">{agent.emoji || '🤖'}</span><span class="agent-name">{agent.id}</span><span class="agent-role">{agent.role}</span></div>{/each}</div>
 			</div>
 		{/if}
-		{#each [data.meMd.sections.find(s => s.id === 'my-values' || s.id === 'the-heart')].filter(Boolean) as valuesSection}
+		{#each meMdValueSections as valuesSection}
 			<div class="memd-values"><span class="memd-section-label">🫀 {valuesSection.title}</span><p class="memd-snippet">{valuesSection.content.slice(0, 240)}{valuesSection.content.length > 240 ? '...' : ''}</p></div>
 		{/each}
 		{#if data.meMd.frontmatter.tags?.length}<div class="memd-tags">{#each data.meMd.frontmatter.tags as tag}<span class="memd-tag">#{tag}</span>{/each}</div>{/if}

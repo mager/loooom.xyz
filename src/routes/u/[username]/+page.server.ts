@@ -28,8 +28,9 @@ function topicsFromSkills(skillList: { category: string | null; keywords?: strin
 	const topics: string[] = [];
 	for (const s of skillList) {
 		if (topics.length >= 4) break;
-		const label = CATEGORY_TOPICS[s.category ?? ''] ?? s.category ?? '';
-		if (label && !seen.has(label)) { seen.add(label); topics.push(label); }
+		if (!s.category) continue;
+		const label = CATEGORY_TOPICS[s.category] ?? s.category;
+		if (!seen.has(label)) { seen.add(label); topics.push(label); }
 	}
 	return topics;
 }

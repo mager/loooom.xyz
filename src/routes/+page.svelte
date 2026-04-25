@@ -1,59 +1,38 @@
 <script lang="ts">
-	import Nav from '$lib/components/Nav.svelte';
+	import YarnLogo from '$lib/components/YarnLogo.svelte';
+	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 
 	let { data } = $props();
 
-	const featuredSkills = $derived(data.featuredSkills ?? []);
-	const totalCount = $derived(data.totalCount ?? 0);
+	const featuredPlugins = $derived(
+		data.plugins.filter((plugin: { source: string }) => plugin.source === 'loooom').slice(0, 4)
+	);
 
-	type Skill = {
-		name: string;
-		title: string;
-		description: string | null;
-		category: string | null;
-		installs: number;
-		version: string;
-		authorUsername: string;
-		authorDisplayName: string;
-		authorAvatarUrl: string | null;
-		link: string;
-	};
+	const skillCount = $derived(data.plugins.length);
+	const contextUrl = 'https://loooom.xyz/me/mager/raw';
+	const promptText = `Before we work together, fetch ${contextUrl} and use it as durable context about me.`;
 
-	let copiedCommand = $state<string | null>(null);
-	function copyCommand(cmd: string) {
-		navigator.clipboard.writeText(cmd);
-		copiedCommand = cmd;
-		setTimeout(() => (copiedCommand = null), 2000);
+	let copiedContext = $state(false);
+	let copiedPrompt = $state(false);
+
+	async function copyContextUrl() {
+		await navigator.clipboard.writeText(contextUrl);
+		copiedContext = true;
+		setTimeout(() => (copiedContext = false), 1800);
 	}
 
-	const categoryColors: Record<string, string> = {
-		writing: '#e8a598',
-		music: '#a8c5da',
-		cooking: '#c8b89a',
-		engineering: '#98b4d4',
-		art: '#d4a8c4',
-		research: '#a8d4b8',
-		design: '#d4c4a8',
-		education: '#b8a8d4',
-		health: '#a8d4c8',
-		business: '#d4b8a8',
-		languages: '#a8c8d4',
-		productivity: '#c4d4a8',
-		life: '#d4a8b8',
-		coding: '#a8acd4',
-		default: '#c4b8d4'
-	};
-
-	function categoryColor(cat: string | null): string {
-		return categoryColors[(cat ?? '').toLowerCase()] ?? categoryColors.default;
+	async function copyPrompt() {
+		await navigator.clipboard.writeText(promptText);
+		copiedPrompt = true;
+		setTimeout(() => (copiedPrompt = false), 1800);
 	}
 </script>
 
 <svelte:head>
-	<title>Loooom — Skills Marketplace for AI Agents</title>
+	<title>Loooom — Personal context and skills for AI agents</title>
 	<meta
 		name="description"
-		content="Discover, publish, and share skills with any AI. The open marketplace for Claude Code skills — written by humans, used by agents."
+		content="Loooom helps people publish reusable AI context with ME.md and discover practical skills for agents."
 	/>
 	<meta name="loooom-agents" content="https://loooom.xyz/AGENTS.md" />
 	<meta name="loooom-directory" content="https://loooom.xyz/api/directory" />
@@ -62,958 +41,822 @@
 	<link rel="alternate" type="text/markdown" title="Agent Briefing" href="/AGENTS.md" />
 </svelte:head>
 
-<Nav />
+<div class="page-shell">
+	<div class="grain"></div>
 
-<!-- ===== HERO ===== -->
-<section class="hero">
-	<div class="hero-inner">
-		<div class="hero-eyebrow">
-			<span class="eyebrow-dot"></span>
-			<span class="eyebrow-text">Open skills marketplace</span>
+	<nav class="site-nav" aria-label="Primary navigation">
+		<a href="/" class="brand" aria-label="Loooom home">
+			<YarnLogo size={24} />
+			<span>loooom</span>
+		</a>
+
+		<div class="nav-links">
+			<a href="/me">ME.md</a>
+			<a href="/browse">Skills</a>
+			<a href="/me/mager">Example</a>
 		</div>
 
-		<h1>Teach your AI<br/><span class="h1-accent">anything.</span></h1>
-
-		<p class="hero-sub">
-			Skills are markdown files that give Claude Code new superpowers.
-			Write one. Share it. The whole community benefits.
-		</p>
-
-		<div class="hero-install">
-			<div class="hero-install-inner">
-				<span class="install-pre">Claude Code</span>
-				<code class="install-cmd">/plugin marketplace add mager/loooom</code>
-				<button class="install-copy" onclick={() => copyCommand('/plugin marketplace add mager/loooom')}>
-					{copiedCommand === '/plugin marketplace add mager/loooom' ? '✓' : 'Copy'}
-				</button>
-			</div>
-			<p class="install-alt-note">or <code>npx loooom add mager/&lt;skill&gt;</code> — works anywhere</p>
+		<div class="nav-actions">
+			<ThemeToggle />
+			<a href="/login" class="nav-cta">Start</a>
 		</div>
+	</nav>
 
-		<div class="hero-stats">
-			<div class="hero-stat">
-				<span class="stat-num">{totalCount}+</span>
-				<span class="stat-label">skills</span>
-			</div>
-			<div class="hero-stat-divider"></div>
-			<div class="hero-stat">
-				<span class="stat-num">free</span>
-				<span class="stat-label">forever</span>
-			</div>
-			<div class="hero-stat-divider"></div>
-			<div class="hero-stat">
-				<span class="stat-num">open</span>
-				<span class="stat-label">source</span>
-			</div>
-		</div>
-	</div>
-</section>
-
-<!-- ===== FEATURED SKILLS ===== -->
-<section class="featured">
-	<div class="section-inner">
-		<div class="section-header">
-			<div class="section-header-left">
-				<p class="eyebrow">Community picks</p>
-				<h2>Skills people love</h2>
-			</div>
-			<div class="section-header-right">
-				<a href="/browse" class="btn-browse">Browse all skills →</a>
-				<a href="/create" class="btn-publish-sm">+ Publish yours</a>
-			</div>
-		</div>
-
-		<div class="skills-grid">
-			{#each featuredSkills as skill (skill.name + skill.authorUsername)}
-				<a href={skill.link} class="skill-card">
-					<div class="skill-card-glow" style="background: radial-gradient(ellipse at top left, {categoryColor(skill.category)}18 0%, transparent 65%);"></div>
-					<div class="skill-card-top">
-						{#if skill.category}
-							<span class="category-chip" style="background: {categoryColor(skill.category)}18; color: {categoryColor(skill.category)}; border-color: {categoryColor(skill.category)}40;">
-								{skill.category}
-							</span>
-						{/if}
-						<span class="installs">⬇ {skill.installs.toLocaleString()}</span>
-					</div>
-					<h3 class="skill-title">{skill.title}</h3>
-					{#if skill.description}
-						<p class="skill-desc">{skill.description}</p>
-					{/if}
-					<div class="skill-card-footer">
-						<div class="author">
-							<div class="author-avatar">
-								{#if skill.authorAvatarUrl}
-									<img src={skill.authorAvatarUrl} alt={skill.authorDisplayName} />
-								{:else}
-									{skill.authorDisplayName[0]}
-								{/if}
-							</div>
-							<span class="author-name">{skill.authorDisplayName}</span>
-						</div>
-						<span class="skill-version">v{skill.version}</span>
-					</div>
-				</a>
-			{/each}
-		</div>
-
-		<!-- CTA bar below grid -->
-		<div class="featured-cta">
-			<p>Got expertise? <strong>Turn it into a skill.</strong> Takes 10 minutes. Helps every AI that runs it forever.</p>
-			<a href="/create" class="btn-primary">Write a skill →</a>
-		</div>
-	</div>
-</section>
-
-<!-- ===== HOW IT WORKS ===== -->
-<section class="how">
-	<div class="section-inner how-inner">
-		<div class="how-text">
-			<p class="eyebrow">Anyone can publish</p>
-			<h2>Got a skill?<br/>Share it.</h2>
-			<p class="how-sub">
-				Skills are plain markdown files that teach Claude new behaviors.
-				If you know how to do something — write it down and share it.
-				No coding required.
-			</p>
-			<a href="/create" class="btn-primary">Start writing →</a>
-		</div>
-		<div class="how-steps">
-			<div class="step">
-				<div class="step-num">01</div>
-				<div class="step-content">
-					<h3>Sign in</h3>
-					<p>Create your Loooom profile. It's free.</p>
-				</div>
-			</div>
-			<div class="step-line"></div>
-			<div class="step">
-				<div class="step-num">02</div>
-				<div class="step-content">
-					<h3>Write your SKILL.md</h3>
-					<p>Describe what your skill teaches. Use our editor with live preview.</p>
-				</div>
-			</div>
-			<div class="step-line"></div>
-			<div class="step">
-				<div class="step-num">03</div>
-				<div class="step-content">
-					<h3>Publish for free</h3>
-					<p>Your skill gets a permanent URL and install command. Always open.</p>
-				</div>
-			</div>
-		</div>
-	</div>
-</section>
-
-<!-- ===== INSTALL DEMO ===== -->
-<section class="install-demo">
-	<div class="section-inner">
-		<div class="demo-grid">
-			<div class="demo-copy">
-				<p class="eyebrow">One command away</p>
-				<h2>Skills install in seconds.</h2>
-				<p class="demo-sub">
-					Any skill on Loooom installs directly into Claude Code.
-					No config. No setup. Just run the command and it works.
+	<main>
+		<section class="hero">
+			<div class="hero-copy">
+				<p class="eyebrow hero-eyebrow">Context + skills for AI agents</p>
+				<h1>
+					<span>Stop teaching</span>
+					<span>every AI who</span>
+					<span>you are from</span>
+					<span>scratch.</span>
+				</h1>
+				<p class="hero-sub">
+					Publish reusable <strong>ME.md</strong> context. Browse skills agents can run with.
 				</p>
-				<button
-					class="copy-install-btn"
-					onclick={() => copyCommand('/plugin marketplace add mager/loooom')}
-				>
-					{copiedCommand === '/plugin marketplace add mager/loooom' ? '✓ Copied!' : 'Copy install command'}
-				</button>
-			</div>
-			<div class="code-window">
-				<div class="code-bar">
-					<span class="dot r"></span>
-					<span class="dot y"></span>
-					<span class="dot g"></span>
-					<span class="code-label">Claude Code</span>
+
+				<div class="hero-actions">
+					<a href="/login" class="primary-action">Claim your ME.md</a>
+					<a href="/browse" class="secondary-action">Browse skills</a>
 				</div>
-				<div class="code-body">
-					<div class="code-line"><span class="prompt">$</span> <span class="cmd">/plugin marketplace add</span> <span class="arg">mager/loooom</span></div>
-					<div class="code-line output">✓ Added marketplace: mager/loooom</div>
-					<div class="code-line output dim">  30 skills available</div>
-					<div class="code-line spacer"></div>
-					<div class="code-line"><span class="prompt">$</span> <span class="cmd">/skill use</span> <span class="arg">beginner-japanese</span></div>
-					<div class="code-line output">✓ Skill loaded: Beginner Japanese</div>
-					<div class="code-line output dim">  Stateful tutor. Picks up where you left off.</div>
-					<div class="code-line spacer"></div>
-					<div class="code-line alt-install"><span class="prompt-alt">or</span> <span class="cmd-alt">npx loooom add</span> <span class="arg-alt">mager/beginner-japanese</span></div>
-					<div class="code-line blink"><span class="prompt">$</span> <span class="cursor">▌</span></div>
+
+				<div class="quick-proof" aria-label="Example public context URL">
+					<code>{contextUrl}</code>
+					<button onclick={copyContextUrl}>{copiedContext ? 'copied' : 'copy'}</button>
 				</div>
 			</div>
-		</div>
-	</div>
-</section>
 
-<!-- ===== ME.MD (secondary) ===== -->
-<section class="memd-section">
-	<div class="section-inner">
-		<div class="memd-inner">
-			<div class="memd-badge">📄 Also on Loooom</div>
-			<h2>Let every AI know who you are.</h2>
-			<p class="memd-sub">
-				<strong>ME.md</strong> is your portable identity file — a permanent URL that any AI can fetch.
-				Write once, known everywhere. No re-introducing yourself to Claude, GPT, or Gemini.
-			</p>
-			<div class="memd-actions">
-				<a href="/me" class="btn-memd-primary">Learn about ME.md →</a>
-				<a href="/me/mager" class="btn-memd-ghost">See an example</a>
+			<div class="hero-card" aria-label="ME.md preview">
+				<div class="card-topline">
+					<span class="window-dots" aria-hidden="true">
+						<span class="dot dot-amber"></span>
+						<span class="dot dot-rose"></span>
+						<span class="dot dot-emerald"></span>
+					</span>
+					<span>ME.md</span>
+				</div>
+				<pre><code>---
+handle: "@you"
+timezone: "America/Chicago"
+tags: [building, design, music]
+---
+
+# The Soul
+How I think, what I value, what matters.
+
+# The Stack
+The tools, projects, and systems I use.
+
+# Anti-Patterns
+What an AI should never do with me.
+
+# Context
+What I am working on right now.</code></pre>
 			</div>
-		</div>
-	</div>
-</section>
+		</section>
 
-<!-- ===== FOOTER ===== -->
-<footer>
-	<div class="footer-inner">
+		<section class="positioning" aria-labelledby="what-it-does">
+			<div class="section-heading">
+				<p class="eyebrow">What Loooom does</p>
+				<h2 id="what-it-does">Two simple primitives for better agent work.</h2>
+			</div>
+
+			<div class="product-grid">
+				<a href="/me" class="product-card context-card">
+					<span class="product-kicker">01 / Personal context</span>
+					<h3>Publish a durable ME.md</h3>
+					<p>
+						A plain markdown profile with your preferences, projects, tools, anti-patterns,
+						and working style. Humans can read it. Agents can fetch it.
+					</p>
+					<span class="card-link">See the format</span>
+				</a>
+
+				<a href="/browse" class="product-card skills-card">
+					<span class="product-kicker">02 / Skill discovery</span>
+					<h3>Find skills that make agents useful</h3>
+					<p>
+						Browse practical agent skills for learning, writing, design, debugging, and
+						creative work. Start from examples instead of blank prompts.
+					</p>
+					<span class="card-link">Explore {skillCount}+ skills</span>
+				</a>
+			</div>
+		</section>
+
+		<section class="why" aria-labelledby="why-heading">
+			<div>
+				<p class="eyebrow">Why people would use it</p>
+				<h2 id="why-heading">The repeated setup tax is real.</h2>
+			</div>
+			<div class="why-copy">
+				<p>
+					Every new AI session starts with the same setup: who you are, what you are building,
+					how direct you want the response, what tools you use, and what mistakes drive you
+					crazy.
+				</p>
+				<p>
+					Loooom turns that into a URL. Share it with a teammate, paste it into an agent, or
+					let software fetch the raw markdown directly.
+				</p>
+			</div>
+		</section>
+
+		<section class="workflow" aria-labelledby="workflow-heading">
+			<div class="section-heading centered">
+				<p class="eyebrow">How it works</p>
+				<h2 id="workflow-heading">Write once. Reuse everywhere.</h2>
+			</div>
+
+			<div class="steps">
+				<div class="step">
+					<span>1</span>
+					<h3>Create your context</h3>
+					<p>Start from a ME.md template and write the parts agents actually need.</p>
+				</div>
+				<div class="step">
+					<span>2</span>
+					<h3>Share the raw URL</h3>
+					<p>Your context is public markdown at <code>/me/you/raw</code>.</p>
+				</div>
+				<div class="step">
+					<span>3</span>
+					<h3>Add useful skills</h3>
+					<p>Browse skills and give your agent repeatable playbooks.</p>
+				</div>
+			</div>
+
+			<div class="prompt-card">
+				<div>
+					<span class="prompt-label">Paste this into an AI</span>
+					<p>{promptText}</p>
+				</div>
+				<button onclick={copyPrompt}>{copiedPrompt ? 'copied' : 'copy prompt'}</button>
+			</div>
+		</section>
+
+		<section class="featured" aria-labelledby="featured-heading">
+			<div class="section-heading">
+				<p class="eyebrow">Featured skills</p>
+				<h2 id="featured-heading">Start with concrete agent abilities.</h2>
+			</div>
+
+			<div class="skill-grid">
+				{#each featuredPlugins as plugin}
+					<a href="/p/{plugin.author}/{plugin.name}" class="skill-card">
+						<span class="skill-emoji">{plugin.emoji}</span>
+						<div>
+							<h3>{plugin.title}</h3>
+							<p>{plugin.description}</p>
+							<span>@{plugin.author}</span>
+						</div>
+					</a>
+				{/each}
+			</div>
+		</section>
+
+		<section class="final-cta">
+			<p class="eyebrow">The ask</p>
+			<h2>Give your future agents a better starting point.</h2>
+			<div class="hero-actions">
+				<a href="/login" class="primary-action">Create your ME.md</a>
+				<a href="/me/mager" class="secondary-action">View an example</a>
+			</div>
+		</section>
+	</main>
+
+	<footer>
 		<div class="footer-brand">
-			<p class="footer-note">Open source. Free forever. Made in Chicago.</p>
-			<div class="footer-machine-links">
-				<a href="/AGENTS.md" class="footer-machine-link">AGENTS.md</a>
-				<a href="/llms.txt" class="footer-machine-link">llms.txt</a>
-				<a href="/api/directory" class="footer-machine-link">directory</a>
-			</div>
+			<YarnLogo size={22} />
+			<span>loooom</span>
 		</div>
 		<div class="footer-links">
-			<div class="footer-col">
-				<h4>Skills</h4>
-				<a href="/browse">Browse</a>
-				<a href="/create">Publish</a>
-				<a href="/docs">Docs</a>
-			</div>
-			<div class="footer-col">
-				<h4>ME.md</h4>
-				<a href="/me">Overview</a>
-				<a href="/me/mager">Example</a>
-				<a href="/login">Claim yours</a>
-			</div>
-			<div class="footer-col">
-				<h4>Open Source</h4>
-				<a href="https://github.com/mager/loooom.xyz" target="_blank" rel="noopener">loooom.xyz</a>
-				<a href="https://github.com/mager/loooom" target="_blank" rel="noopener">catalog</a>
-			</div>
+			<a href="/AGENTS.md">AGENTS.md</a>
+			<a href="/llms.txt">llms.txt</a>
+			<a href="/api/directory">Directory</a>
+			<a href="https://github.com/mager/loooom.xyz" target="_blank" rel="noopener">GitHub</a>
 		</div>
-	</div>
-	<div class="footer-bottom">
-		A weeknight project by <a href="https://x.com/mager" target="_blank" rel="noopener">@mager</a> &amp; <a href="https://x.com/mager" target="_blank" rel="noopener">@magerbot</a>.
-	</div>
-</footer>
+	</footer>
+</div>
 
 <style>
-	:global(html), :global(body) {
+	:global(html),
+	:global(body) {
 		overflow-x: hidden;
-		max-width: 100vw;
 	}
 
-	.section-inner {
-		max-width: 1040px;
+	:global(body) {
+		background:
+			radial-gradient(circle at top left, color-mix(in srgb, var(--ocean) 18%, transparent), transparent 34rem),
+			radial-gradient(circle at 80% 10%, color-mix(in srgb, var(--amber) 14%, transparent), transparent 28rem),
+			var(--bg-primary);
+	}
+
+	.page-shell {
+		position: relative;
+		min-height: 100vh;
+	}
+
+	.grain {
+		position: fixed;
+		inset: 0;
+		pointer-events: none;
+		opacity: 0.35;
+		background-image:
+			linear-gradient(color-mix(in srgb, var(--text-primary) 5%, transparent) 1px, transparent 1px),
+			linear-gradient(90deg, color-mix(in srgb, var(--text-primary) 5%, transparent) 1px, transparent 1px);
+		background-size: 44px 44px;
+		mask-image: linear-gradient(to bottom, black, transparent 70%);
+	}
+
+	.site-nav,
+	main,
+	footer {
+		position: relative;
+		z-index: 1;
+	}
+
+	.site-nav {
+		max-width: 1160px;
 		margin: 0 auto;
-		padding: 0 1.5rem;
+		padding: 1rem 1.25rem;
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items: center;
+		gap: 1rem;
 	}
 
-	.eyebrow {
-		font-family: var(--font-mono);
-		font-size: 0.65rem;
-		font-weight: 600;
-		letter-spacing: 0.14em;
-		text-transform: uppercase;
-		color: var(--ocean);
-		margin-bottom: 0.6rem;
-	}
-
-	/* ===== HERO ===== */
-	.hero {
-		padding: 7rem 1.5rem 5rem;
-		text-align: center;
-	}
-	.hero-inner {
-		max-width: 640px;
-		margin: 0 auto;
-	}
-	.hero-eyebrow {
+	.brand,
+	.footer-brand {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.5rem;
-		margin-bottom: 2rem;
+		gap: 0.55rem;
+		color: var(--text-primary);
+		font-family: var(--font-handwriting);
+		font-size: 1.45rem;
+	}
+
+	.nav-links,
+	.nav-actions,
+	.footer-links {
+		display: flex;
+		align-items: center;
+		gap: 0.9rem;
+	}
+
+	.nav-links {
+		justify-content: center;
+		padding: 0.35rem;
+		background: color-mix(in srgb, var(--bg-card) 76%, transparent);
+		border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+		border-radius: 999px;
+		box-shadow: var(--card-shadow);
+		backdrop-filter: blur(18px);
+	}
+
+	.nav-links a,
+	.footer-links a {
+		color: var(--text-secondary);
+		font-size: 0.88rem;
+		font-weight: 600;
+	}
+
+	.nav-links a {
+		padding: 0.42rem 0.8rem;
+		border-radius: 999px;
+	}
+
+	.nav-links a:hover {
+		background: var(--bg-secondary);
+		color: var(--text-primary);
+	}
+
+	.nav-actions {
+		justify-content: flex-end;
+	}
+
+	.nav-cta,
+	.primary-action,
+	.secondary-action,
+	.prompt-card button,
+	.quick-proof button {
+		border: 0;
+		cursor: pointer;
+		font-family: var(--font-display);
+		font-weight: 800;
+	}
+
+	.nav-cta {
+		padding: 0.6rem 1rem;
+		border-radius: 999px;
+		background: var(--text-primary);
+		color: var(--bg-primary);
+	}
+
+	main {
+		max-width: 1160px;
+		margin: 0 auto;
+		padding: 3.5rem 1.25rem 0;
+	}
+
+	.hero {
+		display: grid;
+		grid-template-columns: minmax(0, 1.02fr) minmax(320px, 0.78fr);
+		gap: clamp(2rem, 6vw, 5rem);
+		align-items: center;
+		padding: 5rem 0 6rem;
+	}
+
+	.hero-copy {
+		min-width: 0;
+		max-width: 100%;
+	}
+
+	.eyebrow,
+	.product-kicker,
+	.prompt-label {
 		font-family: var(--font-mono);
 		font-size: 0.72rem;
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
-		color: var(--text-muted);
+		color: var(--accent);
+		font-weight: 700;
 	}
-	.eyebrow-dot {
-		width: 6px;
-		height: 6px;
-		border-radius: 50%;
-		background: #22c55e;
-		box-shadow: 0 0 6px #22c55e;
-		animation: pulse 2s ease-in-out infinite;
+
+	h1,
+	h2,
+	h3 {
+		font-family: var(--font-display);
+		letter-spacing: -0.045em;
+		color: var(--text-primary);
 	}
-	@keyframes pulse {
-		0%, 100% { opacity: 1; }
-		50% { opacity: 0.5; }
-	}
-	.eyebrow-text { color: var(--text-muted); }
 
 	h1 {
-		font-family: var(--font-display);
-		font-size: clamp(3.5rem, 10vw, 6rem);
-		font-weight: 800;
-		line-height: 1;
-		letter-spacing: -0.035em;
-		color: var(--text-primary);
-		margin-bottom: 1.5rem;
+		max-width: 780px;
+		margin: 1rem 0 1.25rem;
+		font-size: clamp(3.4rem, 7.2vw, 6.4rem);
+		line-height: 0.94;
 	}
-	.h1-accent {
-		color: var(--violet);
-		position: relative;
+
+	h1 span {
+		display: block;
 	}
-	.h1-accent::after {
-		content: '';
-		position: absolute;
-		bottom: 0.05em;
-		left: 0;
-		right: 0;
-		height: 4px;
-		background: linear-gradient(90deg, var(--violet), var(--ocean));
-		border-radius: 2px;
-		opacity: 0.4;
+
+	h2 {
+		font-size: clamp(2.1rem, 5vw, 4.4rem);
+		line-height: 0.98;
+	}
+
+	h3 {
+		font-size: 1.35rem;
+		line-height: 1.05;
 	}
 
 	.hero-sub {
-		font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+		max-width: 360px;
 		color: var(--text-secondary);
-		line-height: 1.65;
-		max-width: 480px;
-		margin: 0 auto 2rem;
-		font-weight: 300;
+		font-size: clamp(1.08rem, 2vw, 1.35rem);
+		line-height: 1.6;
 	}
 
-	/* Hero install command */
-	.hero-install {
-		margin-bottom: 2.25rem;
+	.hero-sub strong {
+		color: var(--text-primary);
 	}
-	.hero-install-inner {
+
+	.hero-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.85rem;
+		margin-top: 2rem;
+	}
+
+	.primary-action,
+	.secondary-action {
 		display: inline-flex;
 		align-items: center;
-		gap: 0;
-		background: var(--bg-card);
+		justify-content: center;
+		min-height: 48px;
+		padding: 0.85rem 1.2rem;
+		border-radius: 999px;
+	}
+
+	.primary-action {
+		background: linear-gradient(135deg, var(--text-primary), color-mix(in srgb, var(--accent) 70%, var(--text-primary)));
+		color: var(--bg-primary);
+		box-shadow: 0 20px 50px color-mix(in srgb, var(--accent) 22%, transparent);
+	}
+
+	.secondary-action {
+		color: var(--text-primary);
 		border: 1px solid var(--border);
-		border-radius: 10px;
-		overflow: hidden;
+		background: color-mix(in srgb, var(--bg-card) 78%, transparent);
+	}
+
+	.quick-proof {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
 		max-width: 100%;
+		margin-top: 1.4rem;
+		padding: 0.45rem;
+		border: 1px solid var(--border);
+		border-radius: 14px;
+		background: var(--bg-card);
+		box-shadow: var(--card-shadow);
 	}
-	.install-pre {
-		padding: 0.6rem 0.9rem;
-		background: var(--bg-secondary);
-		border-right: 1px solid var(--border);
-		font-family: var(--font-mono);
-		font-size: 0.68rem;
-		font-weight: 700;
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		color: var(--text-muted);
-		white-space: nowrap;
-		flex-shrink: 0;
-	}
-	.install-cmd {
-		padding: 0.6rem 1rem;
+
+	.quick-proof code {
+		min-width: 0;
+		padding: 0 0.35rem;
+		color: var(--text-secondary);
 		font-family: var(--font-mono);
 		font-size: 0.82rem;
-		color: #a5b4fc;
-		background: #0d0d14;
-		flex: 1;
-		text-align: left;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
-	.install-copy {
-		padding: 0.6rem 1rem;
-		background: var(--violet);
-		color: white;
-		font-family: var(--font-mono);
-		font-size: 0.75rem;
-		font-weight: 700;
-		border: none;
-		cursor: pointer;
-		transition: opacity 0.2s;
-		white-space: nowrap;
-		flex-shrink: 0;
-	}
-	.install-copy:hover { opacity: 0.85; }
-	.install-alt-note {
-		margin: 0.55rem 0 0;
-		font-size: 0.78rem;
-		color: var(--text-muted);
-	}
-	.install-alt-note code {
-		font-family: var(--font-mono);
-		font-size: 0.78rem;
-		color: #6ee7b7;
-		background: none;
-	}
 
-	/* Hero stats */
-	.hero-stats {
-		display: inline-flex;
-		align-items: center;
-		gap: 1.5rem;
+	.quick-proof button,
+	.prompt-card button {
+		flex-shrink: 0;
+		border-radius: 10px;
 		background: var(--bg-secondary);
-		border: 1px solid var(--border);
-		border-radius: 999px;
-		padding: 0.6rem 1.75rem;
-	}
-	.hero-stat { text-align: center; }
-	.stat-num {
-		display: block;
-		font-family: var(--font-mono);
-		font-size: 0.95rem;
-		font-weight: 700;
-		color: var(--violet);
-		line-height: 1;
-	}
-	.stat-label {
-		font-family: var(--font-mono);
-		font-size: 0.6rem;
-		text-transform: uppercase;
-		letter-spacing: 0.1em;
-		color: var(--text-muted);
-		margin-top: 2px;
-		display: block;
-	}
-	.hero-stat-divider {
-		width: 1px;
-		height: 28px;
-		background: var(--border);
+		color: var(--accent);
+		padding: 0.55rem 0.75rem;
 	}
 
-	.btn-primary {
-		background: var(--violet);
-		color: white;
-		font-weight: 700;
-		font-size: 0.95rem;
-		padding: 0.85rem 1.85rem;
-		border-radius: 999px;
-		text-decoration: none;
-		transition: opacity 0.2s, transform 0.2s;
-		white-space: nowrap;
-		display: inline-block;
-		border: none;
-		cursor: pointer;
-	}
-	.btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
-	.btn-ghost {
-		background: none;
-		border: 1.5px solid var(--border);
-		color: var(--text-secondary);
-		font-size: 0.9rem;
-		font-weight: 500;
-		padding: 0.85rem 1.5rem;
-		border-radius: 999px;
-		text-decoration: none;
-		transition: all 0.2s;
-		white-space: nowrap;
-	}
-	.btn-ghost:hover { border-color: var(--violet); color: var(--violet); }
-
-	/* ===== FEATURED SKILLS ===== */
-	.featured {
-		padding: 4.5rem 1.5rem 3rem;
-		border-top: 1px solid var(--border);
-	}
-	.section-header {
-		display: flex;
-		align-items: flex-end;
-		justify-content: space-between;
-		gap: 1.5rem;
-		margin-bottom: 2rem;
-		flex-wrap: wrap;
-	}
-	.section-header-left { min-width: 0; }
-	.section-header-right {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		flex-shrink: 0;
-	}
-	.section-header h2 {
-		font-family: var(--font-display);
-		font-weight: 700;
-		font-size: clamp(1.5rem, 4vw, 2rem);
-		letter-spacing: -0.025em;
-		line-height: 1.1;
-		color: var(--text-primary);
-		margin: 0.2rem 0 0;
-	}
-	.btn-browse {
-		font-size: 0.85rem;
-		font-weight: 600;
-		color: var(--ocean);
-		text-decoration: none;
-		white-space: nowrap;
-		transition: opacity 0.2s;
-	}
-	.btn-browse:hover { opacity: 0.75; }
-	.btn-publish-sm {
-		font-size: 0.8rem;
-		font-weight: 700;
-		color: white;
-		background: var(--violet);
-		padding: 0.45rem 1rem;
-		border-radius: 999px;
-		text-decoration: none;
-		white-space: nowrap;
-		transition: opacity 0.2s;
-	}
-	.btn-publish-sm:hover { opacity: 0.85; }
-
-	/* Featured CTA bar */
-	.featured-cta {
-		margin-top: 2.5rem;
-		padding: 1.5rem 2rem;
-		background: linear-gradient(135deg, color-mix(in srgb, var(--violet) 8%, transparent), color-mix(in srgb, var(--ocean) 6%, transparent));
-		border: 1px solid color-mix(in srgb, var(--violet) 25%, transparent);
-		border-radius: 14px;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 1.5rem;
-		flex-wrap: wrap;
-	}
-	.featured-cta p {
-		margin: 0;
-		font-size: 0.95rem;
-		color: var(--text-secondary);
-		line-height: 1.5;
-	}
-	.featured-cta strong { color: var(--text-primary); }
-
-	.skills-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 1.25rem;
-	}
-	.skill-card {
+	.hero-card {
 		position: relative;
-		background: var(--bg-card);
-		border: 1px solid var(--border);
-		border-radius: 14px;
-		padding: 1.4rem;
-		display: flex;
-		flex-direction: column;
-		gap: 0.75rem;
-		text-decoration: none;
-		transition: transform 0.22s cubic-bezier(0.4,0,0.2,1), box-shadow 0.22s ease, border-color 0.22s ease;
-		overflow: hidden;
+		padding: 1rem;
+		border: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
+		border-radius: 30px;
+		background:
+			linear-gradient(135deg, color-mix(in srgb, var(--bg-card) 90%, transparent), color-mix(in srgb, var(--bg-secondary) 80%, transparent)),
+			var(--bg-card);
+		box-shadow: 0 30px 100px color-mix(in srgb, var(--accent) 16%, transparent);
+		transform: rotate(1.5deg);
 	}
-	.skill-card:hover {
-		transform: translateY(-3px);
-		box-shadow: 0 12px 40px rgba(0,0,0,0.12);
-		border-color: color-mix(in srgb, var(--violet) 35%, transparent);
-	}
-	.skill-card-glow {
+
+	.hero-card::before {
+		content: "";
 		position: absolute;
-		inset: 0;
-		pointer-events: none;
-		opacity: 0;
-		transition: opacity 0.3s ease;
-		border-radius: inherit;
+		inset: -14px;
+		z-index: -1;
+		border-radius: 36px;
+		background: linear-gradient(135deg, color-mix(in srgb, var(--ocean) 28%, transparent), color-mix(in srgb, var(--amber) 18%, transparent));
+		transform: rotate(-4deg);
 	}
-	.skill-card:hover .skill-card-glow { opacity: 1; }
-	.skill-card-top {
+
+	.card-topline {
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
-		gap: 0.5rem;
-	}
-	.category-chip {
-		font-family: var(--font-mono);
-		font-size: 0.62rem;
-		font-weight: 700;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		padding: 3px 9px;
-		border-radius: 999px;
-		border: 1px solid;
-	}
-	.installs {
-		font-family: var(--font-mono);
-		font-size: 0.68rem;
+		gap: 0.65rem;
+		padding: 0.2rem 0.35rem 0.9rem;
 		color: var(--text-muted);
-	}
-	.skill-title {
-		font-family: var(--font-display);
-		font-weight: 700;
-		font-size: 1.05rem;
-		line-height: 1.2;
-		color: var(--text-primary);
-		margin: 0;
-	}
-	.skill-desc {
-		font-size: 0.85rem;
-		color: var(--text-secondary);
-		line-height: 1.5;
-		margin: 0;
-		flex: 1;
-		display: -webkit-box;
-		-webkit-line-clamp: 2;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
-	}
-	.skill-card-footer {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding-top: 0.75rem;
-		border-top: 1px solid var(--border);
-		margin-top: auto;
-	}
-	.author {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
-	.author-avatar {
-		width: 24px;
-		height: 24px;
-		border-radius: 50%;
-		background: linear-gradient(135deg, var(--violet), var(--ocean));
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 0.65rem;
-		font-weight: 700;
-		color: white;
-		overflow: hidden;
-		flex-shrink: 0;
-	}
-	.author-avatar img { width: 100%; height: 100%; object-fit: cover; }
-	.author-name {
+		font-family: var(--font-mono);
 		font-size: 0.78rem;
-		color: var(--text-muted);
-		font-weight: 500;
-	}
-	.skill-version {
-		font-family: var(--font-mono);
-		font-size: 0.68rem;
-		color: var(--text-muted);
 	}
 
-	/* ===== HOW IT WORKS ===== */
-	.how {
-		padding: 5rem 1.5rem;
-		background: var(--bg-secondary);
-		border-top: 1px solid var(--border);
-		border-bottom: 1px solid var(--border);
-	}
-	.how-inner {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 4rem;
-		align-items: center;
-	}
-	.how-text h2 {
-		font-family: var(--font-display);
-		font-weight: 800;
-		font-size: clamp(2rem, 4vw, 2.75rem);
-		letter-spacing: -0.03em;
-		line-height: 1.05;
-		color: var(--text-primary);
-		margin-bottom: 1rem;
-	}
-	.how-sub {
-		font-size: 0.95rem;
-		color: var(--text-secondary);
-		line-height: 1.65;
-		margin-bottom: 2rem;
-		max-width: 380px;
-	}
-	.how-steps {
-		display: flex;
-		flex-direction: column;
-		gap: 0;
-	}
-	.step {
-		display: flex;
-		gap: 1.25rem;
-		align-items: flex-start;
-	}
-	.step-line {
-		height: 24px;
-		width: 2px;
-		background: var(--border);
-		margin-left: 18px;
-	}
-	.step-num {
-		width: 36px;
-		height: 36px;
-		border-radius: 50%;
-		background: var(--bg-primary);
-		border: 2px solid var(--border);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-family: var(--font-mono);
-		font-size: 0.65rem;
-		font-weight: 700;
-		color: var(--violet);
-		flex-shrink: 0;
-	}
-	.step-content { padding-top: 0.4rem; padding-bottom: 0.5rem; }
-	.step-content h3 {
-		font-family: var(--font-display);
-		font-weight: 700;
-		font-size: 0.95rem;
-		color: var(--text-primary);
-		margin: 0 0 0.2rem;
-	}
-	.step-content p {
-		font-size: 0.85rem;
-		color: var(--text-secondary);
-		line-height: 1.5;
-		margin: 0;
-	}
-
-	/* ===== INSTALL DEMO ===== */
-	.install-demo {
-		padding: 5rem 1.5rem;
-	}
-	.demo-grid {
-		display: grid;
-		grid-template-columns: 1fr 1.1fr;
-		gap: 4rem;
-		align-items: center;
-	}
-	.demo-copy h2 {
-		font-family: var(--font-display);
-		font-weight: 800;
-		font-size: clamp(1.6rem, 3.5vw, 2.25rem);
-		letter-spacing: -0.03em;
-		line-height: 1.1;
-		color: var(--text-primary);
-		margin-bottom: 0.85rem;
-	}
-	.demo-sub {
-		font-size: 0.9rem;
-		color: var(--text-secondary);
-		line-height: 1.65;
-		margin-bottom: 1.5rem;
-		max-width: 360px;
-	}
-	.copy-install-btn {
+	.window-dots {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.5rem;
-		padding: 0.7rem 1.5rem;
-		background: var(--bg-secondary);
-		border: 1.5px solid var(--border);
-		border-radius: 8px;
-		font-family: var(--font-mono);
-		font-size: 0.8rem;
-		font-weight: 600;
+		gap: 0.32rem;
+	}
+
+	.dot {
+		width: 0.7rem;
+		height: 0.7rem;
+		border-radius: 999px;
+	}
+
+	.dot-amber {
+		background: var(--amber);
+	}
+
+	.dot-rose {
+		background: var(--rose);
+	}
+
+	.dot-emerald {
+		background: var(--emerald);
+	}
+
+	pre {
+		overflow: auto;
+		margin: 0;
+		padding: 1.25rem;
+		border-radius: 22px;
+		background: color-mix(in srgb, var(--bg-primary) 88%, black);
 		color: var(--text-secondary);
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-	.copy-install-btn:hover { border-color: var(--violet); color: var(--violet); }
-
-	.code-window {
-		border: 1px solid var(--border);
-		border-radius: 14px;
-		overflow: hidden;
-		box-shadow: 0 8px 40px rgba(0,0,0,0.08);
-	}
-	.code-bar {
-		background: var(--bg-secondary);
-		border-bottom: 1px solid var(--border);
-		padding: 10px 14px;
-		display: flex;
-		align-items: center;
-		gap: 6px;
-	}
-	.dot { width: 10px; height: 10px; border-radius: 50%; }
-	.dot.r { background: #ff5f57; }
-	.dot.y { background: #febc2e; }
-	.dot.g { background: #28c840; }
-	.code-label {
-		margin-left: 8px;
 		font-family: var(--font-mono);
-		font-size: 0.72rem;
-		color: var(--text-muted);
+		font-size: clamp(0.75rem, 1.45vw, 0.9rem);
+		line-height: 1.7;
 	}
-	.code-body {
-		padding: 1.25rem 1.5rem;
-		background: #0d0d14;
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
-	}
-	.code-line {
-		font-family: var(--font-mono);
-		font-size: 0.82rem;
-		line-height: 1.6;
-	}
-	.prompt { color: #6366f1; margin-right: 0.5rem; }
-	.cmd { color: #a5b4fc; }
-	.arg { color: #34d399; }
-	.output { color: #4ade80; padding-left: 1.25rem; }
-	.output.dim { color: #4ade8088; }
-	.code-line.spacer { height: 6px; }
-	.alt-install { padding-left: 0; opacity: 0.7; }
-	.prompt-alt { color: #9ca3af; margin-right: 0.5rem; font-style: italic; }
-	.cmd-alt { color: #6ee7b7; }
-	.arg-alt { color: #fde68a; }
-	.cursor { animation: blink 1s step-end infinite; }
-	@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-	.blink { color: #6366f1; }
 
-	/* ===== ME.MD SECTION ===== */
-	.memd-section {
-		padding: 4rem 1.5rem;
-		background: var(--bg-secondary);
+	.positioning,
+	.workflow,
+	.featured,
+	.final-cta,
+	.why {
+		padding: 5rem 0;
 		border-top: 1px solid var(--border);
-		border-bottom: 1px solid var(--border);
 	}
-	.memd-inner {
+
+	.section-heading {
+		display: grid;
+		grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
+		gap: 2rem;
+		align-items: end;
+		margin-bottom: 1.5rem;
+	}
+
+	.section-heading.centered {
+		display: block;
 		max-width: 680px;
-		margin: 0 auto;
+		margin: 0 auto 2rem;
 		text-align: center;
 	}
-	.memd-badge {
-		display: inline-block;
-		background: var(--bg-card);
+
+	.product-grid,
+	.steps,
+	.skill-grid {
+		display: grid;
+		gap: 1rem;
+	}
+
+	.product-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.product-card,
+	.step,
+	.skill-card,
+	.prompt-card {
 		border: 1px solid var(--border);
-		border-radius: 999px;
-		padding: 0.3rem 0.9rem;
-		font-family: var(--font-mono);
-		font-size: 0.68rem;
-		font-weight: 600;
-		letter-spacing: 0.08em;
-		color: var(--text-muted);
-		margin-bottom: 1.25rem;
+		background: color-mix(in srgb, var(--bg-card) 86%, transparent);
+		box-shadow: var(--card-shadow);
+		backdrop-filter: blur(18px);
 	}
-	.memd-inner h2 {
-		font-family: var(--font-display);
-		font-weight: 800;
-		font-size: clamp(1.5rem, 3.5vw, 2rem);
-		letter-spacing: -0.025em;
+
+	.product-card {
+		position: relative;
+		min-height: 310px;
+		padding: clamp(1.3rem, 3vw, 2rem);
+		border-radius: 32px;
+		overflow: hidden;
 		color: var(--text-primary);
-		margin-bottom: 0.85rem;
 	}
-	.memd-sub {
-		font-size: 0.95rem;
+
+	.product-card::after {
+		content: "";
+		position: absolute;
+		right: -5rem;
+		bottom: -5rem;
+		width: 15rem;
+		height: 15rem;
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--accent) 12%, transparent);
+	}
+
+	.skills-card::after {
+		background: color-mix(in srgb, var(--amber) 18%, transparent);
+	}
+
+	.product-card h3 {
+		margin: 1.4rem 0 0.85rem;
+		font-size: clamp(1.8rem, 3vw, 2.5rem);
+	}
+
+	.product-card p,
+	.step p,
+	.skill-card p,
+	.why-copy p {
 		color: var(--text-secondary);
 		line-height: 1.65;
-		margin-bottom: 1.75rem;
 	}
-	.memd-sub strong { color: var(--text-primary); }
-	.memd-actions {
-		display: flex;
+
+	.card-link {
+		position: absolute;
+		left: clamp(1.3rem, 3vw, 2rem);
+		bottom: clamp(1.3rem, 3vw, 2rem);
+		color: var(--accent);
+		font-weight: 800;
+	}
+
+	.why {
+		display: grid;
+		grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+		gap: 3rem;
+		align-items: start;
+	}
+
+	.why-copy {
+		display: grid;
+		gap: 1rem;
+		font-size: 1.08rem;
+	}
+
+	.steps {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.step {
+		padding: 1.25rem;
+		border-radius: 24px;
+	}
+
+	.step span {
+		display: inline-flex;
+		width: 2.3rem;
+		height: 2.3rem;
 		align-items: center;
 		justify-content: center;
-		gap: 1rem;
-		flex-wrap: wrap;
-	}
-	.btn-memd-primary {
-		font-size: 0.9rem;
-		font-weight: 600;
-		color: var(--text-primary);
-		text-decoration: none;
-		transition: color 0.2s;
-	}
-	.btn-memd-primary:hover { color: var(--ocean); }
-	.btn-memd-ghost {
-		font-size: 0.875rem;
-		color: var(--text-muted);
-		text-decoration: none;
-		transition: color 0.2s;
-	}
-	.btn-memd-ghost:hover { color: var(--text-secondary); }
-
-	/* ===== FOOTER ===== */
-	footer {
-		border-top: 1px solid var(--border);
-		padding: 2.5rem 1.5rem 1.5rem;
-	}
-	.footer-inner {
-		max-width: 1040px;
-		margin: 0 auto 2rem;
-		display: flex;
-		justify-content: space-between;
-		gap: 2rem;
-		flex-wrap: wrap;
-	}
-	.footer-note {
-		font-size: 0.78rem;
-		color: var(--text-muted);
-		font-weight: 300;
-		margin-bottom: 0.75rem;
-	}
-	.footer-machine-links {
-		display: flex;
-		gap: 0.5rem;
-		flex-wrap: wrap;
-	}
-	.footer-machine-link {
+		margin-bottom: 1.4rem;
+		border-radius: 999px;
+		background: var(--text-primary);
+		color: var(--bg-primary);
 		font-family: var(--font-mono);
-		font-size: 0.68rem;
-		font-weight: 600;
-		color: var(--ocean);
-		text-decoration: none;
-		background: color-mix(in srgb, var(--ocean) 8%, transparent);
-		border: 1px solid color-mix(in srgb, var(--ocean) 25%, transparent);
-		padding: 2px 8px;
-		border-radius: 4px;
-		transition: all 0.2s;
+		font-weight: 800;
 	}
-	.footer-machine-link:hover { background: color-mix(in srgb, var(--ocean) 15%, transparent); }
-	.footer-links { display: flex; gap: 3rem; }
-	.footer-col { display: flex; flex-direction: column; gap: 0.6rem; }
-	.footer-col h4 {
-		font-family: var(--font-display);
-		font-size: 0.7rem;
-		font-weight: 700;
-		text-transform: uppercase;
-		letter-spacing: 0.1em;
-		color: var(--text-muted);
-		margin-bottom: 0.25rem;
-	}
-	.footer-col a {
-		font-size: 0.875rem;
-		color: var(--text-secondary);
-		text-decoration: none;
-		transition: color 0.2s;
-		font-weight: 300;
-	}
-	.footer-col a:hover { color: var(--text-primary); }
-	.footer-bottom {
-		max-width: 1040px;
-		margin: 0 auto;
-		padding-top: 1.5rem;
-		border-top: 1px solid var(--border);
-		text-align: center;
-		font-size: 0.75rem;
-		color: var(--text-muted);
-		font-weight: 300;
-	}
-	.footer-bottom a { color: var(--text-muted); text-decoration: none; }
-	.footer-bottom a:hover { color: var(--text-primary); }
 
-	/* ===== RESPONSIVE ===== */
-	@media (max-width: 900px) {
-		.skills-grid { grid-template-columns: repeat(2, 1fr); }
-		.how-inner { grid-template-columns: 1fr; gap: 2.5rem; }
-		.demo-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+	.step h3,
+	.skill-card h3 {
+		margin-bottom: 0.55rem;
 	}
-	@media (max-width: 640px) {
-		.hero { padding: 6rem 1rem 3.5rem; }
-		h1 { font-size: 3rem; }
-		.skills-grid { grid-template-columns: 1fr; }
-		.hero-actions { flex-direction: column; align-items: center; }
-		.footer-inner { flex-direction: column; }
-		.footer-links { gap: 2rem; flex-wrap: wrap; }
+
+	.prompt-card {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-top: 1rem;
+		padding: 1rem;
+		border-radius: 22px;
+	}
+
+	.prompt-card p {
+		margin-top: 0.35rem;
+		color: var(--text-primary);
+		line-height: 1.45;
+	}
+
+	.skill-grid {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+
+	.skill-card {
+		display: grid;
+		gap: 1rem;
+		padding: 1rem;
+		border-radius: 24px;
+		color: var(--text-primary);
+	}
+
+	.skill-card p {
+		display: -webkit-box;
+		min-height: 4.9rem;
+		overflow: hidden;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 3;
+		line-clamp: 3;
+	}
+
+	.skill-card span:last-child {
+		display: inline-block;
+		margin-top: 0.8rem;
+		color: var(--text-muted);
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+	}
+
+	.skill-emoji {
+		font-size: 2rem;
+	}
+
+	.final-cta {
+		max-width: 760px;
+		margin: 0 auto;
+		text-align: center;
+	}
+
+	.final-cta .hero-actions {
+		justify-content: center;
+	}
+
+	footer {
+		max-width: 1160px;
+		margin: 0 auto;
+		padding: 2rem 1.25rem 2.5rem;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		border-top: 1px solid var(--border);
+	}
+
+	.footer-brand {
+		font-size: 1.2rem;
+	}
+
+	@media (max-width: 900px) {
+		.site-nav {
+			grid-template-columns: 1fr auto;
+		}
+
+		.nav-links {
+			display: none;
+		}
+
+		.hero,
+		.section-heading,
+		.why {
+			grid-template-columns: 1fr;
+		}
+
+		.hero {
+			padding-top: 3rem;
+		}
+
+		.hero-card {
+			transform: none;
+		}
+
+		.product-grid,
+		.steps,
+		.skill-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.product-card {
+			min-height: 250px;
+		}
+	}
+
+	@media (max-width: 620px) {
+		.site-nav {
+			padding: 0.85rem 1rem;
+		}
+
+		.nav-actions :global(.theme-toggle) {
+			display: none;
+		}
+
+		main {
+			padding: 2rem 1rem 0;
+		}
+
+		h1 {
+			font-size: clamp(2.7rem, 13vw, 3.55rem);
+			line-height: 0.96;
+			letter-spacing: -0.06em;
+		}
+
+		.hero-sub {
+			font-size: 1rem;
+		}
+
+		.hero-copy,
+		.hero-eyebrow {
+			width: 100%;
+			max-width: calc(100vw - 2rem);
+		}
+
+		.hero-card {
+			width: calc(100vw - 2rem);
+			max-width: 100%;
+		}
+
+		.quick-proof,
+		.prompt-card,
+		footer {
+			align-items: stretch;
+			flex-direction: column;
+		}
+
+		.quick-proof {
+			display: flex;
+		}
+
+		.prompt-card button,
+		.quick-proof button {
+			width: 100%;
+		}
+
+		.positioning,
+		.workflow,
+		.featured,
+		.final-cta,
+		.why {
+			padding: 3.5rem 0;
+		}
+
+		footer {
+			align-items: flex-start;
+		}
+
+		.footer-links {
+			flex-wrap: wrap;
+		}
 	}
 </style>

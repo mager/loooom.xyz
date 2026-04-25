@@ -115,40 +115,58 @@ const prompt = generateInjectionPrompt('@mager', 'https://loooom.xyz/me/mager/ra
 	/>
 </svelte:head>
 
-<!-- Ambient -->
-<div class="ambient">
-	<div class="orb orb-1"></div>
-	<div class="orb orb-2"></div>
-</div>
-
 <!-- Nav -->
 <Nav />
 
 <!-- Page header -->
 <header class="page-header">
 	<div class="header-inner">
-		<div class="breadcrumb">
-			<a href="/me">ME.md</a>
-			<span class="sep">›</span>
-			<span>Spec</span>
+		<div class="header-copy">
+			<div class="breadcrumb">
+				<a href="/me">ME.md</a>
+				<span class="sep">/</span>
+				<span>Spec</span>
+			</div>
+			<div class="eyebrow">Portable Human Context Protocol</div>
+			<h1>
+				<span class="me-title">ME.md</span> Specification
+				<span class="version-badge">v{SPEC_VERSION}</span>
+			</h1>
+			<p class="header-sub">
+				The official standard for a single markdown file that tells any AI who you are, what matters, and how to work with you.
+			</p>
+			<div class="header-actions">
+				<a href="/me" class="btn-primary">Create your ME.md</a>
+				<a href="/me-md-schema.json" target="_blank" class="btn-ghost" download>Download schema</a>
+				<button class="btn-ghost" onclick={copySchemaUrl}>
+					{schemaCopied ? 'Copied' : 'Copy schema URL'}
+				</button>
+			</div>
+			<div class="schema-url-row">
+				<span class="label">JSON Schema</span>
+				<code class="schema-url">{SCHEMA_URL}</code>
+			</div>
 		</div>
-		<h1>
-			<span class="me-title">ME.md</span> Specification
-			<span class="version-badge">v{SPEC_VERSION}</span>
-		</h1>
-		<p class="header-sub">
-			The official standard for Portable Human Context. A single markdown file that tells any AI who you are.
-		</p>
-		<div class="header-actions">
-			<a href="/me" class="btn-primary">Create your ME.md →</a>
-			<a href="/me-md-schema.json" target="_blank" class="btn-ghost" download>Download schema ↓</a>
-			<button class="btn-ghost" onclick={copySchemaUrl}>
-				{schemaCopied ? '✓ copied' : 'Copy schema URL'}
-			</button>
-		</div>
-		<div class="schema-url-row">
-			<span class="label">JSON Schema:</span>
-			<code class="schema-url">{SCHEMA_URL}</code>
+		<div class="hero-panel" aria-label="ME.md file preview">
+			<div class="hero-panel-top">
+				<span>me.md</span>
+				<strong>valid v{SPEC_VERSION}</strong>
+			</div>
+			<pre><code>---
+version: "1.0"
+handle: "@yourhandle"
+timezone: "America/Chicago"
+---
+
+# The Soul
+I build with taste, momentum, and care.
+
+# Working With Me
+Be direct. Keep context portable.</code></pre>
+			<div class="hero-stats">
+				<span><strong>2</strong> required fields</span>
+				<span><strong>7</strong> canonical sections</span>
+			</div>
 		</div>
 	</div>
 </header>
@@ -446,44 +464,19 @@ This is their robots.txt for human consciousness.</code></pre>
 </main>
 
 <style>
-	/* ─── Ambient ─────────────────────────────────────────────────────────── */
-	.ambient {
-		position: fixed;
-		inset: 0;
-		pointer-events: none;
-		z-index: 0;
-		overflow: hidden;
-	}
-	.orb {
-		position: absolute;
-		border-radius: 50%;
-		filter: blur(80px);
-		opacity: 0.12;
-	}
-	.orb-1 {
-		width: 600px; height: 600px;
-		background: radial-gradient(circle, var(--violet) 0%, transparent 70%);
-		top: -100px; left: -100px;
-	}
-	.orb-2 {
-		width: 400px; height: 400px;
-		background: radial-gradient(circle, var(--ocean) 0%, transparent 70%);
-		bottom: 20%; right: -100px;
-	}
-
 	/* ─── Nav ─────────────────────────────────────────────────────────────── */
 	nav {
 		position: sticky;
 		top: 0;
 		z-index: 100;
-		background: var(--nav-bg);
-		backdrop-filter: blur(12px);
-		border-bottom: 1px solid var(--border);
+		background: color-mix(in srgb, var(--bg-primary) 88%, transparent);
+		backdrop-filter: blur(18px);
+		border-bottom: 1px solid color-mix(in srgb, var(--border) 86%, var(--accent) 14%);
 	}
 	.nav-inner {
-		max-width: 1200px;
+		max-width: 1280px;
 		margin: 0 auto;
-		padding: 14px 32px;
+		padding: 16px 32px;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -508,50 +501,88 @@ This is their robots.txt for human consciousness.</code></pre>
 	.nav-link {
 		color: var(--text-secondary);
 		text-decoration: none;
-		font-size: 0.9rem;
+		font-size: 0.86rem;
+		font-weight: 600;
 		transition: color 0.2s;
 	}
 	.nav-link:hover { color: var(--text-primary); }
 	.btn-nav {
-		background: var(--bg-card);
-		border: 1px solid var(--border);
+		background: var(--text-primary);
+		border: 1px solid var(--text-primary);
 		color: var(--text-primary);
-		padding: 6px 16px;
-		border-radius: 999px;
+		color: var(--bg-primary);
+		padding: 8px 16px;
+		border-radius: 8px;
 		font-size: 0.85rem;
+		font-weight: 700;
 		cursor: pointer;
 		text-decoration: none;
 		transition: all 0.2s;
 	}
-	.btn-nav:hover { border-color: var(--accent); color: var(--accent); }
+	.btn-nav:hover {
+		background: var(--accent);
+		border-color: var(--accent);
+		color: var(--bg-primary);
+	}
 
 	/* ─── Page Header ─────────────────────────────────────────────────────── */
 	.page-header {
 		position: relative;
 		z-index: 1;
-		padding: 60px 32px 50px;
-		border-bottom: 1px solid var(--border);
-		background: var(--bg-secondary);
+		padding: 82px 32px 64px;
+		border-bottom: 1px solid color-mix(in srgb, var(--border) 82%, var(--accent) 18%);
+		background:
+			linear-gradient(135deg, color-mix(in srgb, var(--bg-primary) 82%, var(--accent) 18%) 0%, var(--bg-primary) 44%),
+			linear-gradient(90deg, transparent 0 31px, color-mix(in srgb, var(--border) 75%, transparent) 32px),
+			linear-gradient(transparent 0 31px, color-mix(in srgb, var(--border) 75%, transparent) 32px);
+		background-size: auto, 32px 32px, 32px 32px;
 	}
-	.header-inner { max-width: 900px; margin: 0 auto; }
+	.header-inner {
+		max-width: 1280px;
+		margin: 0 auto;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(340px, 440px);
+		gap: 56px;
+		align-items: center;
+	}
+	.header-copy {
+		max-width: 780px;
+	}
 	.breadcrumb {
 		font-size: 0.85rem;
 		color: var(--text-muted);
-		margin-bottom: 16px;
+		margin-bottom: 24px;
 		display: flex;
 		align-items: center;
 		gap: 8px;
+		font-weight: 700;
 	}
 	.breadcrumb a { color: var(--accent); text-decoration: none; }
 	.breadcrumb a:hover { text-decoration: underline; }
 	.sep { color: var(--text-muted); }
+	.eyebrow {
+		width: fit-content;
+		margin-bottom: 14px;
+		padding: 6px 10px;
+		border: 1px solid color-mix(in srgb, var(--accent-bright) 50%, var(--border));
+		border-radius: 8px;
+		background: color-mix(in srgb, var(--accent-glow) 70%, var(--bg-card));
+		color: var(--accent-dim);
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0;
+		text-transform: uppercase;
+	}
 	.page-header h1 {
-		font-size: 2.8rem;
-		margin: 0 0 16px;
+		font-size: clamp(3rem, 8vw, 6.7rem);
+		margin: 0 0 20px;
 		display: flex;
-		align-items: center;
-		gap: 16px;
+		align-items: baseline;
+		gap: 18px;
 		flex-wrap: wrap;
+		line-height: 0.92;
+		letter-spacing: 0;
 	}
 	.me-title {
 		background: var(--gradient-hero);
@@ -561,54 +592,65 @@ This is their robots.txt for human consciousness.</code></pre>
 	}
 	.version-badge {
 		font-family: var(--font-mono);
-		font-size: 0.9rem;
-		background: var(--accent-glow);
-		border: 1px solid var(--accent-bright);
+		font-size: 0.92rem;
+		background: var(--text-primary);
+		border: 1px solid var(--text-primary);
 		color: var(--accent);
-		padding: 4px 12px;
-		border-radius: 999px;
-		font-weight: 600;
+		padding: 7px 12px;
+		border-radius: 8px;
+		font-weight: 700;
+		line-height: 1;
 	}
 	.header-sub {
 		color: var(--text-secondary);
-		font-size: 1.1rem;
-		line-height: 1.6;
-		margin: 0 0 28px;
-		max-width: 600px;
+		font-size: 1.3rem;
+		font-weight: 500;
+		line-height: 1.45;
+		margin: 0 0 32px;
+		max-width: 700px;
 	}
 	.header-actions {
 		display: flex;
 		gap: 12px;
 		flex-wrap: wrap;
-		margin-bottom: 20px;
+		margin-bottom: 22px;
 	}
 	.btn-primary {
 		background: var(--gradient-cta);
 		color: white;
-		padding: 10px 24px;
-		border-radius: 999px;
-		font-weight: 600;
+		padding: 13px 22px;
+		border-radius: 8px;
+		font-weight: 800;
 		font-size: 0.95rem;
 		text-decoration: none;
 		display: inline-block;
-		transition: opacity 0.2s;
+		transition: transform 0.2s, box-shadow 0.2s;
 		border: none;
 		cursor: pointer;
+		box-shadow: 0 14px 34px color-mix(in srgb, var(--accent) 24%, transparent);
 	}
-	.btn-primary:hover { opacity: 0.9; }
+	.btn-primary:hover {
+		transform: translateY(-1px);
+		box-shadow: 0 18px 44px color-mix(in srgb, var(--accent) 30%, transparent);
+	}
 	.btn-ghost {
-		background: none;
-		border: 1px solid var(--border);
-		color: var(--text-secondary);
-		padding: 10px 20px;
-		border-radius: 999px;
+		background: color-mix(in srgb, var(--bg-card) 82%, transparent);
+		border: 1px solid color-mix(in srgb, var(--border) 72%, var(--text-primary) 28%);
+		color: var(--text-primary);
+		padding: 12px 18px;
+		border-radius: 8px;
 		font-size: 0.9rem;
+		font-weight: 700;
 		cursor: pointer;
 		transition: all 0.2s;
 		text-decoration: none;
 		display: inline-block;
 	}
-	.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+	.btn-ghost:hover {
+		border-color: var(--accent);
+		color: var(--accent-dim);
+		background: var(--accent-glow);
+	}
 	.schema-url-row {
 		display: flex;
 		align-items: center;
@@ -616,14 +658,74 @@ This is their robots.txt for human consciousness.</code></pre>
 		color: var(--text-muted);
 		font-size: 0.85rem;
 	}
+	.label {
+		font-size: 0.72rem;
+		font-weight: 800;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
 	.schema-url {
 		font-family: var(--font-mono);
 		font-size: 0.85rem;
 		color: var(--accent);
-		background: var(--bg-primary);
-		border: 1px solid var(--border);
-		padding: 4px 12px;
-		border-radius: 6px;
+		background: var(--bg-card);
+		border: 1px solid color-mix(in srgb, var(--border) 70%, var(--accent) 30%);
+		padding: 7px 10px;
+		border-radius: 8px;
+		overflow-wrap: anywhere;
+	}
+	.hero-panel {
+		border: 1px solid color-mix(in srgb, var(--border) 65%, var(--accent-bright) 35%);
+		border-radius: 8px;
+		background: color-mix(in srgb, var(--bg-card) 90%, var(--bg-primary));
+		box-shadow: 0 30px 70px color-mix(in srgb, var(--accent) 16%, transparent);
+		overflow: hidden;
+	}
+	.hero-panel-top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 13px 16px;
+		border-bottom: 1px solid var(--border);
+		background:
+			linear-gradient(90deg, color-mix(in srgb, var(--rose) 16%, transparent), transparent 34%),
+			var(--bg-secondary);
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+		color: var(--text-muted);
+	}
+	.hero-panel-top strong {
+		color: var(--emerald);
+		font-weight: 800;
+	}
+	.hero-panel pre {
+		margin: 0;
+		padding: 24px;
+		color: var(--text-secondary);
+		font-family: var(--font-mono);
+		font-size: 0.84rem;
+		line-height: 1.75;
+		overflow-x: auto;
+	}
+	.hero-stats {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		border-top: 1px solid var(--border);
+	}
+	.hero-stats span {
+		padding: 16px;
+		color: var(--text-secondary);
+		font-size: 0.85rem;
+		font-weight: 700;
+	}
+	.hero-stats span + span {
+		border-left: 1px solid var(--border);
+	}
+	.hero-stats strong {
+		display: block;
+		color: var(--text-primary);
+		font-size: 1.8rem;
+		line-height: 1;
 	}
 
 	/* ─── Spec Body ───────────────────────────────────────────────────────── */
@@ -632,31 +734,38 @@ This is their robots.txt for human consciousness.</code></pre>
 		z-index: 1;
 	}
 	.spec-inner {
-		max-width: 1200px;
+		max-width: 1280px;
 		margin: 0 auto;
 		display: grid;
-		grid-template-columns: 220px 1fr;
-		gap: 0;
+		grid-template-columns: 260px minmax(0, 1fr);
+		gap: 48px;
 		min-height: 100vh;
+		padding: 0 32px;
 	}
 
 	/* ─── TOC Sidebar ─────────────────────────────────────────────────────── */
 	.toc {
-		border-right: 1px solid var(--border);
-		padding: 40px 24px;
+		padding: 46px 0;
 		position: sticky;
-		top: 60px;
+		top: 62px;
 		height: fit-content;
 		max-height: calc(100vh - 80px);
 		overflow-y: auto;
 	}
+	.toc-nav {
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		background: color-mix(in srgb, var(--bg-card) 82%, transparent);
+		padding: 16px;
+		box-shadow: var(--card-shadow);
+	}
 	.toc-label {
 		font-size: 0.7rem;
-		font-weight: 700;
+		font-weight: 900;
 		letter-spacing: 0.1em;
 		text-transform: uppercase;
 		color: var(--text-muted);
-		margin: 0 0 12px;
+		margin: 0 0 14px;
 	}
 	.toc-nav ul {
 		list-style: none;
@@ -667,9 +776,10 @@ This is their robots.txt for human consciousness.</code></pre>
 	.toc-nav a {
 		color: var(--text-secondary);
 		text-decoration: none;
-		font-size: 0.85rem;
+		font-size: 0.88rem;
+		font-weight: 700;
 		display: block;
-		padding: 4px 8px;
+		padding: 8px 10px;
 		border-radius: 6px;
 		transition: all 0.15s;
 	}
@@ -680,22 +790,26 @@ This is their robots.txt for human consciousness.</code></pre>
 
 	/* ─── Content ─────────────────────────────────────────────────────────── */
 	.content {
-		padding: 40px 48px 80px;
+		padding: 44px 0 88px;
+		max-width: 860px;
 	}
 	.content section {
-		margin-bottom: 64px;
+		margin-bottom: 76px;
 		scroll-margin-top: 80px;
 	}
 	.content h2 {
-		font-size: 1.6rem;
-		margin: 0 0 16px;
-		padding-bottom: 12px;
-		border-bottom: 1px solid var(--border);
+		font-size: clamp(2rem, 4vw, 3rem);
+		margin: 0 0 20px;
+		padding-bottom: 16px;
+		border-bottom: 2px solid color-mix(in srgb, var(--border) 70%, var(--accent) 30%);
+		letter-spacing: 0;
 	}
 	.content p {
 		color: var(--text-secondary);
-		line-height: 1.75;
-		margin: 0 0 16px;
+		font-size: 1.02rem;
+		font-weight: 450;
+		line-height: 1.78;
+		margin: 0 0 18px;
 	}
 	.content a {
 		color: var(--accent);
@@ -713,14 +827,17 @@ This is their robots.txt for human consciousness.</code></pre>
 
 	/* ─── Callout ─────────────────────────────────────────────────────────── */
 	.callout {
-		background: var(--accent-glow);
-		border: 1px solid var(--accent-bright);
-		border-radius: var(--radius-md);
-		padding: 16px 20px;
+		background:
+			linear-gradient(90deg, color-mix(in srgb, var(--amber) 12%, transparent), transparent 45%),
+			color-mix(in srgb, var(--accent-glow) 72%, var(--bg-card));
+		border: 1px solid color-mix(in srgb, var(--accent-bright) 55%, var(--border));
+		border-left: 5px solid var(--accent);
+		border-radius: 8px;
+		padding: 18px 20px;
 		display: flex;
 		gap: 14px;
 		align-items: flex-start;
-		margin: 20px 0;
+		margin: 24px 0;
 	}
 	.callout-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
 	.callout div { color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6; }
@@ -728,14 +845,17 @@ This is their robots.txt for human consciousness.</code></pre>
 
 	/* ─── Code blocks ─────────────────────────────────────────────────────── */
 	.code-wrap {
-		border-radius: var(--radius-lg);
+		border-radius: 8px;
 		overflow: hidden;
-		border: 1px solid var(--border);
+		border: 1px solid color-mix(in srgb, var(--border) 68%, var(--text-primary) 32%);
+		box-shadow: var(--card-shadow);
 	}
 	.code-header {
-		background: var(--bg-secondary);
+		background:
+			linear-gradient(90deg, color-mix(in srgb, var(--indigo) 14%, transparent), transparent 45%),
+			var(--bg-secondary);
 		border-bottom: 1px solid var(--border);
-		padding: 10px 16px;
+		padding: 12px 16px;
 		display: flex;
 		align-items: center;
 		gap: 6px;
@@ -752,15 +872,16 @@ This is their robots.txt for human consciousness.</code></pre>
 		margin-left: 8px;
 		font-family: var(--font-mono);
 		font-size: 0.78rem;
-		color: var(--text-muted);
+		color: var(--text-secondary);
+		font-weight: 700;
 	}
 	.code {
 		background: var(--bg-primary);
 		margin: 0;
-		padding: 24px;
+		padding: 26px;
 		font-family: var(--font-mono);
-		font-size: 0.82rem;
-		line-height: 1.65;
+		font-size: 0.86rem;
+		line-height: 1.7;
 		color: var(--text-secondary);
 		overflow-x: auto;
 		white-space: pre;
@@ -768,18 +889,20 @@ This is their robots.txt for human consciousness.</code></pre>
 
 	/* ─── Field Table ─────────────────────────────────────────────────────── */
 	.field-table {
-		border: 1px solid var(--border);
-		border-radius: var(--radius-md);
+		border: 1px solid color-mix(in srgb, var(--border) 70%, var(--text-primary) 30%);
+		border-radius: 8px;
 		overflow: hidden;
+		background: var(--bg-card);
+		box-shadow: var(--card-shadow);
 	}
 	.field-table-header {
 		display: grid;
-		grid-template-columns: 140px 160px 80px 1fr;
+		grid-template-columns: 150px 170px 92px minmax(0, 1fr);
 		gap: 0;
-		background: var(--bg-secondary);
-		padding: 10px 16px;
+		background: color-mix(in srgb, var(--bg-secondary) 86%, var(--accent-glow));
+		padding: 13px 18px;
 		font-size: 0.75rem;
-		font-weight: 700;
+		font-weight: 900;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
 		color: var(--text-muted);
@@ -787,9 +910,9 @@ This is their robots.txt for human consciousness.</code></pre>
 	}
 	.field-row {
 		display: grid;
-		grid-template-columns: 140px 160px 80px 1fr;
+		grid-template-columns: 150px 170px 92px minmax(0, 1fr);
 		gap: 0;
-		padding: 12px 16px;
+		padding: 15px 18px;
 		border-bottom: 1px solid var(--border);
 		align-items: start;
 	}
@@ -807,16 +930,16 @@ This is their robots.txt for human consciousness.</code></pre>
 		color: var(--text-muted);
 		padding-right: 8px;
 	}
-	.field-req { font-size: 0.82rem; color: var(--text-muted); }
-	.field-req.required { color: var(--violet); font-weight: 600; }
-	.field-desc { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; }
+	.field-req { font-size: 0.82rem; color: var(--text-muted); font-weight: 700; }
+	.field-req.required { color: var(--rose); font-weight: 900; }
+	.field-desc { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.55; }
 	.field-example-row {
-		padding: 4px 16px 12px;
+		padding: 6px 18px 14px;
 		border-bottom: 1px solid var(--border);
 		display: flex;
 		gap: 12px;
 		align-items: flex-start;
-		background: var(--bg-secondary);
+		background: color-mix(in srgb, var(--bg-secondary) 84%, var(--bg-card));
 	}
 	.example-label {
 		font-size: 0.72rem;
@@ -846,17 +969,19 @@ This is their robots.txt for human consciousness.</code></pre>
 	.sections-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-		gap: 12px;
+		gap: 14px;
 	}
 	.section-card {
 		background: var(--bg-card);
-		border: 1px solid var(--border);
-		border-radius: var(--radius-md);
-		padding: 16px;
-		transition: all 0.2s;
+		border: 1px solid color-mix(in srgb, var(--border) 78%, var(--accent) 22%);
+		border-radius: 8px;
+		padding: 18px;
+		transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
 	}
 	.section-card:hover {
 		border-color: var(--accent);
+		transform: translateY(-2px);
+		box-shadow: var(--card-shadow-hover);
 	}
 	.section-top {
 		display: flex;
@@ -864,7 +989,17 @@ This is their robots.txt for human consciousness.</code></pre>
 		gap: 12px;
 		margin-bottom: 10px;
 	}
-	.section-icon { font-size: 1.5rem; flex-shrink: 0; }
+	.section-icon {
+		display: grid;
+		place-items: center;
+		width: 38px;
+		height: 38px;
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		background: var(--bg-secondary);
+		font-size: 1.25rem;
+		flex-shrink: 0;
+	}
 	.section-id {
 		display: block;
 		font-family: var(--font-mono);
@@ -883,7 +1018,7 @@ This is their robots.txt for human consciousness.</code></pre>
 		padding: 0;
 	}
 	.section-hint {
-		font-size: 0.83rem;
+		font-size: 0.88rem;
 		color: var(--text-muted);
 		line-height: 1.5;
 		margin: 0;
@@ -892,9 +1027,10 @@ This is their robots.txt for human consciousness.</code></pre>
 	/* ─── Schema Box ──────────────────────────────────────────────────────── */
 	.schema-box {
 		background: var(--bg-card);
-		border: 1px solid var(--border);
-		border-radius: var(--radius-md);
+		border: 1px solid color-mix(in srgb, var(--border) 70%, var(--accent) 30%);
+		border-radius: 8px;
 		padding: 20px;
+		box-shadow: var(--card-shadow);
 	}
 	.schema-url-display {
 		display: flex;
@@ -924,12 +1060,13 @@ This is their robots.txt for human consciousness.</code></pre>
 	.btn-copy:hover { border-color: var(--accent); color: var(--accent); }
 	.schema-actions { display: flex; gap: 10px; }
 	.btn-ghost-sm {
-		background: none;
+		background: var(--bg-secondary);
 		border: 1px solid var(--border);
 		color: var(--text-secondary);
-		padding: 6px 14px;
+		padding: 8px 14px;
 		border-radius: 8px;
 		font-size: 0.82rem;
+		font-weight: 700;
 		cursor: pointer;
 		transition: all 0.2s;
 		text-decoration: none;
@@ -939,9 +1076,10 @@ This is their robots.txt for human consciousness.</code></pre>
 
 	/* ─── Version Table ───────────────────────────────────────────────────── */
 	.version-table {
-		border: 1px solid var(--border);
-		border-radius: var(--radius-md);
+		border: 1px solid color-mix(in srgb, var(--border) 70%, var(--text-primary) 30%);
+		border-radius: 8px;
 		overflow: hidden;
+		background: var(--bg-card);
 	}
 	.version-row {
 		display: grid;
@@ -956,7 +1094,7 @@ This is their robots.txt for human consciousness.</code></pre>
 	.version-row.header {
 		background: var(--bg-secondary);
 		font-size: 0.72rem;
-		font-weight: 700;
+		font-weight: 900;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
 		color: var(--text-muted);
@@ -964,9 +1102,9 @@ This is their robots.txt for human consciousness.</code></pre>
 	.status-badge {
 		display: inline-block;
 		padding: 3px 10px;
-		border-radius: 999px;
+		border-radius: 8px;
 		font-size: 0.75rem;
-		font-weight: 600;
+		font-weight: 800;
 	}
 	.status-badge.current {
 		background: var(--accent-glow);
@@ -977,9 +1115,25 @@ This is their robots.txt for human consciousness.</code></pre>
 
 	/* ─── Responsive ──────────────────────────────────────────────────────── */
 	@media (max-width: 900px) {
-		.spec-inner { grid-template-columns: 1fr; }
+		.nav-inner {
+			padding: 14px 20px;
+		}
+		.nav-right {
+			gap: 10px;
+		}
+		.nav-link {
+			display: none;
+		}
+		.header-inner {
+			grid-template-columns: 1fr;
+			gap: 28px;
+		}
+		.spec-inner {
+			grid-template-columns: 1fr;
+			padding: 0 20px;
+		}
 		.toc { display: none; }
-		.content { padding: 32px 20px 60px; }
+		.content { padding: 34px 0 64px; }
 		.field-table-header, .field-row {
 			grid-template-columns: 1fr 1fr;
 		}
@@ -989,7 +1143,31 @@ This is their robots.txt for human consciousness.</code></pre>
 		.field-row :nth-child(4) {
 			display: none;
 		}
-		.page-header { padding: 40px 20px 32px; }
-		.page-header h1 { font-size: 2rem; }
+		.page-header { padding: 46px 20px 38px; }
+		.schema-url-row {
+			align-items: flex-start;
+			flex-direction: column;
+		}
+		.hero-panel pre {
+			font-size: 0.78rem;
+			padding: 18px;
+		}
+		.hero-stats {
+			grid-template-columns: 1fr;
+		}
+		.hero-stats span + span {
+			border-left: 0;
+			border-top: 1px solid var(--border);
+		}
+		.schema-url-display,
+		.schema-actions,
+		.field-example-row {
+			align-items: stretch;
+			flex-direction: column;
+		}
+		.version-row {
+			grid-template-columns: 1fr;
+			gap: 8px;
+		}
 	}
 </style>

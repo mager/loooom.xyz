@@ -4,7 +4,10 @@
 	import YarnLogo from '$lib/components/YarnLogo.svelte';
 	import { validateSkill, formatValidation, type ValidationResult } from '$lib/skill-validator';
 
-	let { data, form } = $props();
+	let { data = { user: null }, form } = $props() as {
+		data: { user: { username: string; displayName: string } | null };
+		form: { error?: string; success?: boolean; username?: string | null; skillName?: string } | null;
+	};
 
 	const DRAFT_KEY = 'loooom-skill-draft';
 
