@@ -32,18 +32,22 @@ export const load: PageServerLoad = async ({ url }) => {
 				.orderBy(desc(skills.installs))
 		: [];
 
-	const items = rows.map((s) => {
-		const q = getSkillQuality(CURATOR, s.name);
-		return {
-			name: s.name,
-			title: s.title,
-			description: s.description,
-			category: s.category,
-			score: q?.score ?? null,
-			verdict: q?.verdict ?? null,
-			link: `/s/${CURATOR}/${s.name}`
-		};
-	});
+	// Only the rubric-scored collection (Volume 1, growing). A skill earns its
+	// place on the shelf by being graded; unscored pre-pivot skills don't show.
+	const items = rows
+		.map((s) => {
+			const q = getSkillQuality(CURATOR, s.name);
+			return {
+				name: s.name,
+				title: s.title,
+				description: s.description,
+				category: s.category,
+				score: q?.score ?? null,
+				verdict: q?.verdict ?? null,
+				link: `/s/${CURATOR}/${s.name}`
+			};
+		})
+		.filter((i) => i.score !== null);
 
 	const categories = [...new Set(items.map((i) => i.category).filter(Boolean))].sort() as string[];
 	const filtered = category ? items.filter((i) => i.category === category) : items;

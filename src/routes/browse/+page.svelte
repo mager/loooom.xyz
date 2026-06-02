@@ -41,8 +41,8 @@
 				{/if}
 			</h1>
 			<p class="page-subtitle">
-				A curated collection of {data.total} skill{data.total === 1 ? '' : 's'}, graded against the
-				rubric as they ship. Copy one into any AI and start.
+				A curated collection of {data.total} skill{data.total === 1 ? '' : 's'}, every one graded
+				against the rubric before it ships. Copy one into any AI and start.
 			</p>
 		</header>
 
