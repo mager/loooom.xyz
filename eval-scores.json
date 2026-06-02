@@ -1,0 +1,271 @@
+{
+  "updatedAt": "2026-06-02T16:54:13.551Z",
+  "rubricVersion": "1.0",
+  "judge": {
+    "model": "llama-3.3-70b-versatile",
+    "baseUrl": "https://api.groq.com/openai/v1"
+  },
+  "skills": {
+    "mager/hook": {
+      "spec": {
+        "passed": 9,
+        "total": 10,
+        "checks": [
+          {
+            "id": "frontmatter_parses",
+            "ok": true,
+            "msg": "YAML frontmatter parses"
+          },
+          {
+            "id": "has_name",
+            "ok": true,
+            "msg": "name: hook"
+          },
+          {
+            "id": "name_matches_dir",
+            "ok": true,
+            "msg": "name matches directory"
+          },
+          {
+            "id": "has_description",
+            "ok": true,
+            "msg": "description (38 chars)"
+          },
+          {
+            "id": "frontmatter_spec_clean",
+            "ok": false,
+            "msg": "non-spec frontmatter keys (move under metadata): author, version, tags, category"
+          },
+          {
+            "id": "has_method",
+            "ok": true,
+            "msg": "has an ordered method"
+          },
+          {
+            "id": "has_what_not_to_do",
+            "ok": true,
+            "msg": "addresses failure modes / what not to do"
+          },
+          {
+            "id": "has_worked_example",
+            "ok": true,
+            "msg": "has a worked example"
+          },
+          {
+            "id": "has_agent_behavior",
+            "ok": true,
+            "msg": "has Agent Behavior block"
+          },
+          {
+            "id": "signal_density",
+            "ok": true,
+            "msg": "760 words"
+          }
+        ]
+      },
+      "quality": {
+        "dimensions": {
+          "method": {
+            "score": 5,
+            "note": "The skill provides a clear, ordered procedure with specific steps, such as finding the one line, putting the title where the ear expects it, and building the melodic shape."
+          },
+          "specificity": {
+            "score": 5,
+            "note": "The skill offers concrete, non-obvious techniques, like using open vowels on high or held notes and changing one element when repeating a melody."
+          },
+          "worked_example": {
+            "score": 5,
+            "note": "The skill includes a detailed, end-to-end example of transforming a weak line into a hook, demonstrating the method's application on a real case."
+          },
+          "point_of_view": {
+            "score": 5,
+            "note": "The skill explicitly discusses common failure modes, such as a hook being forgettable, busy, flat, or awkward to sing, and provides diagnostic advice."
+          },
+          "voice": {
+            "score": 5,
+            "note": "The writing is confident, opinionated, and signal-dense, with a clear, practitioner-like voice that avoids hedging and padding."
+          }
+        },
+        "regeneratableFromTitle": false,
+        "verdictLine": "This is real craft, not a costume, because it provides a detailed, specific, and non-obvious method for writing a hook, along with a clear point of view and a worked example.",
+        "score": 100,
+        "verdict": "passing"
+      },
+      "verdict": "passing"
+    },
+    "mager/story": {
+      "spec": {
+        "passed": 9,
+        "total": 10,
+        "checks": [
+          {
+            "id": "frontmatter_parses",
+            "ok": true,
+            "msg": "YAML frontmatter parses"
+          },
+          {
+            "id": "has_name",
+            "ok": true,
+            "msg": "name: story"
+          },
+          {
+            "id": "name_matches_dir",
+            "ok": true,
+            "msg": "name matches directory"
+          },
+          {
+            "id": "has_description",
+            "ok": true,
+            "msg": "description (32 chars)"
+          },
+          {
+            "id": "frontmatter_spec_clean",
+            "ok": false,
+            "msg": "non-spec frontmatter keys (move under metadata): author, version, tags, category"
+          },
+          {
+            "id": "has_method",
+            "ok": true,
+            "msg": "has an ordered method"
+          },
+          {
+            "id": "has_what_not_to_do",
+            "ok": true,
+            "msg": "addresses failure modes / what not to do"
+          },
+          {
+            "id": "has_worked_example",
+            "ok": true,
+            "msg": "has a worked example"
+          },
+          {
+            "id": "has_agent_behavior",
+            "ok": true,
+            "msg": "has Agent Behavior block"
+          },
+          {
+            "id": "signal_density",
+            "ok": true,
+            "msg": "793 words"
+          }
+        ]
+      },
+      "quality": {
+        "dimensions": {
+          "method": {
+            "score": 5,
+            "note": "The method is a clear, ordered procedure with six specific steps, such as 'Find the one-sentence core' and 'Start in the middle', that build on each other to create a story."
+          },
+          "specificity": {
+            "score": 5,
+            "note": "The skill provides concrete, non-obvious techniques like 'Set the stakes early' and 'Build the turn' with specific examples, such as starting a story with 'I was forty feet up the cliff when the rope went slack'."
+          },
+          "worked_example": {
+            "score": 5,
+            "note": "The worked example transforms a raw, unengaging story into a compelling one by applying the method, demonstrating the effectiveness of the technique with a clear before-and-after comparison."
+          },
+          "point_of_view": {
+            "score": 5,
+            "note": "The skill explicitly warns against common failure modes, such as 'No stakes', 'Too much setup', and 'It explains the point', providing a clear point of view on what not to do when telling a story."
+          },
+          "voice": {
+            "score": 5,
+            "note": "The writing is confident, opinionated, and signal-dense, with a clear, practitioner-like voice that uses phrases like 'the kill move' and 'trust the listener to get there'."
+          }
+        },
+        "regeneratableFromTitle": false,
+        "verdictLine": "This is real craft, not a costume, because it provides a specific, non-obvious method with a clear point of view and a worked example that demonstrates its effectiveness.",
+        "score": 100,
+        "verdict": "passing"
+      },
+      "verdict": "passing"
+    },
+    "mager/voice": {
+      "spec": {
+        "passed": 8,
+        "total": 10,
+        "checks": [
+          {
+            "id": "frontmatter_parses",
+            "ok": true,
+            "msg": "YAML frontmatter parses"
+          },
+          {
+            "id": "has_name",
+            "ok": true,
+            "msg": "name: voice"
+          },
+          {
+            "id": "name_matches_dir",
+            "ok": true,
+            "msg": "name matches directory"
+          },
+          {
+            "id": "has_description",
+            "ok": true,
+            "msg": "description (38 chars)"
+          },
+          {
+            "id": "frontmatter_spec_clean",
+            "ok": false,
+            "msg": "non-spec frontmatter keys (move under metadata): author, version, tags, category"
+          },
+          {
+            "id": "has_method",
+            "ok": true,
+            "msg": "has an ordered method"
+          },
+          {
+            "id": "has_what_not_to_do",
+            "ok": true,
+            "msg": "addresses failure modes / what not to do"
+          },
+          {
+            "id": "has_worked_example",
+            "ok": false,
+            "msg": "no worked example section"
+          },
+          {
+            "id": "has_agent_behavior",
+            "ok": true,
+            "msg": "has Agent Behavior block"
+          },
+          {
+            "id": "signal_density",
+            "ok": true,
+            "msg": "740 words"
+          }
+        ]
+      },
+      "quality": {
+        "dimensions": {
+          "method": {
+            "score": 5,
+            "note": "The skill provides a clear, ordered, and followable 5-step procedure to find and protect one's voice in writing, including specific techniques like writing like you'd say it out loud and varying rhythm on purpose."
+          },
+          "specificity": {
+            "score": 5,
+            "note": "The skill offers concrete, non-obvious techniques such as using real numbers, actual brand names, and specific details like 'we reused tea bags until they ran clear' to make writing more personal and unique."
+          },
+          "worked_example": {
+            "score": 4,
+            "note": "While the skill doesn't provide a full, end-to-end example of a weak-to-strong transformation, it does offer several specific examples of how to apply the techniques, such as rewriting 'I had a tough childhood' to 'we reused tea bags until they ran clear'."
+          },
+          "point_of_view": {
+            "score": 5,
+            "note": "The skill explicitly warns against common pitfalls like using hedge words, throat-clearing openers, and abstract nouns, and provides a clear point of view on what voice is and is not."
+          },
+          "voice": {
+            "score": 5,
+            "note": "The writing is opinionated, confident, and signal-dense, with a clear and distinctive voice that reads like it was written by a practitioner."
+          }
+        },
+        "regeneratableFromTitle": false,
+        "verdictLine": "This is real craft, not a costume, because it provides a unique and specific method for finding and protecting one's voice in writing, along with a clear point of view and expert-level techniques.",
+        "score": 97,
+        "verdict": "passing"
+      },
+      "verdict": "passing"
+    }
+  }
+}

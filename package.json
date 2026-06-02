@@ -8,6 +8,7 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
+		"eval": "tsx eval/run.ts",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
 	},
@@ -19,6 +20,7 @@
 		"@types/js-yaml": "^4.0.9",
 		"svelte": "^5.49.2",
 		"svelte-check": "^4.3.6",
+		"tsx": "^4.22.4",
 		"typescript": "^5.9.3",
 		"vite": "^7.3.1"
 	},
