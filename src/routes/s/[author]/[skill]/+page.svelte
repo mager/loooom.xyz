@@ -2,6 +2,7 @@
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import Nav from '$lib/components/Nav.svelte';
 	import { marked } from 'marked';
+	import { QUALITY_DIMENSIONS } from '$lib/skill-scores';
 
 	let { data } = $props();
 	let activeFile = $state(0);
@@ -26,6 +27,15 @@
 	const renderedSkillMd = hasSkillMd ? marked.parse(stripFrontmatter(data.skill.files[skillMdIndex].content)) : '';
 	// Non-SKILL.md files for the raw code viewer
 	const otherFiles = data.skill.files.filter((_: unknown, i: number) => i !== skillMdIndex);
+
+	// Quality score, graded against the Loooom rubric (eval-scores.json).
+	const qualityDims = data.quality
+		? QUALITY_DIMENSIONS.map((d) => ({
+				label: d.label,
+				score: data.quality!.dimensions[d.id]?.score ?? 0,
+				note: data.quality!.dimensions[d.id]?.note ?? ''
+			}))
+		: [];
 
 	function relativeTime(iso: string): string {
 		const diff = Date.now() - new Date(iso).getTime();
@@ -127,6 +137,38 @@
 				{/if}
 			</div>
 		</div>
+
+		<!-- Quality score — the Loooom bar, in public -->
+		{#if data.quality}
+			<details class="quality" data-verdict={data.quality.verdict}>
+				<summary class="q-summary">
+					<span class="q-score">{data.quality.score}</span>
+					<span class="q-meta">
+						<span class="q-verdict">{data.quality.verdict.replace('-', ' ')}</span>
+						<span class="q-sub">graded · rubric v{data.quality.rubricVersion} · spec {data.quality.specPassed}/{data.quality.specTotal}</span>
+					</span>
+					<span class="q-toggle">how it scored</span>
+				</summary>
+				<div class="q-body">
+					{#if data.quality.verdictLine}
+						<p class="q-line">“{data.quality.verdictLine}”</p>
+					{/if}
+					<div class="q-dims">
+						{#each qualityDims as d}
+							<div class="q-dim">
+								<span class="q-dim-name">{d.label}</span>
+								<span class="q-bars" aria-label={`${d.score} out of 5`}>
+									{#each Array(5) as _, i}
+										<span class="q-bar" class:on={i < d.score}></span>
+									{/each}
+								</span>
+								<span class="q-dim-note">{d.note}</span>
+							</div>
+						{/each}
+					</div>
+				</div>
+			</details>
+		{/if}
 
 		<!-- Use this skill — primary action -->
 		{#if data.skill.files.length > 0}
@@ -249,6 +291,35 @@
 	.byline-edit:hover { text-decoration: underline; }
 
 	/* Use this skill — primary action */
+	/* Quality badge */
+	.quality { margin-bottom: 1.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+	.quality[data-verdict="passing"] { border-color: color-mix(in srgb, var(--emerald) 45%, var(--border)); }
+	.q-summary { display: flex; align-items: center; gap: 0.9rem; padding: 0.85rem 1.1rem; cursor: pointer; list-style: none; user-select: none; }
+	.q-summary::-webkit-details-marker { display: none; }
+	.q-score { font-family: var(--font-mono); font-size: 1.7rem; font-weight: 700; line-height: 1; min-width: 2.4rem; text-align: center; }
+	.quality[data-verdict="passing"] .q-score { color: var(--emerald); }
+	.quality[data-verdict="needs-work"] .q-score { color: #d99a16; }
+	.quality[data-verdict="failing"] .q-score { color: #e0245e; }
+	.q-meta { display: flex; flex-direction: column; gap: 0.12rem; flex: 1; min-width: 0; }
+	.q-verdict { font-weight: 600; text-transform: capitalize; font-size: 0.95rem; color: var(--text-primary); }
+	.q-sub { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); }
+	.q-toggle { flex-shrink: 0; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); }
+	.quality[open] .q-toggle::after { content: ' ▴'; }
+	.quality:not([open]) .q-toggle::after { content: ' ▾'; }
+	.q-body { padding: 0 1.1rem 1.1rem; }
+	.q-line { margin: 0 0 1rem; font-size: 0.92rem; font-style: italic; color: var(--text-secondary); line-height: 1.5; }
+	.q-dims { display: flex; flex-direction: column; gap: 0.7rem; }
+	.q-dim { display: grid; grid-template-columns: 7rem auto; gap: 0.2rem 0.85rem; align-items: center; }
+	.q-dim-name { font-weight: 600; font-size: 0.84rem; color: var(--text-primary); }
+	.q-bars { display: inline-flex; gap: 3px; }
+	.q-bar { width: 1.5rem; height: 6px; border-radius: 3px; background: color-mix(in srgb, var(--text-muted) 25%, transparent); }
+	.q-bar.on { background: linear-gradient(90deg, var(--ocean), var(--indigo)); }
+	.q-dim-note { grid-column: 2 / -1; font-size: 0.76rem; color: var(--text-muted); line-height: 1.4; }
+	@media (max-width: 540px) {
+		.q-dim { grid-template-columns: 1fr; }
+		.q-dim-note { grid-column: 1 / -1; }
+	}
+
 	.use-card { margin-bottom: 2.5rem; padding: 1.25rem 1.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); }
 	.use-main { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; }
 	.use-eyebrow { display: block; font-family: var(--font-mono); font-size: 0.62rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-muted); margin-bottom: 0.3rem; }

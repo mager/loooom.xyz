@@ -4,6 +4,7 @@ import { users, skills, skillVersions } from '$lib/server/schema';
 import { eq, and } from 'drizzle-orm';
 import { error } from '@sveltejs/kit';
 import matter from 'gray-matter';
+import { getSkillQuality } from '$lib/skill-scores';
 
 export const load: PageServerLoad = async ({ params, parent }) => {
 	const { user: sessionUser } = await parent();
@@ -61,6 +62,7 @@ export const load: PageServerLoad = async ({ params, parent }) => {
 			updatedAt: skill.updatedAt.toISOString(),
 			createdAt: skill.createdAt.toISOString()
 		},
+		quality: getSkillQuality(author.username, skill.name),
 		isOwner: sessionUser?.id === author.id
 	};
 };
