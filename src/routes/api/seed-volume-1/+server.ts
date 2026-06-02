@@ -50,6 +50,102 @@ const CATALOG = [
 			'Tell a story that actually lands. Stakes, a single core, the turn, and an ending on an image — the structure under every story people remember.',
 		category: 'Communication',
 		version: '1.0.0'
+	},
+	{
+		name: 'frame',
+		title: 'frame',
+		description:
+			'See like a photographer. Subject, light, and a clean frame — the eye behind a good photo, not the camera. Works with the phone in your pocket.',
+		category: 'Creativity',
+		version: '1.0.0'
+	},
+	{
+		name: 'improvise',
+		title: 'improvise',
+		description:
+			'Cook by feel, not by recipe. The five tastes, cooking in ratios, and the rescues — so you can open the fridge and just make something good.',
+		category: 'Life',
+		version: '1.0.0'
+	},
+	{
+		name: 'train',
+		title: 'train',
+		description:
+			'Get stronger without a coach. Progressive overload, a few compound lifts, and the consistency that actually moves the needle.',
+		category: 'Life',
+		version: '1.0.0'
+	},
+	{
+		name: 'rest',
+		title: 'rest',
+		description:
+			'Fix your sleep and get your energy back. The handful of habits — wake time, light, caffeine timing — that quietly decide how you feel all day.',
+		category: 'Life',
+		version: '1.0.0'
+	},
+	{
+		name: 'stack',
+		title: 'stack',
+		description:
+			'Money basics in plain English. The gap, the order of operations, and letting time compound — no stock-picking, no jargon, no hype.',
+		category: 'Life',
+		version: '1.0.0'
+	},
+	{
+		name: 'leverage',
+		title: 'leverage',
+		description:
+			'Negotiate without flinching. Know your walk-away, anchor, trade instead of concede, and use the silence — the moves that change hands at the table.',
+		category: 'Communication',
+		version: '1.0.0'
+	},
+	{
+		name: 'stage',
+		title: 'stage',
+		description:
+			'Command a room when you speak. One idea, the pause, a voice that varies, and never reading your slides.',
+		category: 'Communication',
+		version: '1.0.0'
+	},
+	{
+		name: 'reply',
+		title: 'reply',
+		description:
+			'Write a text or DM that lands right. Match energy, lead with the point, and know when a hard thing should be a call instead.',
+		category: 'Communication',
+		version: '1.0.0'
+	},
+	{
+		name: 'level',
+		title: 'level',
+		description:
+			'Have the hard conversation. Name the one thing, lead with care, state impact not accusation, and land on a request — so it lands, not just gets said.',
+		category: 'Communication',
+		version: '1.0.0'
+	},
+	{
+		name: 'decide',
+		title: 'decide',
+		description:
+			'Make a hard call faster. Reversible vs not, deciding at 70%, the regret test, and committing instead of relitigating.',
+		category: 'Mind',
+		version: '1.0.0'
+	},
+	{
+		name: 'focus',
+		title: 'focus',
+		description:
+			'Do deep work in a noisy world. One task, distraction out of reach, real blocks of time, and starting ugly — attention defended against an environment built to break it.',
+		category: 'Mind',
+		version: '1.0.0'
+	},
+	{
+		name: 'absorb',
+		title: 'absorb',
+		description:
+			'Learn anything faster. Active recall over rereading, spacing over cramming, and the productive struggle that actually makes things stick.',
+		category: 'Mind',
+		version: '1.0.0'
 	}
 ];
 
