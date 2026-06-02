@@ -1,85 +1,57 @@
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import { users, skills } from '$lib/server/schema';
-import { eq } from 'drizzle-orm';
-import { PLUGINS, CATEGORIES as CATALOG_CATEGORIES } from '$lib/plugins';
-import { fetchEvalScores } from '$lib/eval-scores';
+import { eq, and, desc } from 'drizzle-orm';
+import { getSkillQuality } from '$lib/skill-scores';
+
+// Loooom is curated, not crowdsourced — the collection is authored. Browse shows
+// only the curator's published skills, each with its rubric score. No third-party
+// catalog, no skills.sh, no "automation" grab-bag.
+const CURATOR = 'mager';
 
 export const load: PageServerLoad = async ({ url }) => {
-	const category = url.searchParams.get('category') || null;
+	const category = url.searchParams.get('category');
 
-	const allSkills = await db
-		.select({
-			id: skills.id,
-			name: skills.name,
-			title: skills.title,
-			description: skills.description,
-			category: skills.category,
-			installs: skills.installs,
-			authorId: skills.authorId,
-			isPublished: skills.isPublished
-		})
-		.from(skills)
-		.where(eq(skills.isPublished, true));
+	const [curator] = await db
+		.select({ id: users.id })
+		.from(users)
+		.where(eq(users.username, CURATOR))
+		.limit(1);
 
-	// Load author info for each skill
-	const skillsWithAuthors = await Promise.all(
-		allSkills
-			.filter((s) => !category || s.category === category)
-			.map(async (skill) => {
-				const [author] = await db
-					.select({
-						username: users.username,
-						displayName: users.displayName,
-						avatarUrl: users.avatarUrl,
-						verified: users.verified
-					})
-					.from(users)
-					.where(eq(users.id, skill.authorId));
-				return {
-					name: skill.name,
-					title: skill.title,
-					description: skill.description,
-					category: skill.category,
-					installs: skill.installs,
-					author: author
-						? {
-								username: author.username,
-								displayName: author.displayName,
-								avatarUrl: author.avatarUrl,
-								verified: author.verified
-							}
-						: null
-				};
-			})
-	);
+	const rows = curator
+		? await db
+				.select({
+					name: skills.name,
+					title: skills.title,
+					description: skills.description,
+					category: skills.category,
+					installs: skills.installs
+				})
+				.from(skills)
+				.where(and(eq(skills.authorId, curator.id), eq(skills.isPublished, true)))
+				.orderBy(desc(skills.installs))
+		: [];
 
-	const categories = [
-		'Writing',
-		'Music',
-		'Cooking',
-		'Engineering',
-		'Art',
-		'Research',
-		'Design',
-		'Education',
-		'Health',
-		'Business'
-	];
+	const items = rows.map((s) => {
+		const q = getSkillQuality(CURATOR, s.name);
+		return {
+			name: s.name,
+			title: s.title,
+			description: s.description,
+			category: s.category,
+			score: q?.score ?? null,
+			verdict: q?.verdict ?? null,
+			link: `/s/${CURATOR}/${s.name}`
+		};
+	});
 
-	// Static catalog plugins (GitHub-native)
-	const catalogPlugins = category
-		? PLUGINS.filter((p) => p.category === category)
-		: PLUGINS;
-
-	const evalScores = await fetchEvalScores();
+	const categories = [...new Set(items.map((i) => i.category).filter(Boolean))].sort() as string[];
+	const filtered = category ? items.filter((i) => i.category === category) : items;
 
 	return {
-		skills: skillsWithAuthors,
-		plugins: catalogPlugins,
+		skills: filtered,
 		categories,
-		catalogCategories: CATALOG_CATEGORIES,
-		activeCategory: category,
-		evalScores
+		activeCategory: category ?? null,
+		total: items.length
 	};
 };
