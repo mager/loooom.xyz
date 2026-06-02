@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { users, skills, skillVersions } from '$lib/server/schema';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, desc } from 'drizzle-orm';
 import { createHash } from 'crypto';
 
 function hash(content: string) {
@@ -74,7 +74,33 @@ export async function POST() {
 				currentVersion: s.version,
 				updatedAt: new Date()
 			}).where(eq(skills.id, existing.id));
-			results.push({ name: s.name, id: existing.id, status: 'updated' });
+
+			// Publish content edits too — otherwise the stored SKILL.md is frozen
+			// at first insert and edits never reach the page or the copy button.
+			const [latest] = await db
+				.select()
+				.from(skillVersions)
+				.where(eq(skillVersions.skillId, existing.id))
+				.orderBy(desc(skillVersions.createdAt))
+				.limit(1);
+
+			let status = 'updated';
+			if (!latest) {
+				await db.insert(skillVersions).values({
+					skillId: existing.id,
+					version: s.version,
+					contentHash,
+					files: [{ name: 'SKILL.md', content }]
+				});
+				status = 'content-added';
+			} else if (latest.contentHash !== contentHash) {
+				await db
+					.update(skillVersions)
+					.set({ version: s.version, contentHash, files: [{ name: 'SKILL.md', content }] })
+					.where(eq(skillVersions.id, latest.id));
+				status = 'content-updated';
+			}
+			results.push({ name: s.name, id: existing.id, status });
 		} else {
 			const [skill] = await db.insert(skills).values({
 				authorId: magerUser.id,
