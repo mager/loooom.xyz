@@ -1,10 +1,11 @@
 ---
 name: hook
 description: Write a hook people can't stop humming
-author: mager
-version: 1.0.0
-tags: [music, songwriting, hooks]
-category: Music
+metadata:
+  author: mager
+  version: 1.0.0
+  category: Music
+  tags: [music, songwriting, hooks]
 ---
 
 # hook

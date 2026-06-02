@@ -31,7 +31,9 @@ export const load: PageServerLoad = async ({ params, parent }) => {
 	if (skillMdFile) {
 		try {
 			const parsed = matter(skillMdFile.content);
-			tags = parsed.data.tags ?? [];
+			// Spec-compliant skills keep tags under metadata; fall back to a
+			// top-level tags field for older/user-submitted skills.
+			tags = parsed.data.metadata?.tags ?? parsed.data.tags ?? [];
 		} catch {
 			// ignore parse errors
 		}

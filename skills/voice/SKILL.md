@@ -1,10 +1,11 @@
 ---
 name: voice
 description: Write in your own voice, not ChatGPT's
-author: mager
-version: 1.0.0
-tags: [writing, voice, style]
-category: Writing
+metadata:
+  author: mager
+  version: 1.0.0
+  category: Writing
+  tags: [writing, voice, style]
 ---
 
 # voice

@@ -1,10 +1,11 @@
 ---
 name: story
 description: Tell a story that actually lands
-author: mager
-version: 1.0.0
-tags: [storytelling, communication, writing]
-category: Communication
+metadata:
+  author: mager
+  version: 1.0.0
+  category: Communication
+  tags: [storytelling, communication, writing]
 ---
 
 # story
