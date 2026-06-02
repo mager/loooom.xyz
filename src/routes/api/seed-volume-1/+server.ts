@@ -339,5 +339,5 @@ export async function POST() {
 		}
 	}
 
-	return json({ message: \`Seeded \${results.length} Volume 1 skills for mager\`, results });
+	return json({ message: `Seeded ${results.length} Volume 1 skills for mager`, results });
 }
