@@ -60,10 +60,21 @@ The judge is provider-agnostic — any OpenAI-compatible endpoint. It defaults t
 **Groq's free tier** (no Anthropic, no cost):
 
 ```bash
-npm run eval            # both gates, all skills → writes eval-scores.json
-npm run eval -- --spec  # Gate 1 only — no model, no network
-npm run eval -- hook    # filter by name
+npm run eval              # both gates, all skills → writes eval-scores.json
+npm run eval -- --spec    # Gate 1 only — no model, no network
+npm run eval -- hook      # filter by name
+npm run eval -- --calibrate  # self-test: must score costumes low, real skills high
 ```
+
+### Calibrating the judge
+
+A judge is only useful if it can fail a bad skill. `--calibrate` runs the judge
+against deliberate "costume" fixtures in `eval/fixtures/` (generic, regenerable
+from the title) alongside the real skills, and **fails** (exit 1) unless every
+costume scores below 60 and every real skill at or above 80. The separation gap
+is the headline number — a discriminating judge keeps them far apart. On the
+default Groq judge, the costume `hook` scores ~8 against the real `hook`'s 100.
+Add a fixture whenever you find a failure mode the judge should catch.
 
 Swap the judge with three env vars:
 

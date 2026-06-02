@@ -47,32 +47,55 @@ function extractJson(text: string): RawScores {
 	return JSON.parse(candidate.slice(start, end + 1));
 }
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 async function callModel(system: string, user: string): Promise<string> {
-	const res = await fetch(`${BASE_URL}/chat/completions`, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			...(API_KEY ? { Authorization: `Bearer ${API_KEY}` } : {})
-		},
-		body: JSON.stringify({
-			model: MODEL,
-			temperature: 0,
-			max_tokens: 1500,
-			response_format: { type: 'json_object' },
-			messages: [
-				{ role: 'system', content: system },
-				{ role: 'user', content: user }
-			]
-		})
+	const body = JSON.stringify({
+		model: MODEL,
+		temperature: 0,
+		max_tokens: 1500,
+		response_format: { type: 'json_object' },
+		messages: [
+			{ role: 'system', content: system },
+			{ role: 'user', content: user }
+		]
 	});
-	if (!res.ok) {
-		const body = await res.text().catch(() => '');
-		throw new Error(`judge HTTP ${res.status}: ${body.slice(0, 300)}`);
+
+	// Free tiers rate-limit by tokens/minute; back off on 429/5xx and retry.
+	for (let attempt = 0; ; attempt++) {
+		const res = await fetch(`${BASE_URL}/chat/completions`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				...(API_KEY ? { Authorization: `Bearer ${API_KEY}` } : {})
+			},
+			body
+		});
+
+		if (res.status === 429 || res.status === 503 || res.status === 529) {
+			if (attempt >= 6) throw new Error(`judge HTTP ${res.status} after ${attempt} retries`);
+			const text = await res.text().catch(() => '');
+			const header = Number(res.headers.get('retry-after'));
+			const fromBody = text.match(/try again in ([\d.]+)s/);
+			const waitMs = header
+				? header * 1000 + 250
+				: fromBody
+					? Math.ceil(parseFloat(fromBody[1]) * 1000) + 250
+					: (attempt + 1) * 2000;
+			await sleep(Math.min(waitMs, 30000));
+			continue;
+		}
+
+		if (!res.ok) {
+			const errBody = await res.text().catch(() => '');
+			throw new Error(`judge HTTP ${res.status}: ${errBody.slice(0, 300)}`);
+		}
+
+		const data = await res.json();
+		const content = data?.choices?.[0]?.message?.content;
+		if (typeof content !== 'string') throw new Error('judge returned no content');
+		return content;
 	}
-	const data = await res.json();
-	const content = data?.choices?.[0]?.message?.content;
-	if (typeof content !== 'string') throw new Error('judge returned no content');
-	return content;
 }
 
 export async function judgeSkill(name: string, raw: string): Promise<QualityResult> {

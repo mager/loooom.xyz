@@ -11,7 +11,7 @@
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loadSkills } from './load';
+import { loadSkills, loadFixtures } from './load';
 import { runSpec, type SpecResult } from './spec';
 import { judgeSkill, JUDGE_INFO } from './judge';
 import { RUBRIC_VERSION, DIMENSIONS, type QualityResult } from './rubric';
@@ -20,7 +20,13 @@ const ROOT = fileURLToPath(new URL('..', import.meta.url));
 
 const args = process.argv.slice(2);
 const specOnly = args.includes('--spec');
+const calibrate = args.includes('--calibrate');
 const filters = args.filter((a) => !a.startsWith('--'));
+
+// Calibration thresholds: a costume must land below COSTUME_MAX, a real skill
+// at or above GOOD_MIN. A judge that can't keep them apart is rubber-stamping.
+const COSTUME_MAX = 60;
+const GOOD_MIN = 80;
 
 const c = {
 	reset: '\x1b[0m', bold: '\x1b[1m', dim: '\x1b[2m',
@@ -34,7 +40,55 @@ interface SkillReport {
 	verdict: string;
 }
 
+// Self-test the judge: it must score deliberate "costume" fixtures low and the
+// real skills high. Reports the separation gap and fails (exit 1) if the judge
+// can't tell craft from costume — so CI catches a degraded judge.
+async function runCalibration() {
+	console.log(`\n${c.bold}Loooom judge calibration${c.reset} ${c.dim}· rubric v${RUBRIC_VERSION}${c.reset}`);
+	console.log(`${c.dim}judge: ${JUDGE_INFO.model} @ ${JUDGE_INFO.baseUrl}${c.reset}`);
+	if (!JUDGE_INFO.hasKey && JUDGE_INFO.baseUrl.includes('groq')) {
+		console.error(`${c.red}No EVAL_API_KEY / GROQ_API_KEY set.${c.reset}`);
+		process.exit(1);
+	}
+
+	const reals = loadSkills().map((s) => ({ ...s, kind: 'real' as const, judgeName: s.name }));
+	const costumes = loadFixtures().map((s) => ({ ...s, kind: 'costume' as const, judgeName: s.name.replace(/^costume-/, '') }));
+	if (!costumes.length) {
+		console.error(`${c.red}No costume fixtures in eval/fixtures/ — nothing to calibrate against.${c.reset}`);
+		process.exit(1);
+	}
+	console.log('');
+
+	const rows: { name: string; kind: 'real' | 'costume'; score: number }[] = [];
+	for (const s of [...reals, ...costumes]) {
+		const q = await judgeSkill(s.judgeName, s.raw);
+		rows.push({ name: s.name, kind: s.kind, score: q.score });
+		const ok = s.kind === 'costume' ? q.score < COSTUME_MAX : q.score >= GOOD_MIN;
+		const tag = s.kind === 'costume' ? `${c.yellow}costume${c.reset}` : `real   `;
+		console.log(`  ${ok ? c.green : c.red}${q.score.toString().padStart(3)}${c.reset}  ${tag}  ${s.name}  ${c.dim}${q.verdictLine}${c.reset}`);
+	}
+
+	const good = rows.filter((r) => r.kind === 'real').map((r) => r.score);
+	const cost = rows.filter((r) => r.kind === 'costume').map((r) => r.score);
+	const minGood = Math.min(...good);
+	const maxCostume = Math.max(...cost);
+	const gap = minGood - maxCostume;
+	const pass = cost.every((s) => s < COSTUME_MAX) && good.every((s) => s >= GOOD_MIN) && gap > 0;
+
+	console.log(`\n  ${c.dim}worst real ${minGood} · best costume ${maxCostume} · separation ${gap}${c.reset}\n`);
+	if (pass) {
+		console.log(`${c.green}${c.bold}CALIBRATION PASS${c.reset} — the judge separates craft from costume (gap ${gap}).\n`);
+	} else {
+		console.log(`${c.red}${c.bold}CALIBRATION FAIL${c.reset} — judge isn't discriminating. Tighten the rubric or try a stronger model (e.g. EVAL_MODEL=openai/gpt-oss-120b).\n`);
+	}
+	process.exit(pass ? 0 : 1);
+}
+
 async function main() {
+	if (calibrate) {
+		await runCalibration();
+		return;
+	}
 	let skills = loadSkills();
 	if (filters.length) skills = skills.filter((s) => filters.some((f) => s.name.includes(f)));
 	if (!skills.length) {
