@@ -1,6 +1,6 @@
 <script lang="ts">
 	import YarnLogo from '$lib/components/YarnLogo.svelte';
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+	import Nav from '$lib/components/Nav.svelte';
 	import { onMount } from 'svelte';
 
 	// ── The grader (hero signature moment) ──────────────────────────────────
@@ -105,21 +105,7 @@
 <div class="page-shell">
 	<div class="grain" aria-hidden="true"></div>
 
-	<nav class="site-nav" aria-label="Primary navigation">
-		<a href="/" class="brand" aria-label="Loooom home">
-			<YarnLogo size={24} />
-			<span>loooom</span>
-		</a>
-		<div class="nav-links">
-			<a href="/browse">Skills</a>
-			<a href="#grading">How it's scored</a>
-			<a href="https://github.com/mager/loooom" target="_blank" rel="noopener">GitHub</a>
-		</div>
-		<div class="nav-actions">
-			<ThemeToggle />
-			<a href="/browse" class="nav-cta">Browse skills</a>
-		</div>
-	</nav>
+	<Nav />
 
 	<main>
 		<!-- HERO -->
@@ -304,25 +290,12 @@
 		mask-image: linear-gradient(to bottom, black, transparent 62%);
 	}
 
-	.site-nav,
 	main,
 	footer {
 		position: relative;
 		z-index: 1;
 	}
 
-	/* ── Nav ── */
-	.site-nav {
-		max-width: 1160px;
-		margin: 0 auto;
-		padding: 1rem 1.25rem;
-		display: grid;
-		grid-template-columns: 1fr auto 1fr;
-		align-items: center;
-		gap: 1rem;
-	}
-
-	.brand,
 	.footer-brand {
 		display: inline-flex;
 		align-items: center;
@@ -332,66 +305,10 @@
 		font-size: 1.45rem;
 	}
 
-	.brand :global(svg),
-	.footer-brand :global(svg) {
-		transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-	}
-	.brand:hover :global(svg) {
-		transform: rotate(-18deg) scale(1.08);
-	}
-
-	.nav-links {
-		display: flex;
-		align-items: center;
-		gap: 0.3rem;
-		justify-self: center;
-		padding: 0.3rem;
-		background: color-mix(in srgb, var(--bg-card) 70%, transparent);
-		border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
-		border-radius: 999px;
-		box-shadow: var(--card-shadow);
-		backdrop-filter: blur(18px);
-	}
-
-	.nav-links a {
-		color: var(--text-secondary);
-		font-size: 0.86rem;
-		font-weight: 600;
-		padding: 0.42rem 0.85rem;
-		border-radius: 999px;
-		transition: background 0.2s, color 0.2s;
-	}
-	.nav-links a:hover {
-		background: var(--bg-secondary);
-		color: var(--text-primary);
-	}
-
-	.nav-actions {
-		display: flex;
-		align-items: center;
-		gap: 0.7rem;
-		justify-content: flex-end;
-	}
-
-	.nav-cta {
-		padding: 0.55rem 1rem;
-		border-radius: 999px;
-		background: var(--text-primary);
-		color: var(--bg-primary);
-		font-weight: 700;
-		font-size: 0.88rem;
-		transition: transform 0.18s ease, box-shadow 0.18s ease;
-	}
-	.nav-cta:hover {
-		transform: translateY(-1px);
-		box-shadow: 0 10px 24px color-mix(in srgb, var(--accent) 26%, transparent);
-		color: var(--bg-primary);
-	}
-
 	main {
 		max-width: 1160px;
 		margin: 0 auto;
-		padding: 2.5rem 1.25rem 0;
+		padding: clamp(4.5rem, 6vw, 5.5rem) 1.25rem 0;
 	}
 
 	.eyebrow {
@@ -417,7 +334,7 @@
 		grid-template-columns: minmax(0, 1.05fr) minmax(330px, 0.82fr);
 		gap: clamp(2rem, 6vw, 4.5rem);
 		align-items: center;
-		padding: clamp(2.5rem, 7vw, 5.5rem) 0 clamp(3rem, 8vw, 6rem);
+		padding: clamp(1rem, 3vw, 2.5rem) 0 clamp(3rem, 8vw, 6rem);
 	}
 
 	.hero-copy {
@@ -980,12 +897,6 @@
 
 	/* ── Responsive ── */
 	@media (max-width: 900px) {
-		.site-nav {
-			grid-template-columns: 1fr auto;
-		}
-		.nav-links {
-			display: none;
-		}
 		.hero,
 		.grading {
 			grid-template-columns: 1fr;
@@ -996,14 +907,8 @@
 	}
 
 	@media (max-width: 620px) {
-		.site-nav {
-			padding: 0.85rem 1rem;
-		}
-		.nav-actions :global(.theme-toggle) {
-			display: none;
-		}
 		main {
-			padding: 1.5rem 1rem 0;
+			padding: 4rem 1rem 0;
 		}
 		h1 {
 			font-size: clamp(2.7rem, 14vw, 3.6rem);
@@ -1026,10 +931,8 @@
 		.stamp,
 		.make-card,
 		.make-card::before,
-		.brand :global(svg),
 		.primary-action,
-		.secondary-action,
-		.nav-cta {
+		.secondary-action {
 			transition: none !important;
 		}
 		h1 em::after {
