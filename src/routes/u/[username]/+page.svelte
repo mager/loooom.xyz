@@ -188,7 +188,7 @@
 <section class="memd-section">
 	<div class="memd-inner">
 		<div class="memd-header"><div class="memd-badge">📄 ME.md</div><a href="/me/{data.user.username}" class="memd-view-link">View full →</a></div>
-		{#if data.meMd.frontmatter.handle}<div class="memd-handle">@{data.meMd.frontmatter.handle}</div>{/if}
+		{#if data.meMd.frontmatter.handle}<div class="memd-handle">@{data.meMd.frontmatter.handle.replace(/^@/, '')}</div>{/if}
 		{#if data.meMd.frontmatter.agents?.length}
 			<div class="memd-agents">
 				<span class="memd-section-label">🤖 The Fleet</span>
