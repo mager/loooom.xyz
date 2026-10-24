@@ -1,6 +1,7 @@
 <script lang="ts">
 	import YarnLogo from '$lib/components/YarnLogo.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+	import GymPreview from '$lib/components/gym/GymPreview.svelte';
 
 	let { data } = $props();
 
@@ -12,14 +13,7 @@
 	const contextUrl = 'https://loooom.xyz/me/mager/raw';
 	const promptText = `Before we work together, fetch ${contextUrl} and use it as durable context about me.`;
 
-	let copiedContext = $state(false);
 	let copiedPrompt = $state(false);
-
-	async function copyContextUrl() {
-		await navigator.clipboard.writeText(contextUrl);
-		copiedContext = true;
-		setTimeout(() => (copiedContext = false), 1800);
-	}
 
 	async function copyPrompt() {
 		await navigator.clipboard.writeText(promptText);
@@ -29,10 +23,10 @@
 </script>
 
 <svelte:head>
-	<title>Loooom — Personal context and skills for AI agents</title>
+	<title>Loooom — A skills marketplace. And a gym.</title>
 	<meta
 		name="description"
-		content="Loooom helps people publish reusable AI context with ME.md and discover practical skills for agents."
+		content="Find agent skills. Test them, repair failures, and keep the changes that pass. Loooom is a skills marketplace and a gym."
 	/>
 	<meta name="loooom-agents" content="https://loooom.xyz/AGENTS.md" />
 	<meta name="loooom-directory" content="https://loooom.xyz/api/directory" />
@@ -66,90 +60,26 @@
 	<main>
 		<section class="hero">
 			<div class="hero-copy">
-				<p class="eyebrow hero-eyebrow">Context + skills for AI agents</p>
-				<h1>
-					<span>Stop teaching</span>
-					<span>every AI who</span>
-					<span>you are from</span>
-					<span>scratch.</span>
-				</h1>
-				<p class="hero-sub">
-					Publish reusable <strong>ME.md</strong> context. Browse skills agents can run with.
-				</p>
-
-				<div class="hero-actions">
-					<a href="/login" class="primary-action">Claim your ME.md</a>
-					<a href="/browse" class="secondary-action">Browse skills</a>
-				</div>
-
-				<div class="quick-proof" aria-label="Example public context URL">
-					<code>{contextUrl}</code>
-					<button onclick={copyContextUrl}>{copiedContext ? 'copied' : 'copy'}</button>
-				</div>
+				<h1><span>Find a skill.</span><span>Make it</span><span class="hero-accent">better.</span></h1>
+				<p class="hero-sub">A marketplace for agent skills. A gym to <strong>test, repair, and simplify</strong> them.</p>
+				<div class="hero-actions"><a href="/browse" class="primary-action">Explore {skillCount}+ skills</a><a href="/gym" class="secondary-action">Enter the gym</a></div>
+				<p class="hero-note">Small changes. Real tests. Every result saved.</p>
 			</div>
-
-			<div class="hero-card" aria-label="ME.md preview">
-				<div class="card-topline">
-					<span class="window-dots" aria-hidden="true">
-						<span class="dot dot-amber"></span>
-						<span class="dot dot-rose"></span>
-						<span class="dot dot-emerald"></span>
-					</span>
-					<span>ME.md</span>
-				</div>
-				<pre><code>---
-handle: "@you"
-timezone: "America/Chicago"
-tags: [building, design, music]
----
-
-# The Soul
-How I think, what I value, what matters.
-
-# The Stack
-The tools, projects, and systems I use.
-
-# Anti-Patterns
-What an AI should never do with me.
-
-# Context
-What I am working on right now.</code></pre>
-			</div>
+			<GymPreview report={data.gymPreview} />
 		</section>
 
 		<section class="positioning" aria-labelledby="what-it-does">
-			<div class="section-heading">
-				<p class="eyebrow">What Loooom does</p>
-				<h2 id="what-it-does">Two simple primitives for better agent work.</h2>
-			</div>
-
+			<div class="section-heading"><h2 id="what-it-does">Good skills deserve a workout.</h2><p class="section-intro">Find a useful starting point. Then test how it works for you. Keep the evidence with the skill.</p></div>
 			<div class="product-grid">
-				<a href="/me" class="product-card context-card">
-					<span class="product-kicker">01 / Personal context</span>
-					<h3>Publish a durable ME.md</h3>
-					<p>
-						A plain markdown profile with your preferences, projects, tools, anti-patterns,
-						and working style. Humans can read it. Agents can fetch it.
-					</p>
-					<span class="card-link">See the format</span>
-				</a>
-
-				<a href="/browse" class="product-card skills-card">
-					<span class="product-kicker">02 / Skill discovery</span>
-					<h3>Find skills that make agents useful</h3>
-					<p>
-						Browse practical agent skills for learning, writing, design, debugging, and
-						creative work. Start from examples instead of blank prompts.
-					</p>
-					<span class="card-link">Explore {skillCount}+ skills</span>
-				</a>
+				<a href="/browse" class="product-card skills-card"><h3>Find your next skill</h3><p>Browse skills for learning, writing, design, debugging, and creative work. Read the instructions before you install.</p><span class="card-link">Browse the marketplace</span></a>
+				<a href="/gym" class="product-card context-card"><h3>Put it through the gym</h3><p>Find a failed test. Try a repair. Or remove text and check what still works. Inspect every round before you keep a change.</p><span class="card-link">See the experiments</span></a>
 			</div>
 		</section>
 
 		<section class="why" aria-labelledby="why-heading">
 			<div>
-				<p class="eyebrow">Why people would use it</p>
-				<h2 id="why-heading">The repeated setup tax is real.</h2>
+
+				<h2 id="why-heading">Bring your own context.</h2>
 			</div>
 			<div class="why-copy">
 				<p>
@@ -166,7 +96,7 @@ What I am working on right now.</code></pre>
 
 		<section class="workflow" aria-labelledby="workflow-heading">
 			<div class="section-heading centered">
-				<p class="eyebrow">How it works</p>
+
 				<h2 id="workflow-heading">Write once. Reuse everywhere.</h2>
 			</div>
 
@@ -199,7 +129,7 @@ What I am working on right now.</code></pre>
 
 		<section class="featured" aria-labelledby="featured-heading">
 			<div class="section-heading">
-				<p class="eyebrow">Featured skills</p>
+
 				<h2 id="featured-heading">Start with concrete agent abilities.</h2>
 			</div>
 
@@ -340,8 +270,7 @@ What I am working on right now.</code></pre>
 	.nav-cta,
 	.primary-action,
 	.secondary-action,
-	.prompt-card button,
-	.quick-proof button {
+	.prompt-card button {
 		border: 0;
 		cursor: pointer;
 		font-family: var(--font-display);
@@ -366,7 +295,7 @@ What I am working on right now.</code></pre>
 		grid-template-columns: minmax(0, 1.02fr) minmax(320px, 0.78fr);
 		gap: clamp(2rem, 6vw, 5rem);
 		align-items: center;
-		padding: 5rem 0 6rem;
+		padding: 3rem 0 5rem;
 	}
 
 	.hero-copy {
@@ -374,8 +303,6 @@ What I am working on right now.</code></pre>
 		max-width: 100%;
 	}
 
-	.eyebrow,
-	.product-kicker,
 	.prompt-label {
 		font-family: var(--font-mono);
 		font-size: 0.72rem;
@@ -389,14 +316,14 @@ What I am working on right now.</code></pre>
 	h2,
 	h3 {
 		font-family: var(--font-display);
-		letter-spacing: -0.045em;
+		letter-spacing: -0.04em;
 		color: var(--text-primary);
 	}
 
 	h1 {
 		max-width: 780px;
 		margin: 1rem 0 1.25rem;
-		font-size: clamp(3.4rem, 7.2vw, 6.4rem);
+		font-size: clamp(3.4rem, 7.2vw, 6rem);
 		line-height: 0.94;
 	}
 
@@ -454,106 +381,10 @@ What I am working on right now.</code></pre>
 		background: color-mix(in srgb, var(--bg-card) 78%, transparent);
 	}
 
-	.quick-proof {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		max-width: 100%;
-		margin-top: 1.4rem;
-		padding: 0.45rem;
-		border: 1px solid var(--border);
-		border-radius: 14px;
-		background: var(--bg-card);
-		box-shadow: var(--card-shadow);
-	}
-
-	.quick-proof code {
-		min-width: 0;
-		padding: 0 0.35rem;
-		color: var(--text-secondary);
-		font-family: var(--font-mono);
-		font-size: 0.82rem;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	.quick-proof button,
-	.prompt-card button {
-		flex-shrink: 0;
-		border-radius: 10px;
-		background: var(--bg-secondary);
-		color: var(--accent);
-		padding: 0.55rem 0.75rem;
-	}
-
-	.hero-card {
-		position: relative;
-		padding: 1rem;
-		border: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
-		border-radius: 30px;
-		background:
-			linear-gradient(135deg, color-mix(in srgb, var(--bg-card) 90%, transparent), color-mix(in srgb, var(--bg-secondary) 80%, transparent)),
-			var(--bg-card);
-		box-shadow: 0 30px 100px color-mix(in srgb, var(--accent) 16%, transparent);
-		transform: rotate(1.5deg);
-	}
-
-	.hero-card::before {
-		content: "";
-		position: absolute;
-		inset: -14px;
-		z-index: -1;
-		border-radius: 36px;
-		background: linear-gradient(135deg, color-mix(in srgb, var(--ocean) 28%, transparent), color-mix(in srgb, var(--amber) 18%, transparent));
-		transform: rotate(-4deg);
-	}
-
-	.card-topline {
-		display: flex;
-		align-items: center;
-		gap: 0.65rem;
-		padding: 0.2rem 0.35rem 0.9rem;
-		color: var(--text-muted);
-		font-family: var(--font-mono);
-		font-size: 0.78rem;
-	}
-
-	.window-dots {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.32rem;
-	}
-
-	.dot {
-		width: 0.7rem;
-		height: 0.7rem;
-		border-radius: 999px;
-	}
-
-	.dot-amber {
-		background: var(--amber);
-	}
-
-	.dot-rose {
-		background: var(--rose);
-	}
-
-	.dot-emerald {
-		background: var(--emerald);
-	}
-
-	pre {
-		overflow: auto;
-		margin: 0;
-		padding: 1.25rem;
-		border-radius: 22px;
-		background: color-mix(in srgb, var(--bg-primary) 88%, black);
-		color: var(--text-secondary);
-		font-family: var(--font-mono);
-		font-size: clamp(0.75rem, 1.45vw, 0.9rem);
-		line-height: 1.7;
-	}
+	.hero-accent { color: var(--accent); }
+	.hero-note { color: var(--text-secondary); font-size: .85rem; margin-top: 24px; line-height: 1.6; }
+	.section-intro { color: var(--text-secondary); font-size: 1.15rem; line-height: 1.7; align-self: end; }
+	.prompt-card button { flex-shrink: 0; border-radius: var(--radius-sm); background: var(--bg-secondary); color: var(--accent); padding: .55rem .75rem; }
 
 	.positioning,
 	.workflow,
@@ -779,10 +610,6 @@ What I am working on right now.</code></pre>
 			padding-top: 3rem;
 		}
 
-		.hero-card {
-			transform: none;
-		}
-
 		.product-grid,
 		.steps,
 		.skill-grid {
@@ -810,37 +637,25 @@ What I am working on right now.</code></pre>
 		h1 {
 			font-size: clamp(2.7rem, 13vw, 3.55rem);
 			line-height: 0.96;
-			letter-spacing: -0.06em;
+			letter-spacing: -0.04em;
 		}
 
 		.hero-sub {
 			font-size: 1rem;
 		}
 
-		.hero-copy,
-		.hero-eyebrow {
+		.hero-copy {
 			width: 100%;
 			max-width: calc(100vw - 2rem);
 		}
 
-		.hero-card {
-			width: calc(100vw - 2rem);
-			max-width: 100%;
-		}
-
-		.quick-proof,
 		.prompt-card,
 		footer {
 			align-items: stretch;
 			flex-direction: column;
 		}
 
-		.quick-proof {
-			display: flex;
-		}
-
-		.prompt-card button,
-		.quick-proof button {
+		.prompt-card button {
 			width: 100%;
 		}
 

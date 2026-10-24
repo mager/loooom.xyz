@@ -1,11 +1,11 @@
 <script lang="ts">
+ import { gymCommand, GYM_GUIDE } from '$lib/gym/commands';
  import CaseResult from './CaseResult.svelte';
  import { passed, type GymReport } from '$lib/gym/report';
  let { run }: { run: GymReport } = $props();
  let onlyFailures = $state(false);
  let copyState = $state('Copy command');
- const shellArg = (value: string) => `'${value.replaceAll("'", "'\"'\"'")}'`;
- const command = $derived(`node bin/loooom.js gym run ${run.suite.id}${run.runner.model === 'CLI default (unconfigured)' ? '' : ` --model ${shellArg(run.runner.model)}`}`);
+ const command = $derived(gymCommand('run',run.suite.id,run.runner.model));
  const visibleCases = $derived(run.suite.cases.filter(c => !onlyFailures || run.baseline.results.find(r => r.id === c.id)?.passed === false || run.candidate?.results.find(r => r.id === c.id)?.passed === false));
  const status = $derived(({ accepted: 'Candidate accepted', rejected: 'Candidate rejected', 'no-defect': 'No training defect found', error: 'Run interrupted', running: 'Partial report' })[run.status]);
  async function copyCommand() {
@@ -45,7 +45,7 @@
   <div class="skill-columns">{#each [{label: 'Original', value: run.baseline}, ...(run.candidate ? [{label: 'Candidate', value: run.candidate}] : [])] as item}<section><h4>{item.label}</h4><!-- svelte-ignore a11y_no_noninteractive_tabindex (The scrollable text needs keyboard access.) -->
      <pre tabindex="0" role="region" aria-label={`${item.label} skill text`}>{item.value.content}</pre></section>{/each}</div>
  </details>
- <section class="reproduce" aria-labelledby="rerun-heading"><h3 id="rerun-heading">Run another round</h3><p>From your local <a href="https://github.com/mager/loooom">loooom</a> checkout, use your signed-in Codex CLI. Then load the new JSON report here.</p><div class="command"><code>{command}</code><button onclick={copyCommand}>{copyState}</button></div><p class="local-note">Runs on your computer. This page does not start model calls.</p></section>
+ <section class="reproduce" aria-labelledby="rerun-heading"><h3 id="rerun-heading">Run another round</h3><p>Use the available GitHub build with Node 22+ and a signed-in Codex CLI. Loooom 0.3.0 is not on npm yet. <a href={GYM_GUIDE}>Source setup guide</a>.</p><div class="command"><code>{command}</code><button onclick={copyCommand}>{copyState}</button></div><p class="local-note">Runs on your computer. This page does not start model calls.</p></section>
  <footer><p>{run.limitation}</p><dl><div><dt>Runner</dt><dd>{run.runner.version}</dd></div><div><dt>Model</dt><dd>{run.runner.model}</dd></div><div><dt>Run date</dt><dd>{new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeZone: 'America/Chicago' }).format(new Date(run.startedAt))}</dd></div><div><dt>Suite hash</dt><dd><code title={run.suiteHash}>{run.suiteHash.slice(0, 12)}</code></dd></div></dl><p class="judge">Judge: {run.runner.judge}. Repetitions per case: {run.runner.repetitions}.</p><div class="footer-actions"><a href={run.suite.sourceUrl} target="_blank" rel="noreferrer">View pinned source</a><button onclick={download}>Download report</button>{#if run.candidate}<button onclick={downloadCandidate}>Download candidate</button>{/if}</div></footer>
 </article>
 

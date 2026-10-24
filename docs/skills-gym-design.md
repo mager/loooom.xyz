@@ -1,17 +1,35 @@
-# Skills gym surface
+# Skills marketplace and gym surfaces
 
-Mode: Operate. Route: /gym.
+Mode: Operate. Routes: `/` and `/gym`.
 
-Extend the existing cream/ocean website and its dark theme. Keep Outfit, Space Mono for measurements and code, and the existing logo. This is a focused report viewer with a narrow experiment selector and a wide evidence column, not a new brand.
+## Existing visual system
 
-The first viewport shows the selected skill, the strategy, the observed before/after result, and the test rows. The main interaction opens a case into the exact prompt, responses, and criterion decisions. A skill comparison and local JSON import support independent review. Failed, incomplete, no-defect, and empty states must remain honest.
+Extend the cream/ocean website and its dark theme. Keep the existing theme variables, Outfit, Space Mono for code, handwriting headings, and yarn logo. `DESIGN.md` and `src/app.css` remain the visual authority. These surfaces do not establish new global tokens or visual rules.
 
-The runner is local. The website must not imply that a browser button starts a model run. A local-run command and report import make the boundary clear. Controlled regression data is labeled beside its result.
+## Homepage
+
+Lead with skill discovery and testing. Place the marketplace and gym links beside a compact preview of a real saved Focus experiment. On mobile, place the preview below the introduction. Keep ME.md personal context in the following sections.
+
+The preview takes its values from the saved report through the server loader. It shows each round's word count, passed trials, and Keep or Reject decision. The observed Focus run starts at 948 words. Round 1 has 157 words and passes 7/9 trials; it is rejected. Rounds 2 and 3 have 304 and 242 words and pass 9/9 trials; both are kept. The selected version passes 15/15 fresh verification trials. Keep the small-sample and model-grading limit beside these results. A link opens the full evidence in the gym.
+
+## Gym
+
+Use a narrow experiment column and a wide report column on desktop. At mobile widths, use a labeled native select with every saved experiment. Keep the selected skill and result near the top. The first report section shows the strategy, outcome, and original-to-selected change. The training round history follows it.
+
+For repeated-trial reports, separate training selection from fresh verification. Search uses training cases only. Lock the selected skill before the final check, which includes fresh responses and held-out cases. Do not imply that the final evidence guides another edit. Keep controlled defects labeled beside their results. Preserve one-pass reports and distinguish them from repeated-trial experiments.
+
+Users can select a training round or the final check, filter failures, open a case, and inspect each trial's prompt, responses, criteria, and decisions. Keep long response and skill-text regions labeled, keyboard-focusable, and scrollable. Show the original and selected skill with their hashes. Failed, incomplete, cancelled, no-defect, and empty states must describe the available evidence without claiming improvement.
+
+## Local workflow
+
+The browser displays saved reports. It does not start model calls. JSON import reads a local file without uploading it. Downloads provide the full evidence and the selected skill.
+
+The copyable command uses the pinned GitHub archive at `f45997f86ced5d8db2020ab74b9e761fc1f30a39`, as defined in `src/lib/gym/commands.ts`. It includes the suite, round limit, trial count, and model. The page states the Node 22+ and signed-in Codex CLI requirements. At this handoff, npm 0.3.0 publication is pending, so the page provides the source archive command and setup guide. Skill content remains agent-agnostic.
 
 ## Implementation evidence — 2026-10-24
 
-Checked the `/gym` route, `RunReport.svelte`, and `CaseResult.svelte` against `DESIGN.md`, `src/app.css`, and `PRODUCT.md`. Also inspected the desktop and mobile screenshots in `../skills-gym-work/review/desktop.jpg` and `../skills-gym-work/review/mobile.jpg` (paths from the repository root).
+Checked `PRODUCT.md`, `DESIGN.md`, the homepage and its server loader, `/gym`, `GymPreview.svelte`, `ClimbReport.svelte`, `RunReport.svelte`, `CaseResult.svelte`, the saved-report loader, and the command helper. Compared them with the existing theme CSS.
 
-The page uses the existing theme variables, Outfit, Space Mono, handwriting headings, and yarn logo. The desktop view has a narrow experiment column and a wide report column. On mobile, the selector wraps into a two-column grid and the report follows it. Scores, controlled-defect labels, and case results remain visible in both screenshots. Source inspection confirms labeled, keyboard-focusable response and skill-text regions with visible focus styles. JSON import reads the local file in the browser; it does not upload the report or start a model run. Interaction verification belongs to the separate finish review.
+Inspected the six final screenshots in `../skills-gym-work/review-climb/`: `home-desktop-fixed.jpg`, `home-mobile-fixed.jpg`, `home-user-440-fixed.jpg`, `gym-desktop-fixed.jpg`, `gym-mobile-fixed.jpg`, and `gym-user-440-fixed.jpg`. Paths are relative to the repository root. They show the final home and gym layouts on desktop and at 390px and 440px mobile widths. Also inspected `gym-dark.jpg` for the inherited dark theme and `evidence-desktop.jpg` for expanded trial evidence and visible response focus. Those two earlier captures do not establish the final command copy. The separate finish reviewer reported both required fixes resolved and a ship verdict; this document pass did not repeat browser interaction tests.
 
-Preserved `DESIGN.md` and `src/app.css`; neither has a diff. No design sidecar was found. Existing documentation differences remain: `DESIGN.md` has unsupported top-level elevation, shadows, and motion groups and uses “Layout & Spacing” instead of the format's “Layout” heading. It describes the light palette but does not capture the dark-theme values in `app.css`. These existing differences were recorded, not repaired. This surface does not establish new global tokens or visual rules.
+Preserved `DESIGN.md` and `src/app.css`; neither has a diff. No `.impeccable/design.json` sidecar was found or created. Existing documentation differences remain: `DESIGN.md` has unsupported top-level elevation, shadows, and motion groups and uses “Layout & Spacing” instead of the format's “Layout” heading. It records the light palette but omits the dark-theme values in `app.css`. These existing differences were recorded, not repaired.

@@ -34,6 +34,7 @@ export function parseReport(value: unknown): GymReport {
  for (const v of [r.baseline, r.candidate].filter(x => x !== null)) {
   const variant = record(v);
   if (!text(variant.content) || !/^[a-f0-9]{64}$/.test(String(variant.hash)) || !count(variant.words) || !count(variant.bytes) || !Array.isArray(variant.results) || (variant.rationale !== undefined && !text(variant.rationale))) fail();
+  if (variant.words !== String(variant.content).trim().split(/\s+/u).filter(Boolean).length || variant.bytes !== new TextEncoder().encode(String(variant.content)).length) fail();
   const resultIds = new Set();
   for (const item of variant.results as unknown[]) {
    const result = record(item);

@@ -12,7 +12,7 @@ People who publish personal agent context and reusable skills. Skill authors who
 
 ## Product Purpose
 
-Publish ME.md context, discover agent skills, and inspect evidence from skill evaluations.
+A skills marketplace and a gym: discover agent skills, test changes, and inspect the evidence. ME.md personal context remains available.
 
 ## Operating Context
 
@@ -20,7 +20,7 @@ The Skills gym runs locally in the loooom CLI repository. The website shows save
 
 ## Capabilities and Constraints
 
-Repair a skill using observed training failures, or remove sections and test the shorter version. Use fixed criteria and a holdout case. Keep original and candidate content, hashes, responses, and decisions. A small passing suite is not proof of general improvement. This loop does not train model weights.
+Repair a skill using observed training failures, or remove sections and test the shorter version. Use fixed criteria, repeated trials, and held-out cases. Search on training evidence, lock the selection, then verify on fresh responses. Keep original and candidate content, hashes, responses, and decisions. A small passing suite is not proof of general improvement. This loop does not train model weights. The gym stays inside Loooom behind a public library interface that can later move to its own package.
 
 ## Evidence on Hand
 
