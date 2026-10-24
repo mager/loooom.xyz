@@ -5,6 +5,7 @@ import { eq } from 'drizzle-orm';
 import { error } from '@sveltejs/kit';
 import { PLUGINS } from '$lib/plugins';
 import { parseMeMd } from '$lib/memd';
+import { getSkillQuality } from '$lib/skill-scores';
 
 // Map skill categories → human-readable topic labels
 const CATEGORY_TOPICS: Record<string, string> = {
@@ -119,7 +120,11 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 			installCommand: p.installCommand
 		}));
 
-		const allSkills = [...skillsWithFiles, ...catalogPlugins];
+		// Volume 1: only show skills that have passed rubric evaluation (have a quality score).
+		// Catalog plugins (legacy static list) are excluded — they predate the scoring system.
+		const allSkills = [...skillsWithFiles, ...catalogPlugins].filter(
+			(s) => getSkillQuality(dbUser.username, s.name) !== null
+		);
 		const totalInstalls = allSkills.reduce((sum, s) => sum + (s.installs || 0), 0);
 
 		// Parse ME.md if present

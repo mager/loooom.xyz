@@ -17,7 +17,10 @@ export interface ValidationIssue {
 	message: string;
 }
 
-const REQUIRED_FIELDS = ['name', 'description', 'author', 'version'];
+// agentskills spec: only name + description are required, and only these six
+// keys are allowed at the top level. Everything else lives under `metadata`.
+const REQUIRED_FIELDS = ['name', 'description'];
+const SPEC_TOP_LEVEL = ['name', 'description', 'license', 'compatibility', 'allowed-tools', 'metadata'];
 const URL_SAFE_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SEMVER_PATTERN = /^\d+\.\d+\.\d+$/;
 
@@ -36,12 +39,21 @@ export function validateSkill(content: string): ValidationResult {
 	}
 
 	const { data: frontmatter, content: body } = parsed;
+	const metadata = (frontmatter.metadata ?? {}) as Record<string, unknown>;
 
 	// Check required fields
 	for (const field of REQUIRED_FIELDS) {
 		if (!frontmatter[field]) {
 			errors.push({ field, message: `Missing required field: ${field}` });
 		}
+	}
+
+	// Nudge non-spec keys under metadata (author, version, tags, category, ...)
+	const misplaced = Object.keys(frontmatter).filter((k) => !SPEC_TOP_LEVEL.includes(k));
+	if (misplaced.length > 0) {
+		suggestions.push({
+			message: `Move non-spec frontmatter under metadata: ${misplaced.join(', ')}`
+		});
 	}
 
 	// Validate name
@@ -76,23 +88,25 @@ export function validateSkill(content: string): ValidationResult {
 		}
 	}
 
-	// Validate version
-	if (frontmatter.version && !SEMVER_PATTERN.test(frontmatter.version)) {
+	// Validate version (spec: under metadata; tolerate top-level for back-compat)
+	const version = metadata.version ?? frontmatter.version;
+	if (version && (typeof version !== 'string' || !SEMVER_PATTERN.test(version))) {
 		errors.push({
 			field: 'version',
 			message: 'Version must follow SemVer (e.g., 1.0.0)'
 		});
 	}
 
-	// Validate tags
-	if (frontmatter.tags) {
-		if (!Array.isArray(frontmatter.tags)) {
+	// Validate tags (spec: under metadata; tolerate top-level for back-compat)
+	const tags = metadata.tags ?? frontmatter.tags;
+	if (tags) {
+		if (!Array.isArray(tags)) {
 			errors.push({
 				field: 'tags',
 				message: 'Tags must be an array of strings'
 			});
 		} else {
-			for (const tag of frontmatter.tags) {
+			for (const tag of tags) {
 				if (typeof tag !== 'string') {
 					errors.push({
 						field: 'tags',

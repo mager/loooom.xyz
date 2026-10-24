@@ -2,10 +2,10 @@
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import Nav from '$lib/components/Nav.svelte';
 	import { marked } from 'marked';
+	import { QUALITY_DIMENSIONS } from '$lib/skill-scores';
 
 	let { data } = $props();
 	let activeFile = $state(0);
-	let showInstall = $state(false);
 	let copiedSkill = $state(false);
 	let copiedCli = $state(false);
 
@@ -27,6 +27,15 @@
 	const renderedSkillMd = hasSkillMd ? marked.parse(stripFrontmatter(data.skill.files[skillMdIndex].content)) : '';
 	// Non-SKILL.md files for the raw code viewer
 	const otherFiles = data.skill.files.filter((_: unknown, i: number) => i !== skillMdIndex);
+
+	// Quality score, graded against the Loooom rubric (eval-scores.json).
+	const qualityDims = data.quality
+		? QUALITY_DIMENSIONS.map((d) => ({
+				label: d.label,
+				score: data.quality!.dimensions[d.id]?.score ?? 0,
+				note: data.quality!.dimensions[d.id]?.note ?? ''
+			}))
+		: [];
 
 	function relativeTime(iso: string): string {
 		const diff = Date.now() - new Date(iso).getTime();
@@ -64,19 +73,6 @@
 		setTimeout(() => copiedCli = false, 2000);
 	}
 
-	function handleClickOutside(e: MouseEvent) {
-		const target = e.target as HTMLElement;
-		if (!target.closest('.install-wrap')) {
-			showInstall = false;
-		}
-	}
-
-	$effect(() => {
-		if (showInstall) {
-			document.addEventListener('click', handleClickOutside, true);
-			return () => document.removeEventListener('click', handleClickOutside, true);
-		}
-	});
 </script>
 
 <svelte:head>
@@ -142,37 +138,60 @@
 			</div>
 		</div>
 
-		<!-- Install button -->
-		{#if data.skill.files.length > 0}
-			<div class="install-bar">
-				<div class="install-wrap">
-					<button class="btn-install" onclick={() => showInstall = !showInstall}>
-						Install
-						<svg class="install-arrow" class:open={showInstall} viewBox="0 0 12 12" width="12" height="12">
-							<path fill="currentColor" d="M6 8L1 3h10z"/>
-						</svg>
-					</button>
-					
-					{#if showInstall}
-						<div class="install-popover">
-							<div class="install-option">
-								<span class="install-label">CLI</span>
-								<button class="install-copy" onclick={copyCli}>
-									<code>npx loooom add {data.author.username}/{data.skill.name}</code>
-									<span class="copy-hint">{copiedCli ? '✓' : 'copy'}</span>
-								</button>
-							</div>
-							<div class="install-divider"></div>
-							<div class="install-option">
-								<span class="install-label">Manual</span>
-								<button class="install-copy" onclick={copySkillContent}>
-									<span>Copy SKILL.md content</span>
-									<span class="copy-hint">{copiedSkill ? '✓' : 'copy'}</span>
-								</button>
-							</div>
-						</div>
+		<!-- Quality score — the Loooom bar, in public -->
+		{#if data.quality}
+			<details class="quality" data-verdict={data.quality.verdict}>
+				<summary class="q-summary">
+					<span class="q-score">{data.quality.score}</span>
+					<span class="q-meta">
+						<span class="q-verdict">{data.quality.verdict.replace('-', ' ')}</span>
+						<span class="q-sub">graded · rubric v{data.quality.rubricVersion} · spec {data.quality.specPassed}/{data.quality.specTotal}</span>
+					</span>
+					<span class="q-toggle">how it scored</span>
+				</summary>
+				<div class="q-body">
+					{#if data.quality.verdictLine}
+						<p class="q-line">“{data.quality.verdictLine}”</p>
 					{/if}
+					<div class="q-dims">
+						{#each qualityDims as d}
+							<div class="q-dim">
+								<span class="q-dim-name">{d.label}</span>
+								<span class="q-bars" aria-label={`${d.score} out of 5`}>
+									{#each Array(5) as _, i}
+										<span class="q-bar" class:on={i < d.score}></span>
+									{/each}
+								</span>
+								<span class="q-dim-note">{d.note}</span>
+							</div>
+						{/each}
+					</div>
 				</div>
+			</details>
+		{/if}
+
+		<!-- Use this skill — primary action -->
+		{#if data.skill.files.length > 0}
+			<div class="use-card">
+				<div class="use-main">
+					<div class="use-text">
+						<span class="use-eyebrow">Use this skill</span>
+						<p class="use-help">Copy it, paste into any AI — Claude, ChatGPT, Gemini — and start.</p>
+					</div>
+					<button class="btn-use" class:copied={copiedSkill} onclick={copySkillContent}>
+						{copiedSkill ? 'Copied — now paste it in ✓' : 'Copy & paste into any AI'}
+					</button>
+				</div>
+					
+				<details class="use-dev">
+					<summary>For developers</summary>
+					<div class="use-dev-body">
+						<button class="dev-copy" onclick={copyCli}>
+							<code>npx loooom add {data.author.username}/{data.skill.name}</code>
+							<span class="copy-hint">{copiedCli ? '✓ copied' : 'copy'}</span>
+						</button>
+					</div>
+				</details>
 			</div>
 		{/if}
 
@@ -254,7 +273,8 @@
 
 	.skill-header { margin-bottom: 2rem; }
 	.skill-category { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); margin-bottom: 0.5rem; display: inline-block; }
-	.skill-header h1 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 0.75rem; color: var(--text-primary); }
+	.skill-header h1 { font-size: clamp(2.75rem, 7vw, 4.5rem); line-height: 1; margin-bottom: 1rem; color: var(--text-primary); display: inline-block; position: relative; }
+	.skill-header h1::after { content: ''; display: block; width: 2.75rem; height: 3px; margin-top: 0.5rem; border-radius: 999px; background: linear-gradient(90deg, var(--ocean), var(--indigo)); }
 	.skill-desc { font-size: 1.1rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 1.25rem; }
 
 	/* Byline - compact author info */
@@ -270,8 +290,51 @@
 	.byline-edit { color: var(--ocean); text-decoration: none; }
 	.byline-edit:hover { text-decoration: underline; }
 
-	/* Install bar */
-	.install-bar { display: flex; justify-content: flex-end; margin-bottom: 2rem; }
+	/* Use this skill — primary action */
+	/* Quality badge */
+	.quality { margin-bottom: 1.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+	.quality[data-verdict="passing"] { border-color: color-mix(in srgb, var(--emerald) 45%, var(--border)); }
+	.q-summary { display: flex; align-items: center; gap: 0.9rem; padding: 0.85rem 1.1rem; cursor: pointer; list-style: none; user-select: none; }
+	.q-summary::-webkit-details-marker { display: none; }
+	.q-score { font-family: var(--font-mono); font-size: 1.7rem; font-weight: 700; line-height: 1; min-width: 2.4rem; text-align: center; }
+	.quality[data-verdict="passing"] .q-score { color: var(--emerald); }
+	.quality[data-verdict="needs-work"] .q-score { color: #d99a16; }
+	.quality[data-verdict="failing"] .q-score { color: #e0245e; }
+	.q-meta { display: flex; flex-direction: column; gap: 0.12rem; flex: 1; min-width: 0; }
+	.q-verdict { font-weight: 600; text-transform: capitalize; font-size: 0.95rem; color: var(--text-primary); }
+	.q-sub { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); }
+	.q-toggle { flex-shrink: 0; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); }
+	.quality[open] .q-toggle::after { content: ' ▴'; }
+	.quality:not([open]) .q-toggle::after { content: ' ▾'; }
+	.q-body { padding: 0 1.1rem 1.1rem; }
+	.q-line { margin: 0 0 1rem; font-size: 0.92rem; font-style: italic; color: var(--text-secondary); line-height: 1.5; }
+	.q-dims { display: flex; flex-direction: column; gap: 0.7rem; }
+	.q-dim { display: grid; grid-template-columns: 7rem auto; gap: 0.2rem 0.85rem; align-items: center; }
+	.q-dim-name { font-weight: 600; font-size: 0.84rem; color: var(--text-primary); }
+	.q-bars { display: inline-flex; gap: 3px; }
+	.q-bar { width: 1.5rem; height: 6px; border-radius: 3px; background: color-mix(in srgb, var(--text-muted) 25%, transparent); }
+	.q-bar.on { background: linear-gradient(90deg, var(--ocean), var(--indigo)); }
+	.q-dim-note { grid-column: 2 / -1; font-size: 0.76rem; color: var(--text-muted); line-height: 1.4; }
+	@media (max-width: 540px) {
+		.q-dim { grid-template-columns: 1fr; }
+		.q-dim-note { grid-column: 1 / -1; }
+	}
+
+	.use-card { margin-bottom: 2.5rem; padding: 1.25rem 1.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); }
+	.use-main { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; }
+	.use-eyebrow { display: block; font-family: var(--font-mono); font-size: 0.62rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-muted); margin-bottom: 0.3rem; }
+	.use-help { margin: 0; max-width: 32ch; font-size: 0.92rem; line-height: 1.4; color: var(--text-secondary); }
+	.btn-use {
+		flex-shrink: 0; padding: 0.7rem 1.4rem;
+		background: linear-gradient(135deg, var(--ocean), var(--indigo)); color: #fff;
+		border: none; border-radius: var(--radius-sm);
+		font-size: 0.92rem; font-weight: 600; cursor: pointer;
+		box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+		transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+	}
+	.btn-use:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,0,0,0.16); filter: brightness(1.05); }
+	.btn-use:active { transform: translateY(0); }
+	.btn-use.copied { background: var(--emerald); box-shadow: 0 4px 16px rgba(0,0,0,0.10); }
 
 	/* Prose — rendered SKILL.md */
 	.prose { margin-bottom: 3rem; color: var(--text-secondary); line-height: 1.7; font-size: 1rem; }
@@ -313,52 +376,30 @@
 	.file-tab.active { color: var(--text-primary); border-bottom-color: var(--accent); }
 	.file-icon { font-size: 0.9rem; }
 
-	/* Compact install dropdown */
-	.install-wrap { position: relative; padding-right: 0.5rem; }
-	.btn-install {
-		display: inline-flex; align-items: center; gap: 0.4rem;
-		padding: 0.4rem 0.75rem; background: var(--bg-card); color: var(--text-secondary);
-		border: 1px solid var(--border); border-radius: var(--radius-sm);
-		font-family: var(--font-mono); font-size: 0.75rem; font-weight: 500;
-		cursor: pointer; transition: all 0.2s;
-	}
-	.btn-install:hover { border-color: var(--text-muted); color: var(--text-primary); }
-	.install-arrow { transition: transform 0.2s; opacity: 0.7; }
-	.install-arrow.open { transform: rotate(180deg); }
-
-	.install-popover {
-		position: absolute; top: calc(100% + 0.4rem); right: 0;
-		width: 320px; max-width: 90vw;
-		background: var(--bg-card); border: 1px solid var(--border);
-		border-radius: var(--radius-md); box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-		padding: 0.75rem; z-index: 200;
-		animation: popoverIn 0.12s ease-out;
-	}
-	@keyframes popoverIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
-
-	.install-option { display: flex; flex-direction: column; gap: 0.35rem; }
-	.install-divider { height: 1px; background: var(--border); margin: 0.5rem 0; }
-	.install-label {
-		font-family: var(--font-mono); font-size: 0.6rem; font-weight: 600;
-		text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);
-	}
-	.install-copy {
+	/* Developer disclosure */
+	.use-dev { margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+	.use-dev summary { list-style: none; cursor: pointer; user-select: none; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); transition: color 0.2s; }
+	.use-dev summary::-webkit-details-marker { display: none; }
+	.use-dev summary::before { content: '›'; display: inline-block; margin-right: 0.4rem; transition: transform 0.2s; }
+	.use-dev[open] summary::before { transform: rotate(90deg); }
+	.use-dev summary:hover { color: var(--text-secondary); }
+	.use-dev-body { margin-top: 0.6rem; }
+	.dev-copy {
 		display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
-		width: 100%; padding: 0.5rem 0.6rem;
+		width: 100%; padding: 0.5rem 0.7rem;
 		background: var(--bg-secondary); border: 1px solid var(--border);
-		border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s;
-		text-align: left;
+		border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s; text-align: left;
 	}
-	.install-copy:hover { border-color: var(--text-muted); }
-	.install-copy code, .install-copy span:first-child {
-		font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-secondary);
+	.dev-copy:hover { border-color: var(--text-muted); }
+	.dev-copy code {
+		font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-secondary);
 		overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0;
 	}
 	.copy-hint {
-		font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-muted);
-		flex-shrink: 0; transition: color 0.2s;
+		flex-shrink: 0; font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-muted);
+		transition: color 0.2s;
 	}
-	.install-copy:hover .copy-hint { color: var(--text-primary); }
+	.dev-copy:hover .copy-hint { color: var(--text-primary); }
 
 	.code-viewer { background: var(--bg-card); border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius-md) var(--radius-md); overflow: hidden; }
 	.code-header { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--border); background: var(--bg-secondary); }
@@ -394,8 +435,8 @@
 	@media (max-width: 768px) {
 		.files-header { flex-direction: column; align-items: stretch; }
 		.file-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-		.install-wrap { padding: 0.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: flex-end; }
-		.install-popover { right: 0.5rem; }
+		.use-main { gap: 1rem; }
+		.btn-use { width: 100%; }
 		.byline { font-size: 0.8rem; }
 		.nav-right a:not(.btn-nav):not(:global(.theme-toggle)) { display: none; }
 	}
