@@ -12,6 +12,7 @@
 		<div class="nav-right">
 			<a href="/me" class="nav-link">ME.md</a>
 			<a href="/browse" class="nav-link">Skills</a>
+			<a href="/gym" class="nav-link">Gym</a>
 			<a href="/docs" class="nav-link">Docs</a>
 			<a
 				href="https://github.com/mager/loooom"

@@ -53,6 +53,7 @@
 		<div class="nav-links">
 			<a href="/me">ME.md</a>
 			<a href="/browse">Skills</a>
+			<a href="/gym">Gym</a>
 			<a href="/me/mager">Example</a>
 		</div>
 
