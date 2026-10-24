@@ -7,7 +7,7 @@
  let copyState = $state('Copy command');
  const command = $derived(gymCommand('run',run.suite.id,run.runner.model));
  const visibleCases = $derived(run.suite.cases.filter(c => !onlyFailures || run.baseline.results.find(r => r.id === c.id)?.passed === false || run.candidate?.results.find(r => r.id === c.id)?.passed === false));
- const status = $derived(({ accepted: 'Candidate accepted', rejected: 'Candidate rejected', 'no-defect': 'No training defect found', error: 'Run interrupted', running: 'Partial report' })[run.status]);
+ const status = $derived(({ accepted: 'Change kept', rejected: 'Change not kept', 'no-defect': 'Original kept', error: 'Run interrupted', running: 'Partial report' })[run.status]);
  async function copyCommand() {
   try { await navigator.clipboard.writeText(command); copyState = 'Copied'; }
   catch { copyState = 'Select the command to copy'; }
@@ -26,30 +26,39 @@
 </script>
 
 <article>
- <div class="report-title"><div><h2>{run.suite.title}</h2><p>{run.suite.description}</p></div><span class="strategy">{run.strategy === 'repair' ? 'Repair' : 'Shorten'}</span></div>
- {#if run.suite.seededDefect}<aside class="notice"><strong>Controlled regression</strong><p>{run.suite.seededDefect}</p></aside>{/if}
+ <div class="report-title"><div><h2>{run.status==='accepted'?'The change passed the tests.':run.status==='rejected'?'This change did not work.':run.status==='no-defect'?'No change was needed.':'This test is not finished.'}</h2><p>An earlier test of {run.suite.id==='absorb-regression'?'absorb':run.suite.id}. One AI answer per question.</p></div><span class="strategy">{run.strategy === 'repair' ? 'Repair' : 'Shorten'}</span></div>
+ {#if run.suite.seededDefect}<aside class="notice"><strong>A mistake added on purpose</strong><p>We added a mistake to test the repair process. The published skill did not have this mistake.</p></aside>{/if}
  <section class="comparison" aria-label="Evaluation comparison">
-  <div><h3>Original</h3><p class="score">{passed(run.baseline)}<span> / {run.suite.cases.length}</span></p><p class="metric-label">cases passed</p><p class="size">{run.baseline.words.toLocaleString()} words <code>{run.baseline.hash.slice(0, 8)}</code></p></div>
+  <div><h3>Before</h3><p class="score">{passed(run.baseline)}<span> / {run.suite.cases.length}</span></p><p class="metric-label">tests passed</p><p class="size">{run.baseline.words.toLocaleString()} words </p></div>
   <span class="join" aria-hidden="true">→</span>
-  <div><h3>{run.candidate ? 'Candidate' : 'No candidate'}</h3>{#if run.candidate}<p class="score">{passed(run.candidate)}<span> / {run.suite.cases.length}</span></p><p class="metric-label">cases passed</p><p class="size">{run.candidate.words.toLocaleString()} words <code>{run.candidate.hash.slice(0, 8)}</code></p>{:else}<p class="no-candidate">{run.status === 'no-defect' ? 'Keep the original.' : 'Not available yet.'}</p>{/if}</div>
+  <div><h3>{run.candidate ? 'After' : 'No change'}</h3>{#if run.candidate}<p class="score">{passed(run.candidate)}<span> / {run.suite.cases.length}</span></p><p class="metric-label">tests passed</p><p class="size">{run.candidate.words.toLocaleString()} words </p>{:else}<p class="no-candidate">{run.status === 'no-defect' ? 'Keep the original.' : 'Not available yet.'}</p>{/if}</div>
  </section>
  <div class="decision"><strong>{status}</strong><p>{run.decision?.reason ?? 'This file has incomplete results. Run the local command again to create a complete report.'}</p>{#if run.decision && run.strategy === 'ablate' && run.candidate}<p>{run.decision.wordsRemoved} words removed ({run.decision.reductionPercent}%).</p>{/if}</div>
  {#if run.error}<p role="alert" class="notice">{run.error}</p>{/if}
+ <p class="plain-limit">An AI graded a small set of answers. This earlier test did not include a fresh final check.</p>
+ <details class="detail-block"><summary>See the test results</summary>
  <section class="tests" aria-labelledby="test-heading">
   <div class="section-head"><h3 id="test-heading">Test cases</h3><label><input type="checkbox" bind:checked={onlyFailures} /> Only failures</label></div>
-  <div class="column-labels"><span>Open a case to inspect the evidence</span><span>Original</span><span aria-hidden="true"></span><span>Candidate</span><span aria-hidden="true"></span></div>
+  <div class="column-labels"><span>Open a question to read the answers</span><span>Before</span><span aria-hidden="true"></span><span>After</span><span aria-hidden="true"></span></div>
   {#each visibleCases as test (test.id)}<CaseResult {test} before={run.baseline.results.find(r => r.id === test.id)} after={run.candidate?.results.find(r => r.id === test.id)} hasCandidate={!!run.candidate} />{:else}<p class="empty">No failed cases in this report.</p>{/each}
  </section>
- <details class="skill-comparison"><summary>Compare skill text <span>{run.baseline.words} → {run.candidate?.words ?? run.baseline.words} words</span></summary>
+ </details>
+ <details class="skill-comparison"><summary>Read the before and after instructions <span>{run.baseline.words} → {run.candidate?.words ?? run.baseline.words} words</span></summary>
   {#if run.candidate?.rationale}<p class="rationale">{run.candidate.rationale}</p>{/if}
-  <div class="skill-columns">{#each [{label: 'Original', value: run.baseline}, ...(run.candidate ? [{label: 'Candidate', value: run.candidate}] : [])] as item}<section><h4>{item.label}</h4><!-- svelte-ignore a11y_no_noninteractive_tabindex (The scrollable text needs keyboard access.) -->
+  <div class="skill-columns">{#each [{label: 'Before', value: run.baseline}, ...(run.candidate ? [{label: 'After', value: run.candidate}] : [])] as item}<section><h4>{item.label}</h4><!-- svelte-ignore a11y_no_noninteractive_tabindex (The scrollable text needs keyboard access.) -->
      <pre tabindex="0" role="region" aria-label={`${item.label} skill text`}>{item.value.content}</pre></section>{/each}</div>
  </details>
- <section class="reproduce" aria-labelledby="rerun-heading"><h3 id="rerun-heading">Run another round</h3><p>Use the available GitHub build with Node 22+ and a signed-in Codex CLI. Loooom 0.3.0 is not on npm yet. <a href={GYM_GUIDE}>Source setup guide</a>.</p><div class="command"><code>{command}</code><button onclick={copyCommand}>{copyState}</button></div><p class="local-note">Runs on your computer. This page does not start model calls.</p></section>
- <footer><p>{run.limitation}</p><dl><div><dt>Runner</dt><dd>{run.runner.version}</dd></div><div><dt>Model</dt><dd>{run.runner.model}</dd></div><div><dt>Run date</dt><dd>{new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeZone: 'America/Chicago' }).format(new Date(run.startedAt))}</dd></div><div><dt>Suite hash</dt><dd><code title={run.suiteHash}>{run.suiteHash.slice(0, 12)}</code></dd></div></dl><p class="judge">Judge: {run.runner.judge}. Repetitions per case: {run.runner.repetitions}.</p><div class="footer-actions"><a href={run.suite.sourceUrl} target="_blank" rel="noreferrer">View pinned source</a><button onclick={download}>Download report</button>{#if run.candidate}<button onclick={downloadCandidate}>Download candidate</button>{/if}</div></footer>
+ <details class="detail-block"><summary>Try this on your computer</summary>
+ <section class="reproduce" aria-labelledby="rerun-heading"><h3 id="rerun-heading">Run the tests yourself</h3><p>Use the available GitHub build with Node 22+ and a signed-in Codex CLI. Loooom 0.3.0 is not on npm yet. <a href={GYM_GUIDE}>Source setup guide</a>.</p><div class="command"><code>{command}</code><button onclick={copyCommand}>{copyState}</button></div><p class="local-note">Runs on your computer. This page does not start model calls.</p></section>
+ </details>
+ <details class="detail-block"><summary>About this test and downloads</summary>
+ <footer><p>{run.limitation}</p><dl><div><dt>Runner</dt><dd>{run.runner.version}</dd></div><div><dt>Model</dt><dd>{run.runner.model}</dd></div><div><dt>Run date</dt><dd>{new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeZone: 'America/Chicago' }).format(new Date(run.startedAt))}</dd></div><div><dt>Suite hash</dt><dd><code title={run.suiteHash}>{run.suiteHash.slice(0, 12)}</code></dd></div></dl><p class="judge">Judge: {run.runner.judge}. Repetitions per case: {run.runner.repetitions}.</p><div class="footer-actions"><a href={run.suite.sourceUrl} target="_blank" rel="noreferrer">Read the original skill</a><button onclick={download}>Download report</button>{#if run.candidate}<button onclick={downloadCandidate}>Download changed version</button>{/if}</div></footer>
+ </details>
 </article>
 
 <style>
+ .detail-block{border-bottom:1px solid var(--border);margin-top:14px}.detail-block>summary{padding:20px 0;cursor:pointer;font-weight:500;line-height:1.5}.detail-block[open]{padding-bottom:24px}.plain-limit{font-size:.85rem;color:var(--text-secondary);line-height:1.6;margin-bottom:20px}
+
  article { min-width: 0; }
  .report-title { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 26px; }
  h2 { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 500; line-height: 1.2; letter-spacing: -.025em; }

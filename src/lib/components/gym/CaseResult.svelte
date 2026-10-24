@@ -5,16 +5,16 @@
 
 <details class="case">
  <summary>
-  <span class="case-title">{test.title}<small>{test.split === 'holdout' ? 'Holdout · hidden from repair' : 'Training case'}</small></span>
+  <span class="case-title">{test.title}<small>{test.split === 'holdout' ? 'Saved for the final test' : 'Used to test changes'}</small></span>
   <span class:failed={before?.passed === false} class="result">{resultLabel(before)}</span>
   <span aria-hidden="true" class="arrow">→</span>
   <span class:failed={after?.passed === false} class="result">{hasCandidate ? resultLabel(after) : '—'}</span>
   <span class="open-hint" aria-hidden="true">+</span>
  </summary>
  <div class="evidence">
-  <h4>Learner prompt</h4><p class="prompt">{test.prompt}</p>
+  <h4>What we asked</h4><p class="prompt">{test.prompt}</p>
   <div class="responses">
-   {#each [{ label: 'Original response', result: before }, ...(hasCandidate ? [{ label: 'Candidate response', result: after }] : [])] as item}
+   {#each [{ label: 'Before: AI answer', result: before }, ...(hasCandidate ? [{ label: 'After: AI answer', result: after }] : [])] as item}
     <section>
      <h4>{item.label}</h4>
      <!-- svelte-ignore a11y_no_noninteractive_tabindex (The scrollable text needs keyboard access.) -->
