@@ -1,3 +1,4 @@
+import { gymPreview } from '$lib/server/gym';
 import type { PageServerLoad } from './$types';
 import { PLUGINS, CATEGORIES } from '$lib/plugins';
 import { db } from '$lib/server/db';
@@ -80,6 +81,7 @@ export const load: PageServerLoad = async () => {
 	}
 
 	return {
+		gymPreview: gymPreview(),
 		plugins: PLUGINS,
 		categories: CATEGORIES,
 		featuredSkills,

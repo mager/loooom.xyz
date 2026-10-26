@@ -14,7 +14,7 @@ Two audiences, one curator.
 
 ## Product Purpose
 
-Loooom is a **curated collection of high-quality, non-technical skills** for AI agents, held to a deliberately high quality bar — and a personal experiment in measuring skill quality. Not an open marketplace; closer to a single, well-made suite (impeccable.design's model). Every skill is scored against a public rubric by a free model, so quality is shown, not asserted. Success = a visitor recognizes the craft instantly and copies a skill into their AI without friction.
+Loooom is a **curated collection of high-quality, non-technical skills** for AI agents, held to a deliberately high quality bar — and a personal experiment in measuring skill quality. The marketplace is curated by the author; the gym adds saved repair and ablation experiments. Every skill is scored against a public rubric by a free model, so quality is shown, not asserted. Success = a visitor recognizes the craft, copies a skill into their AI, or inspects the evidence for a proposed improvement.
 
 ## Brand Personality
 
@@ -38,3 +38,7 @@ Craft, taste, honesty. A lab, not a startup. Warm but precise; opinionated witho
 ## Accessibility & Inclusion
 
 WCAG AA contrast on all text (≥4.5:1 body, ≥3:1 large). `prefers-reduced-motion` is mandatory — every overdrive effect needs a beautiful static or crossfade fallback. Full keyboard navigation, visible focus states, semantic landmarks. Motion enhances an already-visible default; content never depends on a JS-gated reveal.
+
+## Skills Gym
+
+The gym tests skill behavior, while the catalog rubric scores the skill text. These are separate measures. The first gym runs locally with a model adapter, saves responses and grades, and shows them at `/gym`. It supports repair and shortening, training-only selection, and a final check on fresh responses with held-out cases. The browser reads reports; it does not start model calls. The engine stays in the `loooom` package with a reusable `loooom/gym` export.

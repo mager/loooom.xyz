@@ -1,6 +1,9 @@
 <script lang="ts">
 	import YarnLogo from '$lib/components/YarnLogo.svelte';
 	import Nav from '$lib/components/Nav.svelte';
+	import GymPreview from '$lib/components/gym/GymPreview.svelte';
+	import type { PageData } from './$types';
+	let { data }: { data: PageData } = $props();
 	import { onMount } from 'svelte';
 
 	// ── The grader (hero signature moment) ──────────────────────────────────
@@ -91,10 +94,10 @@
 </script>
 
 <svelte:head>
-	<title>Loooom — Curated skills for making things</title>
+	<title>Loooom — Skills marketplace and gym</title>
 	<meta
 		name="description"
-		content="A curated collection of high-quality skills for the creative, non-technical parts of life. Each one is scored against a rubric before it ships. Copy one into any AI and start."
+		content="A curated skills marketplace and a gym to test, repair, and simplify agent skills. Read the rubric, inspect the experiments, and copy a skill into any AI."
 	/>
 	<meta name="loooom-agents" content="https://loooom.xyz/AGENTS.md" />
 	<meta name="loooom-llms" content="https://loooom.xyz/llms.txt" />
@@ -111,18 +114,17 @@
 		<!-- HERO -->
 		<section class="hero">
 			<div class="hero-copy">
-				<p class="eyebrow">Curated skills · scored before they ship</p>
-				<h1>Make something <em>good.</em></h1>
+				<h1>Find a skill. Make it <em>better.</em></h1>
 				<p class="hero-sub">
-					Loooom is a small, curated collection of skills for the creative, non-technical parts of
-					life. Every one is graded against a rubric first. Copy one into any AI and start making.
+					A curated marketplace for agent skills. A gym to test, repair, and simplify them.
+					Read the quality scores, copy a skill into any AI, and start making.
 				</p>
 				<div class="hero-actions">
 					<a href="/browse" class="primary-action">Browse the skills</a>
-					<a href="/s/mager/hook" class="secondary-action">See one up close</a>
+					<a href="/gym" class="secondary-action">Enter the gym</a>
 				</div>
 				<p class="hero-trust">
-					No terminal, no install. Works in Claude, ChatGPT, Gemini, anything.
+					To use a skill: copy and paste. To improve one: test it in the gym.
 				</p>
 			</div>
 
@@ -178,11 +180,21 @@
 			</div>
 		</section>
 
+		<section class="gym-section" aria-labelledby="gym-heading">
+			<div class="gym-copy">
+				<h2 id="gym-heading">Good skills deserve a workout.</h2>
+				<p>Find a failed test. Try a repair. Or remove text and check what still works. Keep the evidence with the skill.</p>
+				<p>Focus went from 948 to 242 words. The original and shorter versions each passed all 15 fresh trials.</p>
+				<a href="/gym" class="ghost-link">See the experiments <i aria-hidden="true">→</i></a>
+			</div>
+			<GymPreview report={data.gymPreview} />
+		</section>
+
 		<!-- WHAT YOU CAN MAKE -->
 		<section class="make" aria-labelledby="make-heading">
 			<div class="make-head">
 				<h2 id="make-heading">What you can make today</h2>
-				<p>Three are written and live. Twelve more are coming, held to the same bar.</p>
+				<p>Three starting points from Volume 1. Fifteen skills, held to the same bar.</p>
 			</div>
 			<div class="make-grid">
 				{#each flagships as s, i}
@@ -259,6 +271,11 @@
 </div>
 
 <style>
+	.gym-section { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 6vw, 6rem); align-items: center; }
+	.gym-copy p { color: var(--text-secondary); line-height: 1.75; margin-top: 1.25rem; max-width: 36rem; }
+	.gym-copy .ghost-link { margin-top: 1.5rem; }
+	@media (max-width: 900px) { .gym-section { grid-template-columns: 1fr; } }
+
 	:global(html),
 	:global(body) {
 		overflow-x: hidden;
@@ -309,15 +326,6 @@
 		max-width: 1160px;
 		margin: 0 auto;
 		padding: clamp(4.5rem, 6vw, 5.5rem) 1.25rem 0;
-	}
-
-	.eyebrow {
-		font-family: var(--font-mono);
-		font-size: 0.72rem;
-		letter-spacing: 0.12em;
-		text-transform: uppercase;
-		color: var(--accent);
-		font-weight: 700;
 	}
 
 	h1,
@@ -626,6 +634,7 @@
 	}
 
 	/* ── Sections ── */
+	.gym-section,
 	.make,
 	.grading,
 	.lab,
