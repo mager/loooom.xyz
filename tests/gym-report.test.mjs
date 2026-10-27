@@ -54,3 +54,32 @@ test('local imports do not inherit editorial notes from a matching saved session
  const local=readRun('focus-climb.session.json');local.suite.description='A different local investigation.';
  const story=sessionStory(local,true);assert.equal(story.problem,'A different local investigation.');assert.notEqual(story.title,'Shortened focus to 242 words');
 });
+
+const { weaveStages, weaveCases } = await import('../src/lib/gym/weave.ts');
+test('test weave keeps rejected rounds and uses fresh baseline responses for the final comparison',()=>{
+ const run=readRun('focus-climb.session.json');
+ const stages=weaveStages(run);
+ assert.deepEqual(stages.map(s=>s.outcome),['Not kept','Kept','Kept','Passed']);
+ assert.equal(stages[0].before.score.passed,7);
+ assert.equal(stages.at(-1).before.score.passed,15);
+ assert.equal(stages.at(-1).before,run.verification.baseline);
+ assert.equal(weaveCases(run,stages[0]).some(r=>r.test.split==='holdout'),false);
+ assert.equal(weaveCases(run,stages.at(-1)).filter(r=>r.test.split==='holdout').length,2);
+});
+test('test weave pairs answers by question and repetition, not array position',()=>{
+ const run=readRun('absorb-regression.session.json');
+ run.verification.candidate.samples.reverse();
+ const stage=weaveStages(run).at(-1);
+ for(const row of weaveCases(run,stage)) for(const pair of row.pairs) {
+  assert.equal(pair.before.id,pair.after.id);
+  assert.equal(pair.after.caseId,row.test.id);
+  assert.equal(pair.after.repetition,pair.repetition);
+ }
+});
+test('test weave does not invent candidates for unchanged or partial sessions',()=>{
+ const unchanged=readRun('absorb-climb.session.json');
+ assert.deepEqual(weaveStages(unchanged),[]);
+ const partial=readRun('focus-climb.session.json');
+ partial.baseline=null;partial.verification=null;
+ assert.deepEqual(weaveStages(partial),[]);
+});
