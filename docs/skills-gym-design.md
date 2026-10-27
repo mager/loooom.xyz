@@ -16,9 +16,11 @@ The preview takes its values from the saved report through the server loader. It
 
 ## Gym
 
-Start with a plain definition of a skill and explain that the page shows saved examples. On desktop, use a narrow example column and a wide report column. Show the three repeated-test examples first and put the three earlier tests in a closed “Earlier tests” disclosure. On mobile, a labeled native select includes all six examples and any local import.
+Show a complete chronological log of all six saved sessions. Sort by completion time, latest first, and use start time when completion time is absent. Display the date and time in the America/Chicago zone, including the zone abbreviation and a Completed or Started label. On desktop, place the timestamp beside the session summary. On mobile, place it above the summary. There is no example selector or separate group of earlier tests.
 
-Keep the result headline, Before and After values, final test result, and short AI-grading limit visible. The limit must state that a small test does not mean the skill will always work. Use “Before,” “After,” and “Final tests” in the main view. Reserve training, candidate, and verification terms for detailed evidence where needed.
+Each entry shows its title, status, skill, and Problem, Change, and Result fields. Use Checked instead of Problem when no defect was found. Include unchanged skills and rejected changes in the same log. Mark deliberately added defects plainly. Keep recorded results separate from the short editorial account of what happened. State that the log contains saved runs graded by an AI.
+
+Each entry has an “Open session record” native disclosure. Render the full report only while the disclosure is open. Allow multiple records to remain open, with report heading IDs scoped to their session. The expanded report keeps the result headline, Before and After values, final test result, and short AI-grading limit visible. The limit must state that a small test does not mean the skill will always work. Use plain labels for the detailed evidence.
 
 For repeated-trial reports, separate training selection from fresh verification. Search uses training cases only. Lock the selected skill before the final check, which includes fresh responses and held-out cases. Do not imply that the final evidence guides another edit. Keep controlled defects labeled beside their results. Preserve one-pass reports and distinguish them from repeated-trial experiments.
 
@@ -26,15 +28,17 @@ Keep attempted changes, test results, instruction text, the local command, and t
 
 ## Local workflow
 
-The browser displays saved reports. It does not start model calls. JSON import reads a local file without uploading it. Downloads provide the full evidence and the selected skill.
+The browser displays saved reports. It does not start model calls. JSON import reads a local file without uploading it and places the imported session in the same chronological log. Show a notice that the local session is not published and provide a remove control. Imported sessions use their own report evidence and generic summary text, never the editorial notes for a saved session with the same ID. Downloads provide the full evidence and the selected skill.
 
 The copyable command uses the pinned GitHub archive at `f45997f86ced5d8db2020ab74b9e761fc1f30a39`, as defined in `src/lib/gym/commands.ts`. It includes the suite, round limit, trial count, and model. The page states the Node 22+ and signed-in Codex CLI requirements. At this handoff, npm 0.3.0 publication is pending, so the page provides the source archive command and setup guide. Skill content remains agent-agnostic.
 
-## Implementation evidence — 2026-10-24
+## Implementation evidence — 2026-10-26
 
 Checked `PRODUCT.md`, `DESIGN.md`, the homepage and its server loader, `/gym`, `GymPreview.svelte`, `ClimbReport.svelte`, `RunReport.svelte`, `CaseResult.svelte`, the saved-report loader, and the command helper. Compared them with the existing theme CSS. After the upstream merge, checked the homepage source and its diff against `origin/main`: the rubric demo, flagship skills, rubric explanation, and lab sections remain; the marketplace-and-gym hero and saved-evidence section extend that page.
 
-For the clarity update, checked the current gym route, both report components, the answer component, and `GymPreview.svelte`. Inspected `../skills-gym-work/review-simple/gym-desktop-final.jpg`, `gym-mobile-final.jpg`, `gym-user-final.jpg`, and `evidence-desktop-final.jpg` in that same directory. These replace the earlier gym layout evidence and show the compact default view plus expanded answer evidence on desktop and the default view at 390px and 440px mobile widths. The source confirms that selecting a round opens its results. The separate reviewer reported a ship verdict with no required fixes; this document pass did not repeat browser interaction tests.
+For the session-log update, checked `SessionLogEntry.svelte`, `src/lib/gym/log.ts`, the gym route, the server report loader, and the report heading IDs. Inspected `../skills-gym-work/review-log/desktop.jpg`, `mobile.jpg`, `user-current.jpg`, and `expanded.jpg` in that same directory. These replace the earlier gym layout evidence. The captures show all six chronological entries at desktop, 390px mobile, and 1280px user widths, plus expanded answer evidence. Source inspection confirms timestamp fallback, local-import handling, lazy report rendering, and separate heading IDs for multiple open records.
+
+The separate reviewer reported a ship verdict with no required fixes. The implementation handoff reports zero check errors, 74 existing warnings, eight passing tests, and a passing build. This documentation pass did not repeat those checks or browser interaction tests.
 
 The previously inspected `../skills-gym-work/review-climb/home-merged-desktop.jpg`, `home-merged-mobile.jpg`, and `home-merged-user-440.jpg` still establish the homepage structure. Their preview wording predates the plain-language update. Earlier dark-theme and response-focus captures remain supporting evidence only. All paths are relative to the repository root.
 

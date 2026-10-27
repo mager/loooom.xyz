@@ -42,8 +42,8 @@
  <p class="plain-limit">An AI graded these answers on a small set of tests. This result does not mean the skill will always work.</p>
  <div class="downloads"><button onclick={()=>download(run.status==='verified'?selected.content:run.original.content,`${run.suite.skillName??run.suite.id}-${run.status==='verified'?'tested':'original'}.md`,'text/markdown')}>{run.status==='verified'?'Get the tested skill':'Get the original skill'}</button></div>
  <details class="detail-block"><summary>See what we tried <span>{run.rounds.length} {run.rounds.length===1?'change':'changes'}</span></summary>
- <section class="rounds" aria-labelledby="rounds-heading">
-  <div class="section-head"><h3 id="rounds-heading">Changes we tried</h3><span>Same practice tests each time</span></div>
+ <section class="rounds" aria-labelledby={`${run.id}-rounds-heading`}>
+  <div class="section-head"><h3 id={`${run.id}-rounds-heading`}>Changes we tried</h3><span>Same practice tests each time</span></div>
   <div class="round-heading" aria-hidden="true"><span>Version</span><span>Words</span><span>Tests passed</span><span>Result</span></div>
   <div class="round-row original"><strong>Original</strong><span>{run.original.words}</span><span>{run.baseline?.score.passed ?? '—'} / {run.baseline?.score.total ?? '—'}</span><span>Starting point</span></div>
   {#each run.rounds as r}
@@ -55,8 +55,8 @@
 
  </details>
  <details class="detail-block" bind:open={evidenceOpen}><summary>See the test results</summary>
- <section class="evidence" aria-labelledby="evidence-heading">
-  <div class="section-head"><h3 id="evidence-heading">{stage==='final'?'Final test results':`Results for change ${stage}`}</h3><label><input type="checkbox" bind:checked={failuresOnly} /> Failures only</label></div>
+ <section class="evidence" aria-labelledby={`${run.id}-evidence-heading`}>
+  <div class="section-head"><h3 id={`${run.id}-evidence-heading`}>{stage==='final'?'Final test results':`Results for change ${stage}`}</h3><label><input type="checkbox" bind:checked={failuresOnly} /> Failures only</label></div>
   {#if round}<p class="explanation">{round.candidate?.rationale} {round.decision?.reason}</p>{/if}
   <p class="explanation">{stage==='final'?'We chose the version before these tests. Some questions were saved for this final check.':'Compare this change with the original on the practice tests.'} We asked each question {run.config.repetitions} times. An answer passes only if it meets every requirement.</p>
   <div class="evidence-head"><span>Question</span><span>Before</span><span>{after?'After':'—'}</span></div>

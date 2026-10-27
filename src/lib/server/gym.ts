@@ -1,7 +1,8 @@
 import { parseArtifact } from '$lib/gym/session';
+import { newestSessions } from '$lib/gym/log';
 export function savedGymReports() {
  const files=import.meta.glob('$lib/data/gym/*.json',{eager:true,import:'default'});
- return Object.values(files).map(parseArtifact).sort((a,b)=>b.schemaVersion-a.schemaVersion||a.suite.id.localeCompare(b.suite.id));
+ return newestSessions(Object.values(files).map(parseArtifact));
 }
 export function gymPreview() {
  const reports=savedGymReports();
