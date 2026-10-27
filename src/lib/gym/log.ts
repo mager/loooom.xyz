@@ -40,18 +40,18 @@ const notes: Record<string, {title: string; problem: string; change: string}> = 
 
 export function sessionStory(run: GymArtifact, imported = false) {
  const skill = run.schemaVersion===2 ? run.suite.skillName ?? run.suite.id : run.suite.id.replace(/-regression$/, '');
- const status = ({verified:'Verified',accepted:'Kept after one test',rejected:'Not kept','not-verified':'Final test failed','no-defect':'Unchanged','no-improvement':'No change kept',error:'Stopped',cancelled:'Cancelled',running:'In progress'})[run.status];
+ const status = ({verified:'Passed final tests',accepted:'Kept after one pass',rejected:'Not kept','not-verified':'Final test failed','no-defect':'Unchanged','no-improvement':'No change kept',error:'Stopped',cancelled:'Cancelled',running:'In progress'})[run.status];
  const note = imported ? undefined : notes[run.id];
  const candidate = run.schemaVersion===2 ? run.selected : run.candidate;
  const result = (() => {
   if(run.schemaVersion===2) {
    const before=run.verification?.baseline?.score, after=run.verification?.candidate?.score;
-   if(before && after) return `Final tests: ${before.passed}/${before.total} before, ${after.passed}/${after.total} after. ${run.status==='verified'?'The change passed the final check.':run.status==='not-verified'?'The change did not pass the final check.':'No final decision is recorded.'}`;
-   if(run.status==='no-defect') return `${run.baseline?.score.passed ?? 0}/${run.baseline?.score.total ?? 0} first tests passed.${before?` Then ${before.passed}/${before.total} new tests passed.`:''} The original skill was kept.`;
+   if(before && after) return `Final tests: ${before.passed}/${before.total} before, ${after.passed}/${after.total} after.${run.status==='verified'?'':run.status==='not-verified'?' The change did not pass the final check.':' No final decision is recorded.'}`;
+   if(run.status==='no-defect') return `${run.baseline?.score.passed ?? 0}/${run.baseline?.score.total ?? 0} first tests passed.${before?` Then ${before.passed}/${before.total} new tests passed.`:''}`;
    return run.stopReason ?? run.error ?? 'No final result is available yet.';
   }
   const passed=(results: {passed?:boolean}[]) => results.filter(r=>r.passed===true).length;
-  return `${passed(run.baseline.results)}/${run.suite.cases.length} tests passed before${run.candidate?`, ${passed(run.candidate.results)}/${run.suite.cases.length} after`:''}. ${run.status==='accepted'?'The change was kept.':run.status==='rejected'?'The change was rejected.':run.status==='no-defect'?'The original skill was kept.':'This session is incomplete.'} One answer per question; no separate final check.`;
+  return `${passed(run.baseline.results)}/${run.suite.cases.length} tests passed before${run.candidate?`, ${passed(run.candidate.results)}/${run.suite.cases.length} after`:''}.${['accepted','rejected','no-defect'].includes(run.status)?'':' This session is incomplete.'} One answer per question; no separate final check.`;
  })();
  return {
   skill, status, time:sessionTime(run),

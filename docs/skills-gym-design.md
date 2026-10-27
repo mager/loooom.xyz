@@ -4,7 +4,7 @@ Mode: Operate. Routes: `/` and `/gym`.
 
 ## Existing visual system
 
-Extend the cream/ocean website and its dark theme. Keep the existing theme variables, Outfit, Space Mono for code, handwriting headings, and yarn logo. `DESIGN.md` and `src/app.css` remain the visual authority. These surfaces do not establish new global tokens or visual rules.
+Extend the cream/ocean website and its dark theme. Keep the existing theme variables, Outfit, Space Mono for code, handwriting page headings, and yarn logo. Session entry headings use Outfit as specified below. `DESIGN.md` and `src/app.css` remain the visual authority. These surfaces do not establish new global tokens or visual rules.
 
 ## Homepage
 
@@ -16,11 +16,13 @@ The preview takes its values from the saved report through the server loader. It
 
 ## Gym
 
-Show a complete chronological log of all six saved sessions. Sort by completion time, latest first, and use start time when completion time is absent. Display the date and time in the America/Chicago zone, including the zone abbreviation and a Completed or Started label. On desktop, place the timestamp beside the session summary. On mobile, place it above the summary. There is no example selector or separate group of earlier tests.
+Show a complete chronological log of all six saved sessions. Sort by completion time, latest first, and use start time when completion time is absent. Display the date and time in the America/Chicago zone, including the zone abbreviation. Show Started only when completion time is absent, and Local file for an import. Omit the repeated Completed label. On desktop, place the timestamp beside the session summary. On mobile, place it above the summary. There is no example selector or separate group of earlier tests.
 
-Each entry shows its title, status, skill, and Problem, Change, and Result fields. Use Checked instead of Problem when no defect was found. Include unchanged skills and rejected changes in the same log. Mark deliberately added defects plainly. Keep recorded results separate from the short editorial account of what happened. State that the log contains saved runs graded by an AI.
+Keep the page introduction factual: session count, sort order, small question set, and AI grading. Omit the header and footer slogans. Use compact Outfit entry headings at `clamp(1.2rem, 2vw, 1.4rem)` (about 19–22px), weight 500, and line-height 1.35. This is a local component treatment.
 
-Each entry has an “Open session record” native disclosure. Render the full report only while the disclosure is open. Allow multiple records to remain open, with report heading IDs scoped to their session. The expanded report keeps the result headline, Before and After values, final test result, and short AI-grading limit visible. The limit must state that a small test does not mean the skill will always work. Use plain labels for the detailed evidence.
+Each entry shows its title, status, skill, and Problem, Change, and Result fields. Use Checked instead of Problem when no defect was found. Include unchanged skills and rejected changes in the same log. Mark deliberately added defects plainly. Use “Passed final tests” and “Kept after one pass” for the applicable statuses. Keep recorded results separate from the short editorial account of what happened. Report the scores without repeating the status in another outcome sentence; retain failure, incomplete-result, and one-pass limits where needed.
+
+Each entry has a “Session details” native disclosure. Render the full report only while the disclosure is open. Allow multiple records to remain open, with report heading IDs scoped to their session. The expanded report keeps the result headline, Before and After values, final test result, and short AI-grading limit visible. The limit must state that a small test does not mean the skill will always work. Use plain labels for the detailed evidence.
 
 For repeated-trial reports, separate training selection from fresh verification. Search uses training cases only. Lock the selected skill before the final check, which includes fresh responses and held-out cases. Do not imply that the final evidence guides another edit. Keep controlled defects labeled beside their results. Preserve one-pass reports and distinguish them from repeated-trial experiments.
 
@@ -36,9 +38,11 @@ The copyable command uses the pinned GitHub archive at `f45997f86ced5d8db2020ab7
 
 Checked `PRODUCT.md`, `DESIGN.md`, the homepage and its server loader, `/gym`, `GymPreview.svelte`, `ClimbReport.svelte`, `RunReport.svelte`, `CaseResult.svelte`, the saved-report loader, and the command helper. Compared them with the existing theme CSS. After the upstream merge, checked the homepage source and its diff against `origin/main`: the rubric demo, flagship skills, rubric explanation, and lab sections remain; the marketplace-and-gym hero and saved-evidence section extend that page.
 
-For the session-log update, checked `SessionLogEntry.svelte`, `src/lib/gym/log.ts`, the gym route, the server report loader, and the report heading IDs. Inspected `../skills-gym-work/review-log/desktop.jpg`, `mobile.jpg`, `user-current.jpg`, and `expanded.jpg` in that same directory. These replace the earlier gym layout evidence. The captures show all six chronological entries at desktop, 390px mobile, and 1280px user widths, plus expanded answer evidence. Source inspection confirms timestamp fallback, local-import handling, lazy report rendering, and separate heading IDs for multiple open records.
+For the session-log update, checked `SessionLogEntry.svelte`, `src/lib/gym/log.ts`, the gym route, the server report loader, and the report heading IDs. Source inspection confirms timestamp fallback, local-import handling, lazy report rendering, and separate heading IDs for multiple open records. The earlier `../skills-gym-work/review-log/expanded.jpg` remains supporting evidence for the unchanged expanded report.
 
-The separate reviewer reported a ship verdict with no required fixes. The implementation handoff reports zero check errors, 74 existing warnings, eight passing tests, and a passing build. This documentation pass did not repeat those checks or browser interaction tests.
+For the final plain-log refinement, checked the route, entry component, and summary helper against their current diff. Inspected `../skills-gym-work/review-plain/desktop.jpg` and `mobile.jpg`. These replace the earlier default log captures. The full-page images show all six entries at 1280px and 390px widths; their capture viewports were 1280×720 and 390×844. They confirm the smaller Outfit headings, shorter labels, and removal of slogans and repeated outcome text while preserving dates, controls, and evidence links.
+
+The independent plain-log reviewer reported a ship verdict with no required fixes. The implementation handoff reports zero check errors, 74 existing warnings, eight passing tests, a passing build, and a passing keyboard disclosure check. This documentation pass did not repeat those checks or browser interaction tests.
 
 The previously inspected `../skills-gym-work/review-climb/home-merged-desktop.jpg`, `home-merged-mobile.jpg`, and `home-merged-user-440.jpg` still establish the homepage structure. Their preview wording predates the plain-language update. Earlier dark-theme and response-focus captures remain supporting evidence only. All paths are relative to the repository root.
 
