@@ -16,9 +16,23 @@ The preview takes its values from the saved report through the server loader. It
 
 ## Gym
 
-Show a complete chronological log of all six saved sessions. Sort by completion time, latest first, and use start time when completion time is absent. Display the date and time in the America/Chicago zone, including the zone abbreviation. Show Started only when completion time is absent, and Local file for an import. Omit the repeated Completed label. On desktop, place the timestamp beside the session summary. On mobile, place it above the summary. There is no example selector or separate group of earlier tests.
+Place the selected Test weave above the complete session history. The first view keeps the existing header, Gym log title, import control, and a short instruction to compare saved answers. The weave groups eligible session controls, skill purpose, round selection, and paired answer results. Sessions without a comparable revised version remain in the history without invented results.
 
-Keep the page introduction factual: session count, sort order, small question set, and AI grading. Omit the header and footer slogans. Use compact Outfit entry headings at `clamp(1.2rem, 2vw, 1.4rem)` (about 19–22px), weight 500, and line-height 1.35. This is a local component treatment.
+### Test weave
+
+Use a dark ocean work surface within the existing light or dark page shell. Its deliberate local palette is deep `#0b252d`, ground `#10343d`, text `#eff8f4`, secondary text `#b6cece`, pass `#8de2cf`, fail `#ffb4a0`, and rules `#34545b`. Keep these component variables scoped to the weave and its answer evidence. Local radii, type sizes, and state treatments do not replace global design tokens.
+
+Arrange the original and revised answer grids beside each question. Connect matching answers with lightweight SVG threads. Pass and fail symbols, accessible button labels, counts, and a legend carry the result alongside color. On desktop, the skill purpose and round list sit beside the grid. On mobile, they stack above it; round controls scroll horizontally and answer pairs remain within a scrollable region.
+
+Selecting a round redraws the threads and updates the saved results. Selecting a result opens the actual response pair, prompt, and grading disclosures, then moves keyboard focus to the comparison heading. Closing the comparison returns focus to the revised result button for that pair. Long answers remain labeled and keyboard-scrollable. Reduced motion keeps all evidence visible, disables the thread draw, and uses brief state feedback. The surface requires no canvas, continuous animation, synthetic results, or model execution.
+
+Pair answers by case ID and repetition, never array position. Training stages compare the original training responses with that round's responses. Final stages use the fresh original and revised responses; held-out questions belong to the final checks. The pair contains independent sampled answers, not one answer transformed into another. Keep the Absorb controlled defect explicit and the rejected Focus cut available. Focus passes 15/15 final tests in both versions; do not imply higher final accuracy. Keep the small-test and AI-grading limit visible. “Read this session” links to the full history record.
+
+### Session history
+
+Preserve all six saved sessions below the weave. Sort by completion time, latest first, and use start time when completion time is absent. Display the date and time in the America/Chicago zone, including the zone abbreviation. Show Started only when completion time is absent, and Local file for an import. Omit the repeated Completed label. On desktop, place the timestamp beside the session summary, with a fine vertical history line and status node. On mobile, place it above the summary and omit the vertical line. There is no separate group of earlier tests.
+
+Keep the history introduction factual: session count and sort order. Omit slogans. Use compact Outfit entry headings at `clamp(1.2rem, 2vw, 1.4rem)` (about 19–22px), weight 500, and line-height 1.35. This is a local component treatment.
 
 Each entry shows its title, status, skill, and Problem, Change, and Result fields. Use Checked instead of Problem when no defect was found. Include unchanged skills and rejected changes in the same log. Mark deliberately added defects plainly. Use “Passed final tests” and “Kept after one pass” for the applicable statuses. Keep recorded results separate from the short editorial account of what happened. Report the scores without repeating the status in another outcome sentence; retain failure, incomplete-result, and one-pass limits where needed.
 
@@ -34,15 +48,15 @@ The browser displays saved reports. It does not start model calls. JSON import r
 
 The copyable command uses the pinned GitHub archive at `f45997f86ced5d8db2020ab74b9e761fc1f30a39`, as defined in `src/lib/gym/commands.ts`. It includes the suite, round limit, trial count, and model. The page states the Node 22+ and signed-in Codex CLI requirements. At this handoff, npm 0.3.0 publication is pending, so the page provides the source archive command and setup guide. Skill content remains agent-agnostic.
 
-## Implementation evidence — 2026-10-26
+## Implementation evidence — 2026-10-27
 
 Checked `PRODUCT.md`, `DESIGN.md`, the homepage and its server loader, `/gym`, `GymPreview.svelte`, `ClimbReport.svelte`, `RunReport.svelte`, `CaseResult.svelte`, the saved-report loader, and the command helper. Compared them with the existing theme CSS. After the upstream merge, checked the homepage source and its diff against `origin/main`: the rubric demo, flagship skills, rubric explanation, and lab sections remain; the marketplace-and-gym hero and saved-evidence section extend that page.
 
 For the session-log update, checked `SessionLogEntry.svelte`, `src/lib/gym/log.ts`, the gym route, the server report loader, and the report heading IDs. Source inspection confirms timestamp fallback, local-import handling, lazy report rendering, and separate heading IDs for multiple open records. The earlier `../skills-gym-work/review-log/expanded.jpg` remains supporting evidence for the unchanged expanded report.
 
-For the final plain-log refinement, checked the route, entry component, and summary helper against their current diff. Inspected `../skills-gym-work/review-plain/desktop.jpg` and `mobile.jpg`. These replace the earlier default log captures. The full-page images show all six entries at 1280px and 390px widths; their capture viewports were 1280×720 and 390×844. They confirm the smaller Outfit headings, shorter labels, and removal of slogans and repeated outcome text while preserving dates, controls, and evidence links.
+For the Test weave extension, read the selected direction in `../skills-gym-work/review-weave/contract.md`, the current route and history diff, `TestWeave.svelte`, `WeaveEvidence.svelte`, `src/lib/gym/weave.ts`, and the three added data tests. Inspected all six captures in `../skills-gym-work/review-weave/`: `desktop.jpg`, `mobile.jpg`, `absorb-final.jpg`, `focus-rejected.jpg`, `dark.jpg`, and `answer.jpg`. These replace the earlier default gym captures. The full-page desktop and mobile captures use 1280×720 and 390×844 viewports. The three state clips are 1280×1060; the answer capture is 1200×729. They show both palettes, preserved history, a rejected round, final checks, and saved answer evidence with grading reasons.
 
-The independent plain-log reviewer reported a ship verdict with no required fixes. The implementation handoff reports zero check errors, 74 existing warnings, eight passing tests, a passing build, and a passing keyboard disclosure check. This documentation pass did not repeat those checks or browser interaction tests.
+The independent weave reviewer reported a ship verdict with no material fixes. The implementation handoff reports 11 passing tests, zero check errors, 74 existing warnings, and passing keyboard and reduced-motion checks. Inspected the successful final build log at `../skills-gym-work/site-build-weave-final.log`. This documentation pass did not repeat tests or browser interactions. Global design files remain unchanged; the weave palette is a deliberate local extension, not a repair of existing documentation differences.
 
 The previously inspected `../skills-gym-work/review-climb/home-merged-desktop.jpg`, `home-merged-mobile.jpg`, and `home-merged-user-440.jpg` still establish the homepage structure. Their preview wording predates the plain-language update. Earlier dark-theme and response-focus captures remain supporting evidence only. All paths are relative to the repository root.
 
