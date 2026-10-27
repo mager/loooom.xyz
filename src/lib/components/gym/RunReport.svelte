@@ -37,8 +37,8 @@
  {#if run.error}<p role="alert" class="notice">{run.error}</p>{/if}
  <p class="plain-limit">An AI graded a small set of answers. This earlier test did not include a fresh final check.</p>
  <details class="detail-block"><summary>See the test results</summary>
- <section class="tests" aria-labelledby="test-heading">
-  <div class="section-head"><h3 id="test-heading">Test cases</h3><label><input type="checkbox" bind:checked={onlyFailures} /> Only failures</label></div>
+ <section class="tests" aria-labelledby={`${run.id}-test-heading`}>
+  <div class="section-head"><h3 id={`${run.id}-test-heading`}>Test cases</h3><label><input type="checkbox" bind:checked={onlyFailures} /> Only failures</label></div>
   <div class="column-labels"><span>Open a question to read the answers</span><span>Before</span><span aria-hidden="true"></span><span>After</span><span aria-hidden="true"></span></div>
   {#each visibleCases as test (test.id)}<CaseResult {test} before={run.baseline.results.find(r => r.id === test.id)} after={run.candidate?.results.find(r => r.id === test.id)} hasCandidate={!!run.candidate} />{:else}<p class="empty">No failed cases in this report.</p>{/each}
  </section>
@@ -49,7 +49,7 @@
      <pre tabindex="0" role="region" aria-label={`${item.label} skill text`}>{item.value.content}</pre></section>{/each}</div>
  </details>
  <details class="detail-block"><summary>Try this on your computer</summary>
- <section class="reproduce" aria-labelledby="rerun-heading"><h3 id="rerun-heading">Run the tests yourself</h3><p>Use the available GitHub build with Node 22+ and a signed-in Codex CLI. Loooom 0.3.0 is not on npm yet. <a href={GYM_GUIDE}>Source setup guide</a>.</p><div class="command"><code>{command}</code><button onclick={copyCommand}>{copyState}</button></div><p class="local-note">Runs on your computer. This page does not start model calls.</p></section>
+ <section class="reproduce" aria-labelledby={`${run.id}-rerun-heading`}><h3 id={`${run.id}-rerun-heading`}>Run the tests yourself</h3><p>Use the available GitHub build with Node 22+ and a signed-in Codex CLI. Loooom 0.3.0 is not on npm yet. <a href={GYM_GUIDE}>Source setup guide</a>.</p><div class="command"><code>{command}</code><button onclick={copyCommand}>{copyState}</button></div><p class="local-note">Runs on your computer. This page does not start model calls.</p></section>
  </details>
  <details class="detail-block"><summary>About this test and downloads</summary>
  <footer><p>{run.limitation}</p><dl><div><dt>Runner</dt><dd>{run.runner.version}</dd></div><div><dt>Model</dt><dd>{run.runner.model}</dd></div><div><dt>Run date</dt><dd>{new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeZone: 'America/Chicago' }).format(new Date(run.startedAt))}</dd></div><div><dt>Suite hash</dt><dd><code title={run.suiteHash}>{run.suiteHash.slice(0, 12)}</code></dd></div></dl><p class="judge">Judge: {run.runner.judge}. Repetitions per case: {run.runner.repetitions}.</p><div class="footer-actions"><a href={run.suite.sourceUrl} target="_blank" rel="noreferrer">Read the original skill</a><button onclick={download}>Download report</button>{#if run.candidate}<button onclick={downloadCandidate}>Download changed version</button>{/if}</div></footer>
