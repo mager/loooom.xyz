@@ -1,0 +1,384 @@
+{
+  "schemaVersion": 1,
+  "id": "748645c8-bf01-44d0-8a56-ab5dd94f5eb1",
+  "status": "complete",
+  "startedAt": "2026-11-14T15:36:15.043Z",
+  "finishedAt": "2026-11-14T15:36:15.084Z",
+  "runner": {
+    "name": "@loooom/context-evals",
+    "version": "0.1.0",
+    "node": "v22.13.1"
+  },
+  "evidence": {
+    "mode": "replay",
+    "synthetic": true,
+    "label": "Synthetic offline replay. No model was called."
+  },
+  "config": {
+    "baselineInstruction": "Answer the user request. Follow any personal context supplied below.",
+    "temperature": 0,
+    "maxOutputTokens": 1024,
+    "timeoutMs": 30000,
+    "maxRunMs": 300000,
+    "order": "baseline first on even case indexes; context first on odd indexes"
+  },
+  "context": {
+    "sha256": "aa858785865aaa1000253a4796f38d7f3ac02ffb790e24f271fd0065ef3aa42d",
+    "text": "--- Context file 1: AGENTS.md ---\n# Example work rules\n\nWhen you suggest a project check command, use `npm run check`.\nUse short sentences. Keep each answer to 45 words or fewer.\n\n\n--- Context file 2: SOUL.md ---\n# Example response style\n\nGive a direct answer. Do not start with \"Great question\".\nWhen asked for a status update, finish with \"Next: review the result.\"\n\n\n--- Context file 3: ME.md ---\n# Example personal context\n\nI work in Chicago. My time zone is America/Chicago.\nWhen I ask which time zone to use for my work calendar, reply with exactly:\nAmerica/Chicago\n",
+    "files": [
+      {
+        "name": "AGENTS.md",
+        "sha256": "5d1bc18b8bbe46716098afc3c6756f073c296acee08a74975120813d96fadb05",
+        "content": "# Example work rules\n\nWhen you suggest a project check command, use `npm run check`.\nUse short sentences. Keep each answer to 45 words or fewer.\n"
+      },
+      {
+        "name": "SOUL.md",
+        "sha256": "e83d145d2beeedfd37eb2420f11e984becdca2f1d16386c9a1f68409941a4fa0",
+        "content": "# Example response style\n\nGive a direct answer. Do not start with \"Great question\".\nWhen asked for a status update, finish with \"Next: review the result.\"\n"
+      },
+      {
+        "name": "ME.md",
+        "sha256": "e7756090f0a58124af9977772b3c6a9702b4a78c3a49806a3f462dbe1c114cac",
+        "content": "# Example personal context\n\nI work in Chicago. My time zone is America/Chicago.\nWhen I ask which time zone to use for my work calendar, reply with exactly:\nAmerica/Chicago\n"
+      }
+    ]
+  },
+  "suite": {
+    "sha256": "9d11e9397f48ba354efc2dc2871e79879f78b3473f7f7c899a3047077298941b",
+    "definition": {
+      "schemaVersion": 1,
+      "name": "Personal context starter checks",
+      "description": "Three observable preferences. Edit these prompts and checks to match your own context files.",
+      "cases": [
+        {
+          "id": "project-check",
+          "prompt": "Which command should I use to check this project?",
+          "assertions": [
+            {
+              "type": "contains",
+              "value": "npm run check"
+            },
+            {
+              "type": "notContains",
+              "value": "Great question",
+              "caseSensitive": false
+            },
+            {
+              "type": "maxWords",
+              "value": 45
+            }
+          ]
+        },
+        {
+          "id": "work-time-zone",
+          "prompt": "Which time zone should I use for my work calendar?",
+          "assertions": [
+            {
+              "type": "exact",
+              "value": "America/Chicago"
+            }
+          ]
+        },
+        {
+          "id": "status-update",
+          "prompt": "The first draft is ready. Give me a short status update.",
+          "assertions": [
+            {
+              "type": "contains",
+              "value": "Next: review the result."
+            },
+            {
+              "type": "notContains",
+              "value": "Great question",
+              "caseSensitive": false
+            },
+            {
+              "type": "maxWords",
+              "value": 45
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "replay": {
+    "sha256": "c121768c01dd5d0ef78a7cebce3656c02e2177aec26118bf9aff63a0dc1c28fd",
+    "definition": {
+      "schemaVersion": 1,
+      "synthetic": true,
+      "description": "Handwritten answers for a CLI demonstration. No model generated these answers. These scores do not show model performance.",
+      "results": [
+        {
+          "caseId": "project-check",
+          "baseline": "Great question! Try npm test to check your project.",
+          "context": "Run `npm run check`."
+        },
+        {
+          "caseId": "work-time-zone",
+          "baseline": "Use the time zone where you work.",
+          "context": "America/Chicago"
+        },
+        {
+          "caseId": "status-update",
+          "baseline": "The first draft is ready for review.",
+          "context": "The first draft is ready. Next: review the result."
+        }
+      ]
+    }
+  },
+  "results": [
+    {
+      "caseId": "project-check",
+      "prompt": "Which command should I use to check this project?",
+      "baseline": {
+        "output": "Great question! Try npm test to check your project.",
+        "rawResponse": null,
+        "finishReason": null,
+        "request": {
+          "temperature": 0,
+          "max_tokens": 1024,
+          "messages": [
+            {
+              "role": "system",
+              "content": "Answer the user request. Follow any personal context supplied below."
+            },
+            {
+              "role": "user",
+              "content": "Which command should I use to check this project?"
+            }
+          ]
+        },
+        "startedAt": "2026-11-14T15:36:15.050Z",
+        "durationMs": 0,
+        "assertions": [
+          {
+            "type": "contains",
+            "value": "npm run check",
+            "passed": false
+          },
+          {
+            "type": "notContains",
+            "value": "Great question",
+            "caseSensitive": false,
+            "passed": false
+          },
+          {
+            "type": "maxWords",
+            "value": 45,
+            "passed": true,
+            "actual": 9
+          }
+        ],
+        "passed": false
+      },
+      "context": {
+        "output": "Run `npm run check`.",
+        "rawResponse": null,
+        "finishReason": null,
+        "request": {
+          "temperature": 0,
+          "max_tokens": 1024,
+          "messages": [
+            {
+              "role": "system",
+              "content": "Answer the user request. Follow any personal context supplied below.\n\n--- Context file 1: AGENTS.md ---\n# Example work rules\n\nWhen you suggest a project check command, use `npm run check`.\nUse short sentences. Keep each answer to 45 words or fewer.\n\n\n--- Context file 2: SOUL.md ---\n# Example response style\n\nGive a direct answer. Do not start with \"Great question\".\nWhen asked for a status update, finish with \"Next: review the result.\"\n\n\n--- Context file 3: ME.md ---\n# Example personal context\n\nI work in Chicago. My time zone is America/Chicago.\nWhen I ask which time zone to use for my work calendar, reply with exactly:\nAmerica/Chicago\n"
+            },
+            {
+              "role": "user",
+              "content": "Which command should I use to check this project?"
+            }
+          ]
+        },
+        "startedAt": "2026-11-14T15:36:15.054Z",
+        "durationMs": 0,
+        "assertions": [
+          {
+            "type": "contains",
+            "value": "npm run check",
+            "passed": true
+          },
+          {
+            "type": "notContains",
+            "value": "Great question",
+            "caseSensitive": false,
+            "passed": true
+          },
+          {
+            "type": "maxWords",
+            "value": 45,
+            "passed": true,
+            "actual": 4
+          }
+        ],
+        "passed": true
+      }
+    },
+    {
+      "caseId": "work-time-zone",
+      "prompt": "Which time zone should I use for my work calendar?",
+      "baseline": {
+        "output": "Use the time zone where you work.",
+        "rawResponse": null,
+        "finishReason": null,
+        "request": {
+          "temperature": 0,
+          "max_tokens": 1024,
+          "messages": [
+            {
+              "role": "system",
+              "content": "Answer the user request. Follow any personal context supplied below."
+            },
+            {
+              "role": "user",
+              "content": "Which time zone should I use for my work calendar?"
+            }
+          ]
+        },
+        "startedAt": "2026-11-14T15:36:15.067Z",
+        "durationMs": 0,
+        "assertions": [
+          {
+            "type": "exact",
+            "value": "America/Chicago",
+            "passed": false
+          }
+        ],
+        "passed": false
+      },
+      "context": {
+        "output": "America/Chicago",
+        "rawResponse": null,
+        "finishReason": null,
+        "request": {
+          "temperature": 0,
+          "max_tokens": 1024,
+          "messages": [
+            {
+              "role": "system",
+              "content": "Answer the user request. Follow any personal context supplied below.\n\n--- Context file 1: AGENTS.md ---\n# Example work rules\n\nWhen you suggest a project check command, use `npm run check`.\nUse short sentences. Keep each answer to 45 words or fewer.\n\n\n--- Context file 2: SOUL.md ---\n# Example response style\n\nGive a direct answer. Do not start with \"Great question\".\nWhen asked for a status update, finish with \"Next: review the result.\"\n\n\n--- Context file 3: ME.md ---\n# Example personal context\n\nI work in Chicago. My time zone is America/Chicago.\nWhen I ask which time zone to use for my work calendar, reply with exactly:\nAmerica/Chicago\n"
+            },
+            {
+              "role": "user",
+              "content": "Which time zone should I use for my work calendar?"
+            }
+          ]
+        },
+        "startedAt": "2026-11-14T15:36:15.060Z",
+        "durationMs": 0,
+        "assertions": [
+          {
+            "type": "exact",
+            "value": "America/Chicago",
+            "passed": true
+          }
+        ],
+        "passed": true
+      }
+    },
+    {
+      "caseId": "status-update",
+      "prompt": "The first draft is ready. Give me a short status update.",
+      "baseline": {
+        "output": "The first draft is ready for review.",
+        "rawResponse": null,
+        "finishReason": null,
+        "request": {
+          "temperature": 0,
+          "max_tokens": 1024,
+          "messages": [
+            {
+              "role": "system",
+              "content": "Answer the user request. Follow any personal context supplied below."
+            },
+            {
+              "role": "user",
+              "content": "The first draft is ready. Give me a short status update."
+            }
+          ]
+        },
+        "startedAt": "2026-11-14T15:36:15.073Z",
+        "durationMs": 0,
+        "assertions": [
+          {
+            "type": "contains",
+            "value": "Next: review the result.",
+            "passed": false
+          },
+          {
+            "type": "notContains",
+            "value": "Great question",
+            "caseSensitive": false,
+            "passed": true
+          },
+          {
+            "type": "maxWords",
+            "value": 45,
+            "passed": true,
+            "actual": 7
+          }
+        ],
+        "passed": false
+      },
+      "context": {
+        "output": "The first draft is ready. Next: review the result.",
+        "rawResponse": null,
+        "finishReason": null,
+        "request": {
+          "temperature": 0,
+          "max_tokens": 1024,
+          "messages": [
+            {
+              "role": "system",
+              "content": "Answer the user request. Follow any personal context supplied below.\n\n--- Context file 1: AGENTS.md ---\n# Example work rules\n\nWhen you suggest a project check command, use `npm run check`.\nUse short sentences. Keep each answer to 45 words or fewer.\n\n\n--- Context file 2: SOUL.md ---\n# Example response style\n\nGive a direct answer. Do not start with \"Great question\".\nWhen asked for a status update, finish with \"Next: review the result.\"\n\n\n--- Context file 3: ME.md ---\n# Example personal context\n\nI work in Chicago. My time zone is America/Chicago.\nWhen I ask which time zone to use for my work calendar, reply with exactly:\nAmerica/Chicago\n"
+            },
+            {
+              "role": "user",
+              "content": "The first draft is ready. Give me a short status update."
+            }
+          ]
+        },
+        "startedAt": "2026-11-14T15:36:15.079Z",
+        "durationMs": 0,
+        "assertions": [
+          {
+            "type": "contains",
+            "value": "Next: review the result.",
+            "passed": true
+          },
+          {
+            "type": "notContains",
+            "value": "Great question",
+            "caseSensitive": false,
+            "passed": true
+          },
+          {
+            "type": "maxWords",
+            "value": 45,
+            "passed": true,
+            "actual": 9
+          }
+        ],
+        "passed": true
+      }
+    }
+  ],
+  "summary": {
+    "baseline": {
+      "passed": 0,
+      "total": 3,
+      "assertionsPassed": 3,
+      "assertionsTotal": 7
+    },
+    "context": {
+      "passed": 3,
+      "total": 3,
+      "assertionsPassed": 7,
+      "assertionsTotal": 7
+    },
+    "delta": {
+      "casesPassed": 3,
+      "assertionsPassed": 4
+    }
+  },
+  "error": null
+}

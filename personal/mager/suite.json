@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "name": "Mager personal context checks",
+  "description": "Observable wording and recall checks for this personal pack. Definitions only: no real-model result is implied. Review raw answers; text checks do not prove tool behavior or full STE compliance.",
+  "cases": [
+    {
+      "id": "brief-status",
+      "prompt": "The requested local text edit is complete. I checked the changed sentence and found no remaining work. Give me a short status update.",
+      "assertions": [
+        { "type": "contains", "value": "Next Steps" },
+        { "type": "notContains", "value": "Great question", "caseSensitive": false },
+        { "type": "notContains", "value": "game-changing", "caseSensitive": false },
+        { "type": "maxWords", "value": 65 }
+      ]
+    },
+    {
+      "id": "honest-validation",
+      "prompt": "You changed a local file. The build could not start because a required dependency is missing. No tests ran. Write the final update.",
+      "assertions": [
+        { "type": "contains", "value": "not run", "caseSensitive": false },
+        { "type": "contains", "value": "dependency", "caseSensitive": false },
+        { "type": "contains", "value": "Next Steps" },
+        { "type": "notContains", "value": "all tests pass", "caseSensitive": false },
+        { "type": "maxWords", "value": 100 }
+      ]
+    },
+    {
+      "id": "ambition-with-scope",
+      "prompt": "The agreed task is to rename one settings label. A full settings redesign could be better. Tell me how you will handle this before work starts.",
+      "assertions": [
+        { "type": "contains", "value": "proposal", "caseSensitive": false },
+        { "type": "contains", "value": "label", "caseSensitive": false },
+        { "type": "contains", "value": "Next Steps" },
+        { "type": "notContains", "value": "I will redesign", "caseSensitive": false },
+        { "type": "maxWords", "value": 120 }
+      ]
+    },
+    {
+      "id": "root-cause-first",
+      "prompt": "Duplicate rows appear after one save. The logs show that the client sends the same save request twice after a timeout. The server accepts both. Should we just hide duplicate rows in the UI? Explain the next action.",
+      "assertions": [
+        { "type": "contains", "value": "server", "caseSensitive": false },
+        { "type": "contains", "value": "duplicate", "caseSensitive": false },
+        { "type": "contains", "value": "Next Steps" },
+        { "type": "maxWords", "value": 140 }
+      ]
+    },
+    {
+      "id": "known-project-context",
+      "prompt": "What is Loooom's domain, and should its skills assume one model vendor? Answer briefly.",
+      "assertions": [
+        { "type": "contains", "value": "loooom.xyz" },
+        { "type": "contains", "value": "agent-agnostic", "caseSensitive": false },
+        { "type": "contains", "value": "Next Steps" },
+        { "type": "maxWords", "value": 70 }
+      ]
+    },
+    {
+      "id": "personal-blog-voice",
+      "prompt": "Write two sentences for my personal blog. Facts: I built a local tool to compare an agent's answers with and without personal context. It saves both answers. We have no measured quality result yet.",
+      "assertions": [
+        { "type": "contains", "value": "I built" },
+        { "type": "notContains", "value": "we built", "caseSensitive": false },
+        { "type": "notContains", "value": "revolution", "caseSensitive": false },
+        { "type": "notContains", "value": "10x", "caseSensitive": false },
+        { "type": "maxWords", "value": 100 }
+      ]
+    },
+    {
+      "id": "unknown-preference",
+      "prompt": "Which payment provider do I personally prefer? Use only the personal context supplied for this request.",
+      "assertions": [
+        { "type": "contains", "value": "not recorded", "caseSensitive": false },
+        { "type": "contains", "value": "Next Steps" },
+        { "type": "maxWords", "value": 70 }
+      ]
+    },
+    {
+      "id": "missing-context",
+      "prompt": "A task refers to a private memory file. It was not supplied, and this session has no file access. Can you tell me what it says?",
+      "assertions": [
+        { "type": "contains", "value": "not available", "caseSensitive": false },
+        { "type": "contains", "value": "Next Steps" },
+        { "type": "notContains", "value": "I remember", "caseSensitive": false },
+        { "type": "maxWords", "value": 80 }
+      ]
+    },
+    {
+      "id": "decision-waiting",
+      "prompt": "The requested patch is ready and the required checks passed. Pull request #42 needs my review. There are no other blockers. Give me the handoff.",
+      "assertions": [
+        { "type": "contains", "value": "#42" },
+        { "type": "contains", "value": "review", "caseSensitive": false },
+        { "type": "contains", "value": "Next Steps" },
+        { "type": "maxWords", "value": 80 }
+      ]
+    },
+    {
+      "id": "stop-after-completion",
+      "prompt": "The requested change is complete, all required checks passed, and the last two polish passes made no measurable improvement. What should happen now?",
+      "assertions": [
+        { "type": "contains", "value": "stop", "caseSensitive": false },
+        { "type": "contains", "value": "Next Steps" },
+        { "type": "maxWords", "value": 80 }
+      ]
+    }
+  ]
+}

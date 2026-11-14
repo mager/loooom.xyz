@@ -1,0 +1,344 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-14T16:25:34.326Z",
+  "title": "Design System: Loooom",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink"
+      },
+      "panel": {
+        "role": "neutral",
+        "displayName": "Panel"
+      },
+      "panel-raised": {
+        "role": "neutral",
+        "displayName": "Panel Raised"
+      },
+      "rail": {
+        "role": "neutral",
+        "displayName": "Rail"
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper"
+      },
+      "quiet": {
+        "role": "neutral",
+        "displayName": "Quiet"
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Line"
+      },
+      "line-strong": {
+        "role": "neutral",
+        "displayName": "Line Strong"
+      },
+      "lime": {
+        "role": "primary",
+        "displayName": "Lime"
+      },
+      "lavender": {
+        "role": "secondary",
+        "displayName": "Lavender"
+      },
+      "action-bg": {
+        "role": "primary",
+        "displayName": "Action Bg"
+      },
+      "action-hover": {
+        "role": "primary",
+        "displayName": "Action Hover"
+      },
+      "action-ink": {
+        "role": "primary",
+        "displayName": "Action Ink"
+      },
+      "accent-soft": {
+        "role": "primary",
+        "displayName": "Accent Soft"
+      },
+      "accent-border": {
+        "role": "primary",
+        "displayName": "Accent Border"
+      },
+      "code-bg": {
+        "role": "neutral",
+        "displayName": "Code Bg"
+      },
+      "code-toolbar": {
+        "role": "neutral",
+        "displayName": "Code Toolbar"
+      },
+      "code-text": {
+        "role": "neutral",
+        "displayName": "Code Text"
+      },
+      "code-line": {
+        "role": "neutral",
+        "displayName": "Code Line"
+      },
+      "code-target": {
+        "role": "neutral",
+        "displayName": "Code Target"
+      },
+      "code-list": {
+        "role": "neutral",
+        "displayName": "Code List"
+      },
+      "light-ink": {
+        "role": "neutral",
+        "displayName": "Light Ink"
+      },
+      "light-panel": {
+        "role": "neutral",
+        "displayName": "Light Panel"
+      },
+      "light-panel-raised": {
+        "role": "neutral",
+        "displayName": "Light Panel Raised"
+      },
+      "light-rail": {
+        "role": "neutral",
+        "displayName": "Light Rail"
+      },
+      "light-paper": {
+        "role": "neutral",
+        "displayName": "Light Paper"
+      },
+      "light-quiet": {
+        "role": "neutral",
+        "displayName": "Light Quiet"
+      },
+      "light-line": {
+        "role": "neutral",
+        "displayName": "Light Line"
+      },
+      "light-line-strong": {
+        "role": "neutral",
+        "displayName": "Light Line Strong"
+      },
+      "light-lime": {
+        "role": "primary",
+        "displayName": "Light Lime"
+      },
+      "light-lavender": {
+        "role": "secondary",
+        "displayName": "Light Lavender"
+      },
+      "light-accent-soft": {
+        "role": "primary",
+        "displayName": "Light Accent Soft"
+      },
+      "light-accent-border": {
+        "role": "primary",
+        "displayName": "Light Accent Border"
+      },
+      "light-code-bg": {
+        "role": "neutral",
+        "displayName": "Light Code Bg"
+      },
+      "light-code-toolbar": {
+        "role": "neutral",
+        "displayName": "Light Code Toolbar"
+      },
+      "light-code-text": {
+        "role": "neutral",
+        "displayName": "Light Code Text"
+      },
+      "light-code-line": {
+        "role": "neutral",
+        "displayName": "Light Code Line"
+      },
+      "light-code-target": {
+        "role": "neutral",
+        "displayName": "Light Code Target"
+      },
+      "light-code-list": {
+        "role": "neutral",
+        "displayName": "Light Code List"
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Large context headings; route styles set responsive variants."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headings."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "File card titles and small sections."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Interface text and short explanations."
+      },
+      "button": {
+        "displayName": "Button",
+        "purpose": "Primary and secondary action labels."
+      },
+      "label": {
+        "displayName": "Metadata",
+        "purpose": "Filenames, hashes, commits, and numeric records."
+      },
+      "source": {
+        "displayName": "Source",
+        "purpose": "Imported text. Mobile source size is 11px."
+      }
+    },
+    "shadows": [
+      {
+        "name": "woven-file",
+        "value": "0 12px 26px var(--shadow)",
+        "purpose": "Separates file fragments from the weave."
+      },
+      {
+        "name": "fixed-footer",
+        "value": "0 -5px 20px var(--shadow)",
+        "purpose": "Separates the footer from scrolling content. --shadow is #0006 in dark mode and #373c1d1f in light mode."
+      }
+    ],
+    "motion": [
+      {
+        "name": "control-state",
+        "value": "background .2s, color .2s",
+        "purpose": "Button hover states."
+      },
+      {
+        "name": "card-border",
+        "value": "border-color .2s",
+        "purpose": "Source card hover state."
+      },
+      {
+        "name": "weave-turn",
+        "value": "22s ease-in-out infinite alternate",
+        "purpose": "Slow rotation of the woven threads."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation: none; transition: none; scroll-behavior: auto",
+        "purpose": "Applied to context elements and pseudo-elements when prefers-reduced-motion is reduce."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "footer-tight",
+        "value": "370px"
+      },
+      {
+        "name": "card-tight",
+        "value": "400px"
+      },
+      {
+        "name": "reader-and-about",
+        "value": "500px"
+      },
+      {
+        "name": "mobile-shell",
+        "value": "760px"
+      },
+      {
+        "name": "feed-and-source-facts",
+        "value": "900px"
+      },
+      {
+        "name": "share-and-evals-stack",
+        "value": "1100px"
+      },
+      {
+        "name": "narrow-shell",
+        "value": "1150px"
+      },
+      {
+        "name": "feed-density",
+        "value": "1250px"
+      },
+      {
+        "name": "wide-hero",
+        "value": "1500px"
+      },
+      {
+        "name": "wide-shell",
+        "value": "1600px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Bright lime action with dark text in both themes.",
+      "html": "<button class=\"ds-primary\" type=\"button\">Preview your file <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" aria-hidden=\"true\"><path d=\"M5 12h14m-6-6 6 6-6 6\"/></svg></button>",
+      "css": ".ds-primary{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:1px solid var(--line,#34382f);border-radius:6px;padding:12px 20px;font-family:Outfit,sans-serif;font-weight:500;font-size:14px;min-height:46px;cursor:pointer;transition:background .2s,color .2s;touch-action:manipulation;background:var(--action-bg,#d2fa69);border-color:var(--action-bg,#d2fa69);color:var(--action-ink,#19210e)}.ds-primary:hover{background:var(--action-hover,#e0ff95);color:var(--action-ink,#19210e)}.ds-primary:disabled{opacity:.55;cursor:wait}.ds-primary:focus-visible,.ds-secondary:focus-visible,.ds-input:focus-visible,.ds-reader a:focus-visible,.ds-reader button:focus-visible,.ds-footer a:focus-visible,.ds-footer button:focus-visible{outline:2px solid var(--lime,#d2fa69);outline-offset:5px}@media(prefers-reduced-motion:reduce){.ds-primary{transition:none}}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "A bordered action on the page surface.",
+      "html": "<button class=\"ds-secondary\" type=\"button\">Copy file <svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" aria-hidden=\"true\"><rect x=\"8\" y=\"8\" width=\"12\" height=\"12\" rx=\"2\"/><path d=\"M16 8V4H4v12h4\"/></svg></button>",
+      "css": ".ds-secondary{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:1px solid var(--line,#34382f);border-radius:6px;padding:12px 20px;font-family:Outfit,sans-serif;font-weight:500;font-size:14px;min-height:46px;cursor:pointer;transition:background .2s,color .2s;touch-action:manipulation;background:transparent;color:var(--paper,#eff1e8)}.ds-secondary:hover{background:var(--panel-raised,#20231e);color:var(--paper,#eff1e8)}.ds-secondary:disabled{opacity:.55;cursor:wait}.ds-primary:focus-visible,.ds-secondary:focus-visible,.ds-input:focus-visible,.ds-reader a:focus-visible,.ds-reader button:focus-visible,.ds-footer a:focus-visible,.ds-footer button:focus-visible{outline:2px solid var(--lime,#d2fa69);outline-offset:5px}@media(prefers-reduced-motion:reduce){.ds-secondary{transition:none}}"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "A visible label and neutral field from the share form.",
+      "html": "<label class=\"ds-field\">Title<input class=\"ds-input\" type=\"text\" placeholder=\"Name this file\" maxlength=\"100\"/></label>",
+      "css": ".ds-field{display:flex;flex-direction:column;gap:10px;font-family:Outfit,sans-serif;font-size:13px;color:var(--paper,#eff1e8)}.ds-input{width:100%;padding:12px;background:var(--panel,#191b18);border:1px solid var(--line,#34382f);color:var(--paper,#eff1e8);border-radius:6px;font-family:Outfit,sans-serif;font-size:15px}.ds-input::placeholder{color:var(--quiet,#a6ad9f);opacity:1}.ds-primary:focus-visible,.ds-secondary:focus-visible,.ds-input:focus-visible,.ds-reader a:focus-visible,.ds-reader button:focus-visible,.ds-footer a:focus-visible,.ds-footer button:focus-visible{outline:2px solid var(--lime,#d2fa69);outline-offset:5px}"
+    },
+    {
+      "name": "Source Reader",
+      "kind": "custom",
+      "refersTo": "source-reader",
+      "description": "Illustrative source text with line links and a copy control. Application code supplies copy behavior and exact imported text.",
+      "html": "<section class=\"ds-reader\" aria-label=\"Example source\"><div class=\"ds-toolbar\"><span>AGENTS.md</span><button type=\"button\"><svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" aria-hidden=\"true\"><rect x=\"8\" y=\"8\" width=\"12\" height=\"12\" rx=\"2\"/><path d=\"M16 8V4H4v12h4\"/></svg>Copy file</button></div><div class=\"ds-lines\"><div class=\"ds-line\" id=\"ds-L1\"><a href=\"#ds-L1\" aria-label=\"Line 1\">1</a><code class=\"ds-heading\"># Example source</code></div><div class=\"ds-line\" id=\"ds-L2\"><a href=\"#ds-L2\" aria-label=\"Line 2\">2</a><code>Write clear instructions.</code></div></div></section>",
+      "css": ".ds-reader{border:1px solid var(--line,#34382f);border-radius:8px;overflow:hidden;background:var(--code-bg,#171a14);font-family:Outfit,sans-serif}.ds-toolbar{display:flex;justify-content:space-between;align-items:center;padding:13px 18px;background:var(--code-toolbar,#22271c);border-bottom:1px solid var(--line,#34382f);gap:15px}.ds-toolbar>span{font-family:'Space Mono',monospace;font-size:11px;color:var(--paper,#eff1e8);overflow-wrap:anywhere}.ds-toolbar button{display:flex;gap:7px;align-items:center;border:1px solid var(--line-strong,#66704e);color:var(--paper,#eff1e8);background:none;padding:7px 10px;border-radius:4px;font-family:Outfit,sans-serif;font-size:11px;white-space:nowrap;cursor:pointer}.ds-toolbar button:hover{color:var(--lime,#d2fa69)}.ds-lines{padding:22px 0;overflow-x:auto}.ds-line{display:flex;gap:20px;min-height:25px;padding-right:22px;line-height:1.8}.ds-line:target{background:var(--code-target,#323d24)}.ds-line>a{font-family:'Space Mono',monospace;font-size:11px;color:var(--code-line,#96a087);width:48px;flex-shrink:0;text-align:right;user-select:none;position:sticky;left:0;background:var(--code-bg,#171a14);text-decoration:none}.ds-line>a:hover{color:var(--lime,#d2fa69)}.ds-line>code{font-family:'Space Mono',monospace;font-size:12px;color:var(--code-text,#c3ccb6);white-space:pre-wrap;overflow-wrap:anywhere;min-width:0}.ds-line>code.ds-heading{color:var(--lime,#d2fa69);font-weight:700}.ds-primary:focus-visible,.ds-secondary:focus-visible,.ds-input:focus-visible,.ds-reader a:focus-visible,.ds-reader button:focus-visible,.ds-footer a:focus-visible,.ds-footer button:focus-visible{outline:2px solid var(--lime,#d2fa69);outline-offset:5px}@media(max-width:760px){.ds-line{gap:12px;padding-right:14px}.ds-line>a{width:30px;font-size:10px}.ds-line>code{font-size:11px}.ds-toolbar{padding:11px 13px}}"
+    },
+    {
+      "name": "Footer and Theme Control",
+      "kind": "custom",
+      "description": "One-line footer. The application fixes it to the viewport, sets aria-pressed, and saves the theme. This snippet shows its dark state in normal flow.",
+      "html": "<footer class=\"ds-footer\" aria-label=\"Site information and appearance\"><div class=\"ds-footer-links\"><a href=\"/about\">About</a><span class=\"ds-version\" title=\"Website version\">v0.0.1</span></div><span class=\"ds-credit\">A side project by <a href=\"https://x.com/mager\">@mager</a></span><div class=\"ds-theme\" role=\"group\" aria-label=\"Color theme\"><button type=\"button\" aria-pressed=\"false\"><svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5\"/></svg><span class=\"ds-theme-label\">Light</span></button><button type=\"button\" aria-pressed=\"true\"><svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20.5 14.2A9 9 0 0 1 9.8 3.5a9 9 0 1 0 10.7 10.7Z\"/></svg><span class=\"ds-theme-label\">Dark</span></button></div></footer>",
+      "css": ".ds-footer{display:flex;align-items:center;gap:24px;min-height:76px;padding:12px 28px;border-top:1px solid var(--line,#34382f);background:var(--rail,#151713);color:var(--quiet,#a6ad9f);font-family:Outfit,sans-serif;font-size:12px;box-shadow:0 -5px 20px var(--shadow,#0006)}.ds-footer-links{display:flex;align-items:center;gap:18px}.ds-footer a{color:var(--paper,#eff1e8);text-decoration:none}.ds-footer a:hover{color:var(--lime,#d2fa69)}.ds-version{font-family:'Space Mono',monospace;font-size:10px;font-variant-numeric:tabular-nums}.ds-credit{margin-left:auto}.ds-theme{display:flex;align-items:center;gap:3px;padding:3px;border:1px solid var(--line-strong,#66704e);border-radius:7px}.ds-theme button{display:flex;align-items:center;justify-content:center;gap:6px;min-height:34px;padding:7px 10px;border:0;border-radius:4px;background:transparent;color:var(--quiet,#a6ad9f);font-family:Outfit,sans-serif;font-size:11px;cursor:pointer}.ds-theme button:hover{color:var(--paper,#eff1e8);background:var(--panel-raised,#20231e)}.ds-theme button[aria-pressed=\"true\"]{background:var(--action-bg,#d2fa69);color:var(--action-ink,#19210e)}.ds-primary:focus-visible,.ds-secondary:focus-visible,.ds-input:focus-visible,.ds-reader a:focus-visible,.ds-reader button:focus-visible,.ds-footer a:focus-visible,.ds-footer button:focus-visible{outline:2px solid var(--lime,#d2fa69);outline-offset:5px}@media(max-width:760px){.ds-footer{flex-wrap:nowrap;justify-content:space-between;gap:8px;padding:10px 12px;min-height:60px;font-size:10px;white-space:nowrap}.ds-footer-links{gap:8px;flex-shrink:0}.ds-version{font-size:9px}.ds-credit{flex-shrink:0}.ds-theme{flex-shrink:0;gap:2px;padding:2px}.ds-theme button{width:32px;height:32px;min-height:32px;padding:0;gap:0}.ds-theme-label{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}}@media(max-width:370px){.ds-footer{padding-left:8px;padding-right:8px;gap:6px}.ds-footer-links{gap:6px}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Night Press",
+    "overview": "Large Outfit headings, fine woven lines, and compact source records define Loooom. Dark mode uses pale text on ink. Light mode uses dark text on warm paper. Both modes use the same layout and controls.\n\nThis system applies to the context pages in `src/lib/harness/context.css` and `src/lib/components/harness/`. Existing Skills, Gym, and older profile styles stay within their current scope. This document replaces the old cream and cyan direction for the context pages.",
+    "keyCharacteristics": [
+      "Clear type hierarchy with short, direct copy.",
+      "Lime actions, lavender support, and quiet borders.",
+      "Four interwoven rings in the brand mark.",
+      "Exact source text with visible source records.",
+      "One footer and a saved light or dark theme."
+    ],
+    "rules": [
+      {
+        "name": "The Action Contrast Rule",
+        "body": "Use `--lime` for accent text. Use `--action-bg` with `--action-ink` for primary buttons. In light mode, `--lime` becomes dark green; the action background stays bright lime.",
+        "section": "colors"
+      }
+    ],
+    "dos": [
+      "**Do** use the existing theme properties for every new context surface.",
+      "**Do** lead with AGENTS.md and describe other context files as optional.",
+      "**Do** keep one primary share entry and one footer.",
+      "**Do** preserve exact source text and separate owner and sharer attribution.",
+      "**Do** check both themes, keyboard focus, reduced motion, and the 320px layout."
+    ],
+    "donts": [
+      "**Don't** use the text accent as the primary button background in light mode.",
+      "**Don't** add decorative gradients, large pill buttons, or the old cyan theme to context pages.",
+      "**Don't** add catchphrases, invented activity, membership claims, or eval scores.",
+      "**Don't** execute imported instructions or hide source records to simplify the layout.",
+      "**Don't** apply these styles to Skills or Gym without a separate request."
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "@loooom/context-evals",
+  "version": "0.1.0",
+  "description": "Paired behavior checks for personal AI context files, with offline replay and saved evidence.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mager/loooom.xyz.git",
+    "directory": "plugins/context-evals"
+  },
+  "homepage": "https://loooom.xyz/evals",
+  "engines": { "node": ">=22" },
+  "bin": { "loooom-context-eval": "bin/loooom-context-eval.mjs" },
+  "files": ["bin", "src", "examples", "SKILL.md", "README.md", "LICENSE"],
+  "scripts": { "test": "node --test ../../tests/context-evals.test.mjs" },
+  "keywords": ["agents", "context", "evaluation", "personalization", "agent-skills"]
+}

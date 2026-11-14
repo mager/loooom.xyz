@@ -8,6 +8,10 @@ export async function GET() {
 
 	const staticPages = [
 		{ url: '/', priority: '1.0', changefreq: 'weekly' },
+		{ url: '/share', priority: '0.8', changefreq: 'monthly' },
+		{ url: '/about', priority: '0.5', changefreq: 'monthly' },
+		{ url: '/evals', priority: '0.9', changefreq: 'weekly' },
+		{ url: '/gym', priority: '0.8', changefreq: 'weekly' },
 		{ url: '/browse', priority: '0.9', changefreq: 'weekly' },
 		{ url: '/me', priority: '0.7', changefreq: 'monthly' },
 		{ url: '/docs', priority: '0.6', changefreq: 'monthly' },

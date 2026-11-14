@@ -11,15 +11,16 @@
 		</a>
 
 		<div class="nav-links">
+			<a href="/">Discover</a>
 			<a href="/browse">Skills</a>
 			<a href="/gym">Gym</a>
-			<a href="/#grading">How it's scored</a>
+			<a href="/evals">Personal evals</a>
 			<a href="https://github.com/mager/loooom" target="_blank" rel="noopener">GitHub</a>
 		</div>
 
 		<div class="nav-actions">
 			<ThemeToggle />
-			<a href="/browse" class="nav-cta">Browse skills</a>
+			<a href="/share" class="nav-cta">Share context</a>
 		</div>
 	</div>
 </nav>

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "synthetic": true,
+  "description": "Handwritten answers for a CLI demonstration. No model generated these answers. These scores do not show model performance.",
+  "results": [
+    {
+      "caseId": "project-check",
+      "baseline": "Great question! Try npm test to check your project.",
+      "context": "Run `npm run check`."
+    },
+    {
+      "caseId": "work-time-zone",
+      "baseline": "Use the time zone where you work.",
+      "context": "America/Chicago"
+    },
+    {
+      "caseId": "status-update",
+      "baseline": "The first draft is ready for review.",
+      "context": "The first draft is ready. Next: review the result."
+    }
+  ]
+}

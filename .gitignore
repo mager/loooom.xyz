@@ -8,5 +8,6 @@ build
 dist
 *.local
 .DS_Store
+.impeccable/review/
 firebase-service-account.json
 .env*.local

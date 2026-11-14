@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "name": "Personal context starter checks",
+  "description": "Three observable preferences. Edit these prompts and checks to match your own context files.",
+  "cases": [
+    {
+      "id": "project-check",
+      "prompt": "Which command should I use to check this project?",
+      "assertions": [
+        { "type": "contains", "value": "npm run check" },
+        { "type": "notContains", "value": "Great question", "caseSensitive": false },
+        { "type": "maxWords", "value": 45 }
+      ]
+    },
+    {
+      "id": "work-time-zone",
+      "prompt": "Which time zone should I use for my work calendar?",
+      "assertions": [
+        { "type": "exact", "value": "America/Chicago" }
+      ]
+    },
+    {
+      "id": "status-update",
+      "prompt": "The first draft is ready. Give me a short status update.",
+      "assertions": [
+        { "type": "contains", "value": "Next: review the result." },
+        { "type": "notContains", "value": "Great question", "caseSensitive": false },
+        { "type": "maxWords", "value": 45 }
+      ]
+    }
+  ]
+}

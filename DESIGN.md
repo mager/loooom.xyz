@@ -1,161 +1,233 @@
 ---
-version: "alpha"
-name: "Loooom.xyz"
-description: "Human context publishing platform with machine-readable rigor, soft creator warmth, and cyan-to-indigo optimism."
+name: "Loooom"
+description: "Night Press: clear source files, strong type, and fine woven lines."
 colors:
-  primary: "#0e7490"
-  secondary: "#57534e"
-  tertiary: "#6366f1"
-  background: "#fafaf9"
-  surface: "#ffffff"
-  surface-alt: "#f5f5f4"
-  border: "#e7e5e4"
-  on-background: "#1c1917"
-  on-primary: "#ffffff"
-  accent-bright: "#06b6d4"
-  accent-dim: "#155e75"
-  ocean: "#06b6d4"
-  indigo: "#6366f1"
-  amber: "#f59e0b"
-  rose: "#f43f5e"
-  emerald: "#10b981"
-  violet: "#8b5cf6"
+  ink: "#111211"
+  panel: "#191b18"
+  panel-raised: "#20231e"
+  rail: "#151713"
+  paper: "#eff1e8"
+  quiet: "#a6ad9f"
+  line: "#34382f"
+  line-strong: "#66704e"
+  lime: "#d2fa69"
+  lavender: "#c5b6ed"
+  action-bg: "#d2fa69"
+  action-hover: "#e0ff95"
+  action-ink: "#19210e"
+  accent-soft: "#2b3321"
+  accent-border: "#536039"
+  code-bg: "#171a14"
+  code-toolbar: "#22271c"
+  code-text: "#c3ccb6"
+  code-line: "#96a087"
+  code-target: "#323d24"
+  code-list: "#d1c4eb"
+  light-ink: "#f5f2e9"
+  light-panel: "#faf9f3"
+  light-panel-raised: "#eaece0"
+  light-rail: "#eceee1"
+  light-paper: "#25291f"
+  light-quiet: "#626a56"
+  light-line: "#cdd2bf"
+  light-line-strong: "#7e8b69"
+  light-lime: "#40571a"
+  light-lavender: "#705193"
+  light-accent-soft: "#e3ebd1"
+  light-accent-border: "#95a576"
+  light-code-bg: "#fcfbf7"
+  light-code-toolbar: "#eceee1"
+  light-code-text: "#46503b"
+  light-code-line: "#6c755f"
+  light-code-target: "#e4edcd"
+  light-code-list: "#6c4c90"
 typography:
-  display-xl:
-    fontFamily: "Outfit"
-    fontSize: 4.75rem
-    fontWeight: "700"
-    lineHeight: 0.95
-    letterSpacing: -0.05em
-  headline-lg:
-    fontFamily: "Playwrite IT Moderna"
-    fontSize: 2.5rem
-    fontWeight: "400"
-    lineHeight: 1.05
-  headline-md:
-    fontFamily: "Outfit"
-    fontSize: 2rem
-    fontWeight: "600"
-    lineHeight: 1.1
-  body-lg:
-    fontFamily: "Outfit"
-    fontSize: 1.125rem
-    fontWeight: "400"
-    lineHeight: 1.7
-  body-md:
-    fontFamily: "Outfit"
-    fontSize: 1rem
-    fontWeight: "400"
-    lineHeight: 1.65
-  code-md:
-    fontFamily: "Space Mono"
-    fontSize: 0.9375rem
-    fontWeight: "400"
-    lineHeight: 1.6
-  label-sm:
-    fontFamily: "Space Mono"
-    fontSize: 0.75rem
-    fontWeight: "700"
-    lineHeight: 1.3
-    letterSpacing: 0.08em
+  display:
+    fontFamily: "Outfit, sans-serif"
+    fontSize: "clamp(2.6rem, 5.4vw, 5.4rem)"
+    fontWeight: 500
+    lineHeight: 1.02
+    letterSpacing: "-0.035em"
+  headline:
+    fontFamily: "Outfit, sans-serif"
+    fontSize: "1.8rem"
+    fontWeight: 500
+    lineHeight: 1.15
+    letterSpacing: "-0.035em"
+  title:
+    fontFamily: "Outfit, sans-serif"
+    fontSize: "1.2rem"
+    fontWeight: 500
+    lineHeight: 1.25
+    letterSpacing: "-0.035em"
+  body:
+    fontFamily: "Outfit, sans-serif"
+    fontSize: "15px"
+    fontWeight: 400
+    lineHeight: 1.5
+  button:
+    fontFamily: "Outfit, sans-serif"
+    fontSize: "14px"
+    fontWeight: 500
+  label:
+    fontFamily: "Space Mono, monospace"
+    fontSize: "11px"
+    fontWeight: 400
+  source:
+    fontFamily: "Space Mono, monospace"
+    fontSize: "12px"
+    fontWeight: 400
+    lineHeight: 1.8
 rounded:
-  sm: 8px
-  md: 12px
-  lg: 20px
-  xl: 28px
-  full: 9999px
+  small: "4px"
+  control: "6px"
+  reader: "8px"
+  panel: "10px"
 spacing:
-  xs: 4px
-  sm: 8px
-  md: 16px
-  lg: 24px
-  xl: 40px
-  xxl: 64px
-  section-gap: 96px
-  content-max: 1200px
-elevation:
-  soft: "0 2px 16px rgba(28, 25, 23, 0.06)"
-  hover: "0 8px 32px rgba(6, 182, 212, 0.12)"
-shadows:
-  card: "0 2px 16px rgba(28, 25, 23, 0.06)"
-  accent: "0 8px 32px rgba(6, 182, 212, 0.12)"
-motion:
-  standard: "200ms ease"
-  theme: "300ms ease"
-  hover: "200ms ease"
+  small: "8px"
+  control-gap: "10px"
+  compact: "12px"
+  medium: "16px"
+  mobile-gutter: "20px"
+  large: "24px"
+  narrow-gutter: "28px"
+  desktop-gutter: "44px"
+  wide-gutter: "64px"
 components:
-  page-shell:
-    backgroundColor: "{colors.background}"
-    textColor: "{colors.on-background}"
-    padding: "{spacing.xl}"
-  nav-link:
-    textColor: "{colors.secondary}"
-    typography: "{typography.label-sm}"
-  code-chip:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.secondary}"
-    typography: "{typography.code-md}"
-    rounded: "{rounded.md}"
-    padding: 12px
   button-primary:
-    backgroundColor: "{colors.accent-bright}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.label-sm}"
-    rounded: "{rounded.full}"
-    height: 52px
-    padding: 0 24px
+    backgroundColor: "{colors.action-bg}"
+    textColor: "{colors.action-ink}"
+    typography: "{typography.button}"
+    rounded: "{rounded.control}"
+    padding: "12px 20px"
+  button-primary-hover:
+    backgroundColor: "{colors.action-hover}"
+    textColor: "{colors.action-ink}"
   button-secondary:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.secondary}"
-    typography: "{typography.label-sm}"
-    rounded: "{rounded.full}"
-    height: 52px
-    padding: 0 24px
-  info-card:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.on-background}"
-    rounded: "{rounded.lg}"
-    padding: "{spacing.lg}"
+    backgroundColor: "transparent"
+    textColor: "{colors.paper}"
+    typography: "{typography.button}"
+    rounded: "{rounded.control}"
+    padding: "12px 20px"
+  button-secondary-hover:
+    backgroundColor: "{colors.panel-raised}"
+    textColor: "{colors.paper}"
+  input:
+    backgroundColor: "{colors.panel}"
+    textColor: "{colors.paper}"
+    rounded: "{rounded.control}"
+    padding: "12px"
+  nav-active:
+    backgroundColor: "{colors.accent-soft}"
+    textColor: "{colors.lime}"
+    rounded: "{rounded.control}"
+    padding: "12px 10px"
+  topic-chip:
+    backgroundColor: "{colors.accent-soft}"
+    textColor: "{colors.lime}"
+    rounded: "{rounded.small}"
+    padding: "3px 8px"
+  source-card:
+    backgroundColor: "{colors.panel}"
+    textColor: "{colors.paper}"
+    rounded: "{rounded.panel}"
+  source-reader:
+    backgroundColor: "{colors.code-bg}"
+    textColor: "{colors.code-text}"
+    typography: "{typography.source}"
+    rounded: "{rounded.reader}"
 ---
 
-## Overview
-Loooom should feel like infrastructure for the AI era that still has a human pulse. It is not cyberpunk, and it is not corporate enterprise software. The tone is optimistic, legible, and slightly playful, with machine-readable precision sitting beside creator warmth.
+# Design System: Loooom
 
-The homepage demonstrates the balance clearly: code snippets and endpoint language are presented with confidence, but the overall atmosphere stays bright, airy, and welcoming.
+## Overview
+
+**Creative North Star: "Night Press"**
+
+Large Outfit headings, fine woven lines, and compact source records define Loooom. Dark mode uses pale text on ink. Light mode uses dark text on warm paper. Both modes use the same layout and controls.
+
+This system applies to the context pages in `src/lib/harness/context.css` and `src/lib/components/harness/`. Existing Skills, Gym, and older profile styles stay within their current scope. This document replaces the old cream and cyan direction for the context pages.
+
+**Key Characteristics:**
+
+- Clear type hierarchy with short, direct copy.
+- Lime actions, lavender support, and quiet borders.
+- Four interwoven rings in the brand mark.
+- Exact source text with visible source records.
+- One footer and a saved light or dark theme.
 
 ## Colors
-The color system lives in a cream-and-ocean world. Cyan and indigo provide the core energy, while neutral stone backgrounds keep the product grounded. Accent color should read as clarity and momentum, not alarm.
 
-Supporting colors like amber, rose, emerald, and violet are useful for topic differentiation, examples, and ecosystem cues, but the heart of the brand is cyan plus indigo over soft neutrals.
+The palette uses ink and paper for structure, lime for actions, and lavender for supporting context and evals. The frontmatter records the shared colors. Component-specific state colors remain in the stylesheet.
+
+- **Primary:** `lime` is the accent for text, icons, focus, and selected states. `action-bg`, `action-hover`, and `action-ink` form a separate button color set.
+- **Secondary:** `lavender` marks supporting context and evals. The lavender eval feature panel keeps dark text in both themes.
+- **Neutral:** `ink` is the page background; `paper` is the primary text. `panel`, `panel-raised`, and `rail` separate surfaces. `quiet` supports metadata; `line` and `line-strong` define boundaries.
+- **Source:** the `code-*` colors separate source text, line numbers, the toolbar, and a linked line. Keep these roles distinct from body text.
+- **Light theme:** each `light-*` token replaces the matching CSS property when `html[data-theme="light"]` is set. The role names stay the same even when the color changes.
+
+**The Action Contrast Rule.** Use `--lime` for accent text. Use `--action-bg` with `--action-ink` for primary buttons. In light mode, `--lime` becomes dark green; the action background stays bright lime.
+
+Do not add unobserved color ramps. The CSS contains the available colors and state variants.
 
 ## Typography
-Outfit is the structural backbone: clean, current, and readable. Space Mono gives code, commands, and agent-oriented UI the necessary machine credibility. Playwrite IT Moderna and the sketchier supporting handwriting family add just enough human-made texture to keep the product from feeling dry.
 
-The result should feel like docs, product marketing, and creator tooling all agreed to speak in one voice.
+**Display and interface font:** Outfit, with a sans-serif fallback.
+**Source and metadata font:** Space Mono, with a monospace fallback.
 
-## Layout & Spacing
-Use broad sections with clear narrative sequencing. This is a concept-heavy product, so layout must teach: intro, quickstart, proof, format explanation, and examples. Generous spacing helps the copy breathe, but modules should stay compact enough to preserve momentum.
+Use the frontmatter hierarchy. Headings use medium weight, tight tracking, and balanced line breaks. Body copy uses regular weight. Use Space Mono for file names, hashes, commits, line numbers, and compact metadata. Use tabular numbers for comparable values.
 
-Code snippets, endpoint grids, and CTA rows should feel easy to scan. The page should work equally well for a curious human and an agent developer skimming for protocol details.
+Page introductions use a smaller heading range (`clamp(36px, 4vw, 60px)`). The home heading has route-specific responsive sizes. Source text reduces to 11px on mobile. Preserve source spacing and allow long lines, URLs, and hashes to wrap inside their container.
+
+Copy names the file or action directly. AGENTS.md leads; ME.md, SOUL.md, and DESIGN.md are optional supporting files. Keep captions short. Do not use catchphrases or labels such as “Human context” and “Open by choice.”
+
+## Layout
+
+The desktop shell has a fixed left rail (220px), a top action bar, and a main area with a maximum width of 1440px. Main gutters use the spacing tokens. The rail reduces to 190px at 1150px and grows to 250px from 1600px.
+
+At 760px and below, the rail becomes a top navigation area with horizontal scrolling. Main content uses 20px side gutters. Columns stack as each route requires; keep file text and metadata inside the available width. Existing route breakpoints are listed in the sidecar, not a new uniform grid scale.
+
+Use one sticky footer on desktop and mobile. The implementation fixes it to the viewport bottom. It contains About, the site version, “A side project by @mager,” and the Light and Dark controls. Keep all four items on one line, including at 320px. Mobile theme controls show icons with accessible text labels. Reserve the footer height (76px desktop, 60px mobile) plus the safe-area inset in page padding.
+
+Check the context shell at 1440px, 390px, and 320px in both themes. Confirm that the footer does not hide the final content or keyboard focus.
 
 ## Elevation & Depth
-Depth is soft and modern. Cards should sit above the page with tasteful shadows and subtle hover lift. There is room for gradient energy in CTAs and hero accents, but surfaces should remain clean and readable.
 
-The system should feel polished, not glossy. It can be expressive without looking overproduced.
+Most surfaces are flat, with borders and small changes in tone. Cards change border color on hover; they do not lift. Shadows separate the woven file fragments and the fixed footer from the page. Their exact values and theme-dependent shadow color are in the sidecar and CSS.
+
+The weave moves slowly with a 22-second alternating turn. Control transitions last 0.2 seconds. When reduced motion is requested, disable animation and transitions and keep the weave visible in its static state.
 
 ## Shapes
-Rounded corners are important here. They soften the technical subject matter and give the platform a maker-friendly tone. Pills are appropriate for buttons, code prompts, and badges. Cards can be noticeably rounded without feeling childish.
+
+Use small rounded controls and slightly softer source panels, as recorded in `rounded`. Borders are thin (1px). Avatars and the woven threads use circles or ellipses. The logo and favicon contain exactly four interwoven rings, one for each o in loooom.
 
 ## Components
-Code prompts and endpoint rows should feel like trustworthy interfaces for machines. Hero actions should feel optimistic and forward-moving. Informational cards should make protocol concepts feel approachable.
 
-When choosing between a harsher terminal treatment and a softer documentation treatment, prefer the softer one unless the content is explicitly machine-facing.
+- **Buttons:** solid lime for the main action; transparent with a border for secondary actions. Standard controls have a minimum height of 46px. Compact topbar actions use 38px. Retain the dark action text on hover. Disabled buttons use reduced opacity and a waiting cursor.
+- **Inputs:** visible labels, neutral surfaces, a thin border, and readable placeholder text. Search and GitHub link fields may use an inline icon. Show errors beside the form with text and a distinct state treatment.
+- **Navigation:** quiet links; a soft accent surface for the active route. Provide one primary share entry in the topbar. Omit that entry on the share page. Mobile navigation scrolls horizontally.
+- **Topic chips:** small text labels with a soft accent fill, accent border, and modest corners. Selected filters also show a line or explicit pressed state.
+- **Source cards:** owner and sharer attribution, file name, short text preview, source metadata, and separate read and save actions. Card previews use real source line numbers. Do not imply that a curated source owner is a member.
+- **Source reader:** a compact filename and copy toolbar above numbered text. Show imported content as text. Use a distinct background for the linked line. Keep the source URL, commit, file update date, line count, and SHA-256 available next to the reader.
+- **Brand and weave:** four rings form the small mark. Fine crossing threads and file fragments form the larger illustration. Use the illustration where it helps explain files; keep reading and form areas clear.
+- **Footer and theme control:** one continuous bar. The active theme uses the action colors and `aria-pressed`. Keep labels accessible when their visible text is hidden on mobile. Save the choice between visits.
+
+All interactive controls need a visible keyboard focus ring (2px accent outline with a 5px offset). Keep text labels for icon controls and status text for errors and copy results.
 
 ## Do's and Don'ts
-Do balance machine clarity with creator warmth.
-Do use cyan and indigo as the signature energy.
-Do let code UI and prose UI coexist naturally.
 
-Don't make the brand feel dark, paranoid, or hacker-only.
-Don't overdecorate with too many playful type treatments at once.
-Don't let cards get so airy that the product loses technical confidence.
+### Do:
+
+- **Do** use the existing theme properties for every new context surface.
+- **Do** lead with AGENTS.md and describe other context files as optional.
+- **Do** keep one primary share entry and one footer.
+- **Do** preserve exact source text and separate owner and sharer attribution.
+- **Do** check both themes, keyboard focus, reduced motion, and the 320px layout.
+
+### Don't:
+
+- **Don't** use the text accent as the primary button background in light mode.
+- **Don't** add decorative gradients, large pill buttons, or the old cyan theme to context pages.
+- **Don't** add catchphrases, invented activity, membership claims, or eval scores.
+- **Don't** execute imported instructions or hide source records to simplify the layout.
+- **Don't** apply these styles to Skills or Gym without a separate request.

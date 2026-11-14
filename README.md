@@ -1,14 +1,19 @@
-# 🧶 Loooom
+# Loooom
 
-**Where skills are woven.**
+**A social home for your context.**
 
-A social skills marketplace. Share what you know. Use what inspires you.
+Share your AGENTS.md from GitHub, with optional ME.md, SOUL.md, DESIGN.md,
+and other Markdown files. Read useful instructions,
+follow their source owners, and test what helps.
 
 ## What
 
-Loooom is a place where people share skills — the things they're actually good at — so AI agents can learn from the best. Not templates. Not prompts. Real expertise, from real people.
+Loooom gives personal AI context a home with source history, discovery,
+collections, and personal evals. GitHub remains the editable source. Every
+import keeps its commit, update date, line count, content hash, and text.
 
-Skills are always free. Authors can receive donations. The whole thing is open source.
+Skills, the Gym, and existing ME.md tools remain available. The local personal
+context eval plugin is agent-neutral and MIT-licensed.
 
 ## Stack
 
@@ -20,7 +25,7 @@ SvelteKit 5 · TypeScript · Neon Postgres · Drizzle ORM · Vercel
 
 ### Prerequisites
 
-- **Node.js 20+** (check with `node -v`)
+- **Node.js 22+** (check with `node -v`; required by the local eval plugin)
 - **npm** (comes with Node)
 - A **Neon** database (free tier works fine — [neon.tech](https://neon.tech))
 
@@ -116,3 +121,48 @@ src/
 ## License
 
 MIT
+
+## Personal context network
+
+The new homepage centers on AGENTS.md. Other Markdown files are optional. Skills (`/browse`),
+the Gym (`/gym`), and existing ME.md profiles remain available.
+
+- `/share`: import a public GitHub file, inspect the exact snapshot, and publish it.
+- `/h/:id`: read the source, see commit/date/line metadata, copy it, or save it.
+- `/people/:owner`: discover a GitHub owner's shared context and follow that source.
+- `/evals`: inspect paired context-eval evidence or open a local report in the browser.
+- `/evals/plugin`: read the local eval plugin guide.
+
+Before deploying this version, apply the additive migration:
+
+```sh
+node --env-file=.env scripts/migrate-context.mjs
+```
+
+Set `DATABASE_URL` and the existing Firebase configuration. `GITHUB_TOKEN` is
+optional and increases GitHub's API rate allowance. The server reads public
+repositories only. New share/save/follow writes require a verified Firebase ID
+token; they do not trust the legacy session ID cookie. Configure host-level
+rate limiting for import and publish endpoints before a public launch.
+
+GitHub remains the editable source. Imports are snapshots, and their content is
+read at the same commit used for metadata. The publisher can refresh a file
+from its branch. Previous snapshots are retained. A commit-pinned URL stays
+pinned. Imported Markdown is displayed as source text, never executable HTML.
+
+Curated examples are real public GitHub snapshots. They are identified as
+curated and do not claim membership or endorsement. The local eval example
+is synthetic and clearly labeled. It is not evidence of model performance.
+
+The MIT-licensed eval plugin lives in `plugins/context-evals`. It is ready for
+source use; npm publication is a separate release step. See its README for
+paired live runs, provider configuration, and offline replay. Personal draft
+files and a tailored eval suite are in `personal/mager`; they are not installed
+as global instructions or submitted to the discovery feed.
+
+```sh
+npm run test:context
+npm run test:gym
+npm run check
+npm run build
+```

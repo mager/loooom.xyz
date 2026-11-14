@@ -105,3 +105,35 @@ export const meMdVersions = pgTable('me_md_versions', {
 	charCount: integer('char_count').notNull().default(0),
 	createdAt: timestamp('created_at').notNull().defaultNow()
 });
+
+// GitHub remains the editable source; each imported version is immutable.
+export const harnesses = pgTable('harnesses', {
+ id: uuid('id').primaryKey().defaultRandom(),
+ userId: uuid('user_id').notNull().references(() => users.id),
+ sourceUrl: text('source_url').notNull(),
+ title: text('title').notNull(),
+ description: text('description').notNull().default(''),
+ topic: text('topic').notNull().default('workflow'),
+ snapshot: jsonb('snapshot').$type<import('./github-harness').GitHubSnapshot>().notNull(),
+ createdAt: timestamp('created_at').notNull().defaultNow(),
+ updatedAt: timestamp('updated_at').notNull().defaultNow()
+}, t => [unique().on(t.userId,t.sourceUrl)]);
+export const harnessVersions = pgTable('harness_versions', {
+ id: uuid('id').primaryKey().defaultRandom(),
+ harnessId: uuid('harness_id').notNull().references(() => harnesses.id),
+ commitSha: text('commit_sha').notNull(),
+ snapshot: jsonb('snapshot').$type<import('./github-harness').GitHubSnapshot>().notNull(),
+ createdAt: timestamp('created_at').notNull().defaultNow()
+}, t => [unique().on(t.harnessId,t.commitSha)]);
+export const harnessSaves = pgTable('harness_saves', {
+ id: uuid('id').primaryKey().defaultRandom(),
+ userId: uuid('user_id').notNull().references(() => users.id),
+ harnessId: text('harness_id').notNull(),
+ createdAt: timestamp('created_at').notNull().defaultNow()
+}, t => [unique().on(t.userId,t.harnessId)]);
+export const harnessFollows = pgTable('harness_follows', {
+ id: uuid('id').primaryKey().defaultRandom(),
+ userId: uuid('user_id').notNull().references(() => users.id),
+ owner: text('owner').notNull(),
+ createdAt: timestamp('created_at').notNull().defaultNow()
+}, t => [unique().on(t.userId,t.owner)]);

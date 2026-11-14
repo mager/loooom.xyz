@@ -1,5 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
+	let next = $derived(page.url.searchParams.get('next') ?? '/');
+	let returnTo = $derived(next.startsWith('/') && !next.startsWith('//') && !next.includes('\\') ? next : '/');
 	import YarnLogo from '$lib/components/YarnLogo.svelte';
 	import { signInWithEmail, resetPassword, signInWithGitHub } from '$lib/firebase';
 
@@ -31,7 +34,7 @@
 				ghLoading = false;
 				return;
 			}
-			goto('/dashboard');
+			goto(returnTo);
 		} catch (e: unknown) {
 			const msg = e instanceof Error ? e.message : '';
 			if (msg.includes('popup-closed')) {
@@ -65,7 +68,7 @@
 				return;
 			}
 
-			goto('/dashboard');
+			goto(returnTo);
 		} catch (e: unknown) {
 			const msg = e instanceof Error ? e.message : 'Login failed';
 			if (msg.includes('user-not-found') || msg.includes('wrong-password') || msg.includes('invalid-credential')) {
