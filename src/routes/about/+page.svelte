@@ -6,7 +6,7 @@
 <svelte:head><title>About — Loooom</title><meta name="description" content="Share AGENTS.md. Try other working rules, with optional personal and design context."/></svelte:head>
 
 <ContextShell>
- <div class="page-intro"><h1>About <span>Loooom.</span></h1><p>Share your AGENTS.md. See how others work with agents.</p></div>
+ <div class="page-intro"><h1>About <span>Loooom.</span></h1><p>Let anyone try on your harness</p></div>
  <div class="about-content">
   <section><h2>AGENTS.md comes first.</h2><p>Share your working rules. Other Markdown context is optional.</p><dl><div><dt>AGENTS.md</dt><dd>Your working rules, tools, and boundaries.</dd></div><div><dt>ME.md</dt><dd>The personal context you choose to share.</dd></div><div><dt>SOUL.md</dt><dd>Character and voice. Borrow ideas, not an identity.</dd></div><div><dt>DESIGN.md</dt><dd>Design rules and visual standards.</dd></div></dl></section>
   <section><h2>GitHub is the source.</h2><p>Snapshots keep the source, commit, date, and hash. Owners and sharers get separate credit. Curated authors may not have a Loooom account.</p><div class="about-links"><a class="text-link" href="https://github.com/mager/loooom.xyz" target="_blank" rel="noreferrer"><Icon name="github" size={16}/>Source code <Icon name="external" size={13}/></a><a class="text-link" href="/me/spec">ME.md spec <Icon name="arrow" size={16}/></a></div></section>

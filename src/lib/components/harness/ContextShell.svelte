@@ -39,7 +39,7 @@
   <div class="rail-bottom"><a href="https://github.com/mager/loooom.xyz" target="_blank" rel="noreferrer"><Icon name="github" size={16}/> Source code <Icon name="external" size={12}/></a></div>
  </aside>
  <div class="site-body">
-  <header class="topbar"><span class="topbar-copy">Try their rules. <strong>Share yours.</strong></span><div><a class="sign-in" href={page.data.user?'/dashboard':'/login?next=/'}>{page.data.user?`@${page.data.user.username}`:'Sign in'}</a>{#if page.url.pathname!=='/share'}<a class="button primary compact" href="/share"><Icon name="plus" size={16}/><span>Share AGENTS.md</span></a>{/if}</div></header>
+  <header class="topbar"><span class="topbar-copy">Let anyone <strong>try on your harness</strong></span><div><a class="sign-in" href={page.data.user?'/dashboard':'/login?next=/'}>{page.data.user?`@${page.data.user.username}`:'Sign in'}</a>{#if page.url.pathname!=='/share'}<a class="button primary compact" href="/share"><Icon name="plus" size={16}/><span>Share AGENTS.md</span></a>{/if}</div></header>
   <main id="main-content">{@render children()}</main>
  </div>
  <footer class="utility-footer" aria-label="Site information and appearance">
