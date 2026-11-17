@@ -23,10 +23,10 @@
  });
  let people=$derived([...new Set(data.harnesses.map(h=>h.snapshot.owner))].slice(0,4));
 </script>
-<svelte:head><title>Loooom — Share your AGENTS.md</title><meta name="description" content="Let anyone try on your harness"/></svelte:head>
+<svelte:head><title>Loooom — Let anyone try on your harness</title><meta name="description" content="Let anyone try on your harness"/></svelte:head>
 <ContextShell>
  <section class="home-hero">
-  <div class="hero-copy"><h1>Share your<br/><span>AGENTS.md.</span></h1><p>Let anyone try on your harness</p><div class="hero-actions"><a href="#discover" class="button primary">Explore AGENTS.md <Icon name="arrow" size={17}/></a></div><div class="source-promise"><Icon name="git" size={13}/><span>Source and commit included.</span></div></div>
+  <div class="hero-copy"><h1>Let anyone<br/>try on your<br/><span>harness</span></h1><p>Share AGENTS.md from GitHub.</p><div class="hero-actions"><a href="#discover" class="button primary">Explore AGENTS.md <Icon name="arrow" size={17}/></a></div><div class="source-promise"><Icon name="git" size={13}/><span>Source and commit included.</span></div></div>
   <ContextWeave/>
  </section>
  <div class="context-types" role="group" aria-label="Context file types">
