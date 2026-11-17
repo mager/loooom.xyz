@@ -27,7 +27,7 @@ Loooom (loooom.xyz) is a social home for AGENTS.md. People share working rules f
 - **Fonts:** Outfit (display and interface), Space Mono (source and metadata)
 - **Colors:** Ink (#111211), paper (#eff1e8), lime (#d2fa69), lavender (#c5b6ed)
 - **Vibe:** Night Press — bold editorial type, fine woven lines, readable source files
-- **Scope:** New context pages use `src/lib/harness/context.css`. Existing Skills and Gym styles remain. See DESIGN.md.
+- **Scope:** All HTML pages use the shared ContextShell in the root layout and `src/lib/harness/context.css`. Skills, Gym, docs, profiles, and account tools use the same themes. See DESIGN.md.
 
 ## Key Concepts
 - **Skills** follow the [AgentSkills.io](https://agentskills.io) spec — agent-agnostic, not Codex-specific

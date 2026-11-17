@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Nav from '$lib/components/Nav.svelte';
 
 	let { data } = $props();
 </script>
@@ -23,13 +22,6 @@
 	<meta name="twitter:site" content="@mager" />
 </svelte:head>
 
-<div class="ambient" aria-hidden="true">
-	<div class="orb orb-1"></div>
-	<div class="orb orb-2"></div>
-</div>
-
-<Nav />
-
 <section class="browse-page">
 	<div class="browse-inner">
 		<header class="page-header">
@@ -48,12 +40,13 @@
 
 		{#if data.categories.length > 0}
 			<nav class="categories" aria-label="Filter by category">
-				<a href="/browse" class="cat-pill" class:active={!data.activeCategory}>All</a>
+				<a href="/browse" class="cat-pill" class:active={!data.activeCategory} aria-current={!data.activeCategory ? 'page' : undefined}>All</a>
 				{#each data.categories as cat}
 					<a
 						href="/browse?category={encodeURIComponent(cat)}"
 						class="cat-pill"
-						class:active={data.activeCategory === cat}>{cat}</a
+						class:active={data.activeCategory === cat}
+						aria-current={data.activeCategory === cat ? 'page' : undefined}>{cat}</a
 					>
 				{/each}
 			</nav>
@@ -66,8 +59,8 @@
 			</div>
 		{:else}
 			<div class="grid">
-				{#each data.skills as s, i}
-					<a class="card" href={s.link} style="--i:{i}">
+				{#each data.skills as s}
+					<a class="card" href={s.link}>
 						<span class="card-name">{s.name}</span>
 						{#if s.score !== null}
 							<span class="card-score" data-pass={s.verdict === 'passing'}>{s.score}</span>
@@ -85,241 +78,30 @@
 </section>
 
 <style>
-	.ambient {
-		position: fixed;
-		inset: 0;
-		pointer-events: none;
-		z-index: 0;
-		overflow: hidden;
-	}
-	.orb {
-		position: absolute;
-		border-radius: 50%;
-		filter: blur(140px);
-		opacity: 0.07;
-	}
-	:global(html[data-theme='dark']) .orb {
-		opacity: 0.13;
-	}
-	.orb-1 {
-		width: 500px;
-		height: 500px;
-		background: var(--ocean);
-		top: -120px;
-		left: -100px;
-	}
-	.orb-2 {
-		width: 420px;
-		height: 420px;
-		background: var(--indigo);
-		bottom: 8%;
-		right: -120px;
-		opacity: 0.05;
-	}
-
-	.browse-page {
-		position: relative;
-		z-index: 1;
-		min-height: 100vh;
-		padding: 7rem 2rem 5rem;
-	}
-	.browse-inner {
-		max-width: 1100px;
-		margin: 0 auto;
-	}
-
-	.page-header {
-		margin-bottom: 2rem;
-	}
-	.page-header h1 {
-		font-family: var(--font-display);
-		font-weight: 800;
-		letter-spacing: -0.04em;
-		font-size: clamp(2.4rem, 6vw, 4rem);
-		line-height: 1;
-		color: var(--text-primary);
-		margin-bottom: 0.6rem;
-	}
-	.handwriting {
-		font-family: var(--font-handwriting);
-		font-weight: 400;
-		color: var(--accent-dim);
-	}
-	.page-subtitle {
-		max-width: 52ch;
-		color: var(--text-secondary);
-		font-size: 1.02rem;
-		line-height: 1.55;
-	}
-
-	.categories {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem;
-		margin-bottom: 2rem;
-	}
-	.cat-pill {
-		padding: 0.4rem 1rem;
-		border-radius: 999px;
-		background: color-mix(in srgb, var(--bg-card) 80%, transparent);
-		border: 1px solid var(--border);
-		color: var(--text-secondary);
-		font-size: 0.86rem;
-		font-weight: 600;
-		text-decoration: none;
-		transition: border-color 0.2s, color 0.2s, background 0.2s;
-	}
-	.cat-pill:hover {
-		border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
-		color: var(--text-primary);
-	}
-	.cat-pill.active {
-		background: var(--accent);
-		color: #fff;
-		border-color: var(--accent);
-	}
-	:global(html[data-theme='dark']) .cat-pill.active {
-		color: var(--bg-primary);
-	}
-
-	.grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-		gap: 1rem;
-	}
-
-	.card {
-		position: relative;
-		display: grid;
-		grid-template-rows: auto 1fr auto;
-		gap: 0.7rem;
-		min-height: 200px;
-		padding: 1.4rem;
-		border: 1px solid var(--border);
-		border-radius: 24px;
-		background: color-mix(in srgb, var(--bg-card) 86%, transparent);
-		box-shadow: var(--card-shadow);
-		color: var(--text-primary);
-		text-decoration: none;
-		overflow: hidden;
-		transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease,
-			border-color 0.22s ease;
-	}
-	.card:hover {
-		transform: translateY(-4px);
-		border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
-		box-shadow: var(--card-shadow-hover);
-	}
-	/* thread drawing across the top on hover */
-	.card::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		height: 3px;
-		background: linear-gradient(90deg, var(--ocean), var(--indigo));
-		transform: scaleX(0);
-		transform-origin: left;
-		transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-	}
-	.card:hover::before {
-		transform: scaleX(1);
-	}
-
-	.card-name {
-		font-family: var(--font-handwriting);
-		font-size: 1.7rem;
-		line-height: 1;
-		color: var(--text-primary);
-	}
-	.card-score {
-		position: absolute;
-		top: 1.35rem;
-		right: 1.4rem;
-		font-family: var(--font-mono);
-		font-size: 0.82rem;
-		font-weight: 700;
-		padding: 0.18rem 0.5rem;
-		border-radius: 999px;
-		color: var(--text-muted);
-		background: var(--bg-secondary);
-	}
-	.card-score[data-pass='true'] {
-		color: var(--emerald);
-		background: color-mix(in srgb, var(--emerald) 14%, transparent);
-	}
-	.card-desc {
-		align-self: start;
-		color: var(--text-secondary);
-		font-size: 0.96rem;
-		line-height: 1.5;
-		display: -webkit-box;
-		-webkit-box-orient: vertical;
-		-webkit-line-clamp: 3;
-		line-clamp: 3;
-		overflow: hidden;
-	}
-	.card-foot {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 0.5rem;
-	}
-	.card-tag {
-		font-family: var(--font-mono);
-		font-size: 0.72rem;
-		color: var(--text-muted);
-	}
-	.card-go {
-		font-family: var(--font-mono);
-		font-size: 0.76rem;
-		font-weight: 700;
-		color: var(--accent);
-		opacity: 0;
-		transform: translateX(-4px);
-		transition: opacity 0.22s ease, transform 0.22s ease;
-	}
-	.card:hover .card-go {
-		opacity: 1;
-		transform: translateX(0);
-	}
-	.card-go i {
-		font-style: normal;
-		transition: transform 0.22s ease;
-	}
-	.card:hover .card-go i {
-		transform: translateX(3px);
-	}
-
-	.empty {
-		text-align: center;
-		padding: 5rem 0;
-	}
-	.empty-text {
-		font-size: 1.15rem;
-		color: var(--text-secondary);
-		margin-bottom: 0.75rem;
-	}
-	.empty-link {
-		font-weight: 700;
-		color: var(--accent);
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.card,
-		.card::before,
-		.card-go {
-			transition: none !important;
-		}
-	}
-
-	@media (max-width: 560px) {
-		.browse-page {
-			padding: 6rem 1rem 4rem;
-		}
-		.grid {
-			grid-template-columns: 1fr;
-		}
-	}
+	.browse-page { padding: 54px 0 32px; }
+	.browse-inner { max-width: 1200px; margin: 0 auto; min-width: 0; }
+	.page-header { margin-bottom: 32px; }
+	.page-header h1 { margin: 0 0 16px; font-size: clamp(36px, 4vw, 60px); font-weight: 500; line-height: 1.05; letter-spacing: -.035em; overflow-wrap: anywhere; }
+	.handwriting { color: var(--lime); }
+	.page-subtitle { max-width: 65ch; color: var(--quiet); font-size: 17px; line-height: 1.6; }
+	.categories { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+	.cat-pill { display: inline-flex; align-items: center; min-height: 46px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--quiet); font-size: 14px; transition: border-color .2s, background .2s; }
+	.cat-pill:hover { border-color: var(--line-strong); color: var(--paper); }
+	.cat-pill.active { border-color: var(--accent-border); background: var(--accent-soft); color: var(--lime); text-decoration: underline; text-underline-offset: 5px; }
+	.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 16px; }
+	.card { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto 1fr auto; gap: 16px 12px; min-height: 220px; padding: 24px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); color: var(--paper); transition: border-color .2s; }
+	.card:hover { border-color: var(--line-strong); color: var(--paper); }
+	.card-name { font-size: 25px; font-weight: 500; line-height: 1.15; letter-spacing: -.025em; overflow-wrap: anywhere; }
+	.card-score { align-self: start; padding: 4px 7px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel-raised); color: var(--quiet); font-family: var(--font-mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+	.card-score[data-pass='true'] { border-color: var(--accent-border); background: var(--accent-soft); color: var(--lime); }
+	.card-desc { grid-column: 1 / -1; align-self: start; color: var(--quiet); font-size: 15px; line-height: 1.5; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; overflow-wrap: anywhere; }
+	.card-foot { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+	.card-tag { font-family: var(--font-mono); font-size: 11px; color: var(--quiet); overflow-wrap: anywhere; }
+	.card-go { font-size: 13px; color: var(--lime); }
+	.card-go i { font-style: normal; }
+	.empty { padding: 48px 20px; border: 1px dashed var(--line); border-radius: 8px; }
+	.empty-text { color: var(--quiet); font-size: 17px; margin-bottom: 16px; }
+	.empty-link { display: inline-block; color: var(--lime); padding: 10px 0; }
+	@media (max-width: 760px) { .browse-page { padding-top: 32px; } .card { padding: 20px; } }
+	@media (prefers-reduced-motion: reduce) { .cat-pill, .card { transition: none; } }
 </style>

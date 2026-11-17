@@ -3,7 +3,6 @@
 	import { page } from '$app/state';
 	let next = $derived(page.url.searchParams.get('next') ?? '/');
 	let returnTo = $derived(next.startsWith('/') && !next.startsWith('//') && !next.includes('\\') ? next : '/');
-	import YarnLogo from '$lib/components/YarnLogo.svelte';
 	import { signInWithEmail, resetPassword, signInWithGitHub } from '$lib/firebase';
 
 	let email = $state('');
@@ -103,11 +102,6 @@
 </svelte:head>
 
 <div class="login-page">
-	<a href="/" class="logo">
-		<YarnLogo size={28} />
-		<span class="logo-text">loooom</span>
-	</a>
-
 	<div class="login-card">
 		{#if resetMode}
 			{#if resetSent}
@@ -119,11 +113,13 @@
 				<p class="subtitle">Enter your email and we'll send a reset link</p>
 
 				{#if error}
-					<div class="error">{error}</div>
+					<div class="error" role="alert">{error}</div>
 				{/if}
 
 				<form onsubmit={handleReset}>
+					<label for="reset-email">Email</label>
 					<input
+						id="reset-email"
 						type="email"
 						bind:value={email}
 						placeholder="you@example.com"
@@ -139,7 +135,7 @@
 			<p class="subtitle">Sign in to your Loooom account</p>
 
 			{#if error}
-				<div class="error">{error}</div>
+				<div class="error" role="alert">{error}</div>
 			{/if}
 
 			<button class="btn-github" onclick={handleGitHub} disabled={ghLoading}>
@@ -150,14 +146,18 @@
 			<div class="divider"><span>or</span></div>
 
 			<form onsubmit={handleLogin}>
+				<label for="login-email">Email</label>
 				<input
+					id="login-email"
 					type="email"
 					bind:value={email}
 					placeholder="you@example.com"
 					required
 					autocomplete="email"
 				/>
+				<label for="login-password">Password</label>
 				<input
+					id="login-password"
 					type="password"
 					bind:value={password}
 					placeholder="password"
@@ -177,131 +177,28 @@
 </div>
 
 <style>
-	.login-page {
-		min-height: 100vh;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 2rem;
-		gap: 2rem;
-	}
-	.logo {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		color: var(--text-primary);
-		text-decoration: none;
-	}
-	.logo-text {
-		font-family: var(--font-handwriting);
-		font-size: 1.25rem;
-		font-weight: 100;
-	}
-	.login-card {
-		width: 100%;
-		max-width: 400px;
-		background: var(--bg-card);
-		border: 1px solid var(--border);
-		border-radius: var(--radius-lg);
-		padding: 2.5rem;
-	}
-	h1 {
-		font-family: var(--font-handwriting);
-		font-size: 2rem;
-		margin-bottom: 0.5rem;
-	}
-	.subtitle {
-		color: var(--text-secondary);
-		font-size: 0.9rem;
-		margin-bottom: 1.5rem;
-	}
-	.error {
-		background: rgba(253, 121, 168, 0.1);
-		border: 1px solid rgba(253, 121, 168, 0.3);
-		color: var(--ocean);
-		padding: 0.75rem 1rem;
-		border-radius: var(--radius-sm);
-		font-size: 0.875rem;
-		margin-bottom: 1rem;
-	}
-	form {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
-	input {
-		padding: 0.875rem 1.25rem;
-		background: var(--bg-primary);
-		border: 1px solid var(--border);
-		border-radius: var(--radius-md);
-		color: var(--text-primary);
-		font-family: var(--font-handwriting);
-		font-size: 1rem;
-		outline: none;
-		transition: border-color 0.2s;
-	}
-	input:focus { border-color: var(--text-secondary); }
-	input::placeholder { color: var(--text-muted); }
-	button[type="submit"] {
-		padding: 0.875rem;
-		background: var(--accent);
-		color: white;
-		border: none;
-		border-radius: var(--radius-md);
-		font-family: var(--font-display);
-		font-size: 1rem;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.25s;
-	}
-	button[type="submit"]:hover:not(:disabled) {
-		background: var(--accent-bright);
-		transform: translateY(-1px);
-		box-shadow: 0 6px 24px rgba(45, 42, 62, 0.15);
-	}
-	:global(html[data-theme="dark"]) button[type="submit"] {
-		color: var(--bg-primary);
-	}
-	button[type="submit"]:disabled {
-		opacity: 0.6;
-		cursor: not-allowed;
-	}
-	.links {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-top: 1.25rem;
-		font-size: 0.875rem;
-	}
-	.link-btn {
-		background: none;
-		border: none;
-		color: var(--ocean);
-		cursor: pointer;
-		font-family: var(--font-display);
-		font-size: 0.875rem;
-		padding: 0;
-		margin-top: 1rem;
-	}
-	.link-btn:hover {
-		color: var(--ocean);
-	}
-	.btn-github {
-		display: flex; align-items: center; justify-content: center; gap: 0.75rem;
-		width: 100%; padding: 0.875rem;
-		background: var(--bg-primary); color: var(--text-primary);
-		border: 1px solid var(--border); border-radius: var(--radius-md);
-		font-family: var(--font-display); font-size: 0.95rem; font-weight: 600;
-		cursor: pointer; transition: all 0.25s;
-	}
-	.btn-github:hover:not(:disabled) { border-color: var(--text-secondary); background: var(--bg-card-hover); }
-	.btn-github:disabled { opacity: 0.6; cursor: not-allowed; }
-	.divider {
-		display: flex; align-items: center; gap: 1rem;
-		margin: 0.5rem 0; color: var(--text-muted); font-size: 0.8rem;
-	}
-	.divider::before, .divider::after {
-		content: ''; flex: 1; height: 1px; background: var(--border);
-	}
+	.login-page { padding: 54px 0 40px; }
+	.login-card { width: 100%; max-width: 480px; margin: 0 auto; }
+	.login-card h1 { margin: 0 0 16px; font-size: clamp(36px, 4vw, 52px); line-height: 1.05; font-weight: 500; letter-spacing: -.035em; }
+	.subtitle { color: var(--quiet); font-size: 16px; line-height: 1.6; margin-bottom: 28px; overflow-wrap: anywhere; }
+	.error { margin-bottom: 20px; padding: 12px 16px; border: 1px solid var(--error-border); border-radius: 6px; background: var(--error-bg); color: var(--error-ink); font-size: 14px; line-height: 1.5; }
+	form { display: flex; flex-direction: column; gap: 10px; }
+	label { margin-top: 8px; color: var(--paper); font-size: 14px; }
+	input { width: 100%; min-width: 0; min-height: 46px; padding: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; color: var(--paper); font-size: 16px; caret-color: var(--lime); transition: border-color .2s; }
+	input:focus { border-color: var(--lime); }
+	input::placeholder { color: var(--quiet); }
+	button[type='submit'] { min-height: 46px; margin-top: 12px; padding: 12px 20px; border: 1px solid var(--action-bg); border-radius: 6px; background: var(--action-bg); color: var(--action-ink); font-size: 14px; font-weight: 500; cursor: pointer; transition: background .2s; }
+	button[type='submit']:hover:not(:disabled) { background: var(--action-hover); color: var(--action-ink); }
+	button:disabled { opacity: .55; cursor: wait; }
+	.links { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 20px; font-size: 14px; }
+	.links a { display: inline-flex; align-items: center; min-height: 46px; color: var(--lime); }
+	.link-btn { display: inline-flex; align-items: center; min-height: 46px; padding: 8px 0; margin-top: 16px; border: none; background: transparent; color: var(--lime); font-size: 14px; cursor: pointer; }
+	.links .link-btn { margin-top: 0; }
+	.link-btn:hover, .links a:hover { text-decoration: underline; text-underline-offset: 4px; }
+	.btn-github { display: flex; align-items: center; justify-content: center; gap: 12px; min-height: 46px; width: 100%; padding: 12px 16px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--paper); font-size: 14px; cursor: pointer; transition: background .2s, border-color .2s; }
+	.btn-github:hover:not(:disabled) { border-color: var(--line-strong); background: var(--panel-raised); }
+	.divider { display: flex; align-items: center; gap: 16px; margin: 24px 0 12px; color: var(--quiet); font-size: 13px; }
+	.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+	@media (max-width: 760px) { .login-page { padding-top: 32px; } }
+	@media (prefers-reduced-motion: reduce) { input, button[type='submit'], .btn-github { transition: none; } }
 </style>

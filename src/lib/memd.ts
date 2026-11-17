@@ -6,7 +6,7 @@
  * Frontmatter: YAML. Body: standard markdown with known section headers.
  */
 
-import matter from 'gray-matter';
+import { load } from 'js-yaml';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -64,9 +64,18 @@ export const KNOWN_SECTIONS = [
 export function parseMeMd(raw: string): ParsedMeMd {
 	const errors: string[] = [];
 
-	let parsed: matter.GrayMatterFile<string>;
+	let content = raw.replace(/^\uFEFF/, '');
+	let fm: Partial<MeMdFrontmatter> = {};
 	try {
-		parsed = matter(raw);
+		// Read YAML fences as text so this parser also works in the browser.
+		const opening = /^---[\t ]*(?:\r?\n|$)/.exec(content);
+		if (opening) {
+			const remainder = content.slice(opening[0].length);
+			const closing = /^---[\t ]*(?:\r?\n|$)/m.exec(remainder);
+			const yaml = closing ? remainder.slice(0, closing.index) : remainder;
+			fm = (load(yaml) ?? {}) as Partial<MeMdFrontmatter>;
+			content = closing ? remainder.slice(closing.index + closing[0].length) : '';
+		}
 	} catch (e) {
 		return {
 			frontmatter: { version: '0', handle: 'unknown' },
@@ -76,8 +85,6 @@ export function parseMeMd(raw: string): ParsedMeMd {
 			errors: ['Failed to parse frontmatter: ' + String(e)]
 		};
 	}
-
-	const fm = parsed.data as Partial<MeMdFrontmatter>;
 
 	// Validate required fields
 	if (!fm.handle) errors.push('Missing required field: handle');
@@ -96,12 +103,12 @@ export function parseMeMd(raw: string): ParsedMeMd {
 	};
 
 	// Parse sections from markdown body
-	const sections = parseBodySections(parsed.content);
+	const sections = parseBodySections(content);
 
 	return {
 		frontmatter,
 		sections,
-		raw: parsed.content,
+		raw: content,
 		valid: errors.length === 0,
 		errors
 	};

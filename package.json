@@ -13,7 +13,7 @@
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "gym:import": "node --experimental-strip-types scripts/import-gym-report.mjs",
     "test:gym": "node --experimental-strip-types --test tests/gym-report.test.mjs",
-    "test:context": "node --experimental-strip-types --test tests/github-harness.test.mjs tests/context-report.test.mjs tests/context-evals.test.mjs tests/harness-store.test.mjs"
+    "test:context": "node --experimental-strip-types --test tests/github-harness.test.mjs tests/context-report.test.mjs tests/context-evals.test.mjs tests/harness-store.test.mjs tests/memd.test.mjs"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^7.0.0",

@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
-	import YarnLogo from '$lib/components/YarnLogo.svelte';
 	import { validateSkill, formatValidation, type ValidationResult } from '$lib/skill-validator';
 
 	let { data = { user: null }, form } = $props() as {
@@ -173,27 +171,9 @@ Any caveats, edge cases, or important considerations.
 	<title>Publish a Skill — Loooom</title>
 </svelte:head>
 
-<div class="ambient">
-	<div class="orb orb-1"></div>
-	<div class="orb orb-2"></div>
-</div>
 
-<nav>
-	<div class="nav-inner">
-		<a href="/" class="logo">
-			<YarnLogo size={28} />
-			<span class="logo-text">loooom</span>
-		</a>
-		<div class="nav-right">
-			<ThemeToggle />
-			{#if data.user}
-				<a href="/u/{data.user.username}" class="btn-nav">{data.user.displayName}</a>
-			{:else}
-				<a href="/login" class="btn-nav">Sign In</a>
-			{/if}
-		</div>
-	</div>
-</nav>
+
+
 
 <section class="create-page">
 
@@ -462,27 +442,9 @@ Any caveats, edge cases, or important considerations.
 </section>
 
 <style>
-	.ambient {
-		position: fixed; inset: 0;
-		pointer-events: none; z-index: 0; overflow: hidden;
-	}
-	.orb { position: absolute; border-radius: 50%; filter: blur(140px); opacity: 0.05; }
-	:global(html[data-theme="dark"]) .orb { opacity: 0.1; }
-	.orb-1 { width: 500px; height: 500px; background: var(--accent); top: -100px; left: -100px; animation: drift 25s ease-in-out infinite; }
-	.orb-2 { width: 400px; height: 400px; background: var(--ocean); bottom: 10%; right: -100px; animation: drift 30s ease-in-out infinite reverse; }
-	@keyframes drift { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(30px, -20px); } }
+	.handwriting { font-family: var(--font-handwriting); font-weight: 500;  }
 
-	nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; backdrop-filter: blur(20px); background: var(--nav-bg); border-bottom: 1px solid var(--border); }
-	.nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 2rem; height: 64px; display: flex; align-items: center; justify-content: space-between; }
-	.logo { display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary); text-decoration: none; }
-	.logo-text { font-family: var(--font-handwriting); font-size: 1.3rem; font-weight: 100; }
-	.nav-right { display: flex; align-items: center; gap: 1rem; }
-	.btn-nav { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border); padding: 0.5rem 1.25rem; border-radius: var(--radius-sm); font-size: 0.875rem; font-weight: 500; transition: all 0.2s; text-decoration: none; }
-	.btn-nav:hover { border-color: var(--text-secondary); }
-
-	.handwriting { font-family: var(--font-handwriting); font-weight: 100; text-shadow: 0 0.5px 0 rgba(0,0,0,0.06); }
-
-	.create-page { position: relative; z-index: 1; min-height: 100vh; padding: 7rem 2rem 4rem; }
+	.create-page { position: relative; z-index: 1; min-height: 0; padding: 48px 0 40px; }
 
 	/* ===== SUCCESS ===== */
 	.success-state {
@@ -536,20 +498,20 @@ Any caveats, edge cases, or important considerations.
 		justify-content: space-between;
 		gap: 1rem;
 		padding: 0.9rem 1.1rem;
-		background: #0d0d14;
+		background: var(--code-bg);
 	}
 	.install-command code {
 		font-family: var(--font-mono);
 		font-size: 0.88rem;
-		color: #a5b4fc;
+		color: var(--code-text);
 		background: none;
 	}
 	.install-command-alt code {
-		color: #6ee7b7;
+		color: var(--lime);
 	}
 	.copy-btn {
-		background: var(--accent);
-		color: white;
+		background: var(--action-bg);
+		color: var(--action-ink);
 		border: none;
 		padding: 0.35rem 0.85rem;
 		border-radius: 6px;
@@ -559,21 +521,21 @@ Any caveats, edge cases, or important considerations.
 		transition: all 0.2s;
 		white-space: nowrap;
 	}
-	:global(html[data-theme="dark"]) .copy-btn { color: var(--bg-primary); }
+	:global(html[data-theme="dark"]) .copy-btn { color: var(--action-ink); }
 	.copy-btn:hover { opacity: 0.85; }
 	.success-actions { display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap; }
 	.btn-view {
 		padding: 0.8rem 1.75rem;
-		background: var(--accent);
-		color: white;
-		border-radius: 999px;
+		background: var(--action-bg);
+		color: var(--action-ink);
+		border-radius: 6px;
 		font-weight: 700;
 		font-size: 0.9rem;
 		text-decoration: none;
 		transition: opacity 0.2s;
 	}
 	.btn-view:hover { opacity: 0.85; }
-	:global(html[data-theme="dark"]) .btn-view { color: var(--bg-primary); }
+	:global(html[data-theme="dark"]) .btn-view { color: var(--action-ink); }
 	.btn-another {
 		font-size: 0.88rem;
 		color: var(--text-muted);
@@ -593,12 +555,12 @@ Any caveats, edge cases, or important considerations.
 	.auth-gate p { color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 2rem; line-height: 1.6; }
 	.btn-primary {
 		display: inline-flex; align-items: center; gap: 0.5rem;
-		padding: 0.9rem 2rem; background: var(--accent); color: white;
-		border: none; border-radius: 999px; font-size: 1rem; font-weight: 700;
+		padding: 0.9rem 2rem; background: var(--action-bg); color: var(--action-ink);
+		border: none; border-radius: 6px; font-size: 1rem; font-weight: 700;
 		cursor: pointer; transition: all 0.2s; text-decoration: none;
 	}
-	.btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
-	:global(html[data-theme="dark"]) .btn-primary { color: var(--bg-primary); }
+	.btn-primary:hover { opacity: 0.88;  }
+	:global(html[data-theme="dark"]) .btn-primary { color: var(--action-ink); }
 	.auth-hint { font-size: 0.82rem; color: var(--text-muted); margin-top: 1.25rem; }
 	.auth-hint a { color: var(--ocean); text-decoration: none; }
 	.auth-hint a:hover { text-decoration: underline; }
@@ -614,7 +576,7 @@ Any caveats, edge cases, or important considerations.
 		background: rgba(239, 68, 68, 0.08);
 		border: 1px solid rgba(239, 68, 68, 0.3);
 		border-radius: 10px;
-		color: #ef4444;
+		color: var(--failure);
 		font-weight: 500;
 		margin-bottom: 1.5rem;
 	}
@@ -633,7 +595,7 @@ Any caveats, edge cases, or important considerations.
 		font-family: var(--font-handwriting);
 		font-size: 1rem;
 		color: var(--text-primary);
-		font-weight: 100;
+		font-weight: 500;
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
@@ -670,7 +632,7 @@ Any caveats, edge cases, or important considerations.
 		padding: 0.35rem 0.9rem;
 		background: var(--bg-card);
 		border: 1.5px solid var(--border);
-		border-radius: 999px;
+		border-radius: 6px;
 		font-size: 0.8rem;
 		font-weight: 500;
 		color: var(--text-secondary);
@@ -697,7 +659,7 @@ Any caveats, edge cases, or important considerations.
 		font-family: var(--font-handwriting);
 		font-size: 1rem;
 		color: var(--text-primary);
-		font-weight: 100;
+		font-weight: 500;
 	}
 	.editor-tabs {
 		display: flex;
@@ -791,16 +753,16 @@ Any caveats, edge cases, or important considerations.
 		line-height: 1.6;
 		color: var(--text-secondary);
 	}
-	.md-preview :global(h1) { font-family: var(--font-handwriting); font-size: 1.7rem; font-weight: 100; color: var(--text-primary); margin: 0 0 0.75rem; }
-	.md-preview :global(h2) { font-family: var(--font-handwriting); font-size: 1.3rem; font-weight: 100; color: var(--text-primary); margin: 1.5rem 0 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
-	.md-preview :global(h3) { font-family: var(--font-handwriting); font-size: 1.1rem; font-weight: 100; color: var(--text-primary); margin: 1.25rem 0 0.4rem; }
+	.md-preview :global(h1) { font-family: var(--font-handwriting); font-size: 1.7rem; font-weight: 500; color: var(--text-primary); margin: 0 0 0.75rem; }
+	.md-preview :global(h2) { font-family: var(--font-handwriting); font-size: 1.3rem; font-weight: 500; color: var(--text-primary); margin: 1.5rem 0 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+	.md-preview :global(h3) { font-family: var(--font-handwriting); font-size: 1.1rem; font-weight: 500; color: var(--text-primary); margin: 1.25rem 0 0.4rem; }
 	.md-preview :global(h4) { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin: 1rem 0 0.35rem; }
 	.md-preview :global(p) { margin: 0 0 0.75rem; }
 	.md-preview :global(strong) { color: var(--text-primary); font-weight: 700; }
 	.md-preview :global(em) { color: var(--text-secondary); }
 	.md-preview :global(code) { font-family: var(--font-mono); font-size: 0.82em; background: var(--bg-secondary); padding: 0.15em 0.45em; border-radius: 4px; color: var(--violet); }
-	.md-preview :global(pre) { background: #0d0d14; border-radius: 8px; padding: 1rem 1.25rem; overflow-x: auto; margin: 1rem 0; }
-	.md-preview :global(pre code) { background: none; padding: 0; color: #a5b4fc; font-size: 0.82rem; }
+	.md-preview :global(pre) { background: var(--code-bg); border-radius: 8px; padding: 1rem 1.25rem; overflow-x: auto; margin: 1rem 0; }
+	.md-preview :global(pre code) { background: none; padding: 0; color: var(--code-text); font-size: 0.82rem; }
 	.md-preview :global(ul) { padding-left: 1.5rem; margin: 0 0 0.75rem; }
 	.md-preview :global(li) { margin-bottom: 0.3rem; }
 	.md-preview :global(a) { color: var(--ocean); text-decoration: underline; }
@@ -808,7 +770,7 @@ Any caveats, edge cases, or important considerations.
 	/* Additional files */
 	.additional-files { margin-bottom: 2rem; }
 	.files-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }
-	.files-header label { font-family: var(--font-handwriting); font-size: 1rem; color: var(--text-primary); font-weight: 100; display: flex; align-items: center; gap: 0.5rem; }
+	.files-header label { font-family: var(--font-handwriting); font-size: 1rem; color: var(--text-primary); font-weight: 500; display: flex; align-items: center; gap: 0.5rem; }
 	.btn-add-file {
 		padding: 0.4rem 1rem; background: var(--bg-card); border: 1.5px dashed var(--border);
 		border-radius: 8px; color: var(--text-secondary); font-size: 0.83rem; cursor: pointer; transition: all 0.2s;
@@ -819,19 +781,19 @@ Any caveats, edge cases, or important considerations.
 	.file-name-input { flex: 1; padding: 0.4rem 0.5rem; background: transparent; border: none; color: var(--text-primary); font-family: var(--font-mono); font-size: 0.8rem; outline: none; }
 	.file-name-input::placeholder { color: var(--text-muted); }
 	.btn-remove-file { background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; padding: 0.25rem 0.5rem; transition: color 0.2s; }
-	.btn-remove-file:hover { color: #ef4444; }
+	.btn-remove-file:hover { color: var(--failure); }
 	.file-content-input { width: 100%; min-height: 120px; padding: 0.75rem; background: transparent; border: none; color: var(--text-primary); font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.5; resize: vertical; outline: none; box-sizing: border-box; }
 
 	/* Publish bar */
 	.publish-bar { display: flex; align-items: center; gap: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--border); flex-wrap: wrap; }
 	.btn-publish {
 		display: inline-flex; align-items: center; gap: 0.5rem;
-		padding: 0.875rem 2.5rem; background: var(--accent); color: white;
-		border: none; border-radius: 999px; font-size: 1rem; font-weight: 700;
+		padding: 0.875rem 2.5rem; background: var(--action-bg); color: var(--action-ink);
+		border: none; border-radius: 6px; font-size: 1rem; font-weight: 700;
 		cursor: pointer; transition: all 0.2s;
 	}
-	.btn-publish:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
-	:global(html[data-theme="dark"]) .btn-publish { color: var(--bg-primary); }
+	.btn-publish:hover:not(:disabled) { opacity: 0.88;  }
+	:global(html[data-theme="dark"]) .btn-publish { color: var(--action-ink); }
 	.btn-publish:disabled { opacity: 0.45; cursor: not-allowed; }
 	.publish-note { font-family: var(--font-handwriting); font-size: 0.9rem; color: var(--text-muted); }
 	.btn-clear-draft {
@@ -843,7 +805,7 @@ Any caveats, edge cases, or important considerations.
 		cursor: pointer;
 		transition: color 0.2s;
 	}
-	.btn-clear-draft:hover { color: #ef4444; }
+	.btn-clear-draft:hover { color: var(--failure); }
 
 	/* Validation panel */
 	.validation-panel {
@@ -862,7 +824,7 @@ Any caveats, edge cases, or important considerations.
 	.validation-success h3 {
 		font-family: var(--font-handwriting);
 		font-size: 1.5rem;
-		font-weight: 100;
+		font-weight: 500;
 		color: var(--text-primary);
 		margin-bottom: 0.5rem;
 	}
@@ -910,33 +872,36 @@ Any caveats, edge cases, or important considerations.
 		min-width: 18px;
 		height: 18px;
 		padding: 0 5px;
-		border-radius: 999px;
+		border-radius: 6px;
 		font-size: 0.65rem;
 		font-weight: 700;
 		margin-left: 0.35rem;
 	}
 	.badge.error {
-		background: #ef4444;
-		color: white;
+		background: var(--error-bg);
+		color: var(--error-ink);
 	}
 	.badge.warn {
-		background: #f59e0b;
-		color: white;
+		background: var(--warm-bg);
+		color: var(--warm-ink);
 	}
 	.badge.ok {
-		background: #10b981;
-		color: white;
+		background: var(--accent-soft);
+		color: var(--lime);
 		font-size: 0.55rem;
 	}
-	.etab.has-errors { color: #ef4444; }
-	.etab.has-warnings { color: #f59e0b; }
+	.etab.has-errors { color: var(--failure); }
+	.etab.has-warnings { color: var(--warm-ink); }
 
 	@media (max-width: 768px) {
 		.form-grid { grid-template-columns: 1fr; }
 		.field-desc { grid-column: 1; }
 		.field-cat { grid-column: 1; }
-		.create-page { padding: 6rem 1.25rem 3rem; }
+		.create-page { padding: 32px 0; }
 		.publish-bar { flex-direction: column; align-items: stretch; }
 		.publish-note { text-align: center; }
 	}
+
+ .field,.md-editor,.md-preview{min-width:0}.field input{width:100%}.md-preview{overflow-wrap:anywhere}.file-name-input{min-width:0}
+ @media(max-width:600px){.files-header{gap:12px;flex-wrap:wrap}.install-command{flex-wrap:wrap;overflow-wrap:anywhere}.form-grid{grid-template-columns:1fr}}
 </style>

@@ -4,7 +4,7 @@
  import type {Snippet} from 'svelte';
  import Icon from './Icon.svelte';
  import '$lib/harness/context.css';
- let {children}: {children:Snippet}=$props();
+ let {children,user}: {children:Snippet;user:{username:string}|null}=$props();
  let theme=$state<'light'|'dark'>('dark');
  function setTheme(value:'light'|'dark') {
   theme=value;
@@ -32,14 +32,18 @@
    <a class:active={page.url.searchParams.get('view')==='following'} href="/?view=following#discover"><Icon name="people"/>Following</a>
    <a class:active={page.url.searchParams.get('view')==='saved'} href="/?view=saved#discover"><Icon name="bookmark"/>Your collection</a>
    <div class="rail-divider"></div>
-   <a class:active={page.url.pathname==='/evals'} href="/evals"><Icon name="flask"/>Personal evals<span class="small-new">New</span></a>
-   <a href="/browse"><Icon name="layers"/>Skills</a>
-   <a href="/gym"><Icon name="code"/>The Gym</a>
+   <a class:active={page.url.pathname.startsWith('/evals')} href="/evals"><Icon name="flask"/>Personal evals<span class="small-new">New</span></a>
+   <a class:active={page.url.pathname==='/browse'||page.url.pathname.startsWith('/s/')||page.url.pathname.startsWith('/p/')} href="/browse"><Icon name="layers"/>Skills</a>
+   <a class:active={page.url.pathname==='/gym'} href="/gym"><Icon name="code"/>The Gym</a>
+   <div class="rail-divider"></div>
+   <a class:active={page.url.pathname.startsWith('/me')} href="/me"><Icon name="file"/>ME.md</a>
+   <a class:active={page.url.pathname==='/docs'} href="/docs"><Icon name="file"/>Docs</a>
+   <a class:active={page.url.pathname==='/mcp'} href="/mcp"><Icon name="code"/>MCP</a>
   </nav>
   <div class="rail-bottom"><a href="https://github.com/mager/loooom.xyz" target="_blank" rel="noreferrer"><Icon name="github" size={16}/> Source code <Icon name="external" size={12}/></a></div>
  </aside>
  <div class="site-body">
-  <header class="topbar"><span class="topbar-copy">Let anyone <strong>try on your harness</strong></span><div><a class="sign-in" href={page.data.user?'/dashboard':'/login?next=/'}>{page.data.user?`@${page.data.user.username}`:'Sign in'}</a>{#if page.url.pathname!=='/share'}<a class="button primary compact" href="/share"><Icon name="plus" size={16}/><span>Share AGENTS.md</span></a>{/if}</div></header>
+  <header class="topbar"><span class="topbar-copy">Let anyone <strong>try on your harness</strong></span><div><a class="sign-in" href={user?'/dashboard':'/login?next=/'}>{user?`@${user.username}`:'Sign in'}</a>{#if page.url.pathname!=='/share'}<a class="button primary compact" href="/share"><Icon name="plus" size={16}/><span>Share AGENTS.md</span></a>{/if}</div></header>
   <main id="main-content">{@render children()}</main>
  </div>
  <footer class="utility-footer" aria-label="Site information and appearance">

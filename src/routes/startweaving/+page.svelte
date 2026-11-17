@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
-	import YarnLogo from '$lib/components/YarnLogo.svelte';
 	import { signUpWithEmail, signInWithGitHub } from '$lib/firebase';
 
 	let username = $state('');
@@ -110,29 +108,18 @@
 </script>
 
 <svelte:head>
-	<title>Start Weaving — Loooom</title>
+	<title>Create an account — Loooom</title>
 </svelte:head>
 
-<div class="ambient">
-	<div class="orb orb-1"></div>
-	<div class="orb orb-2"></div>
-</div>
 
-<nav>
-	<div class="nav-inner">
-		<a href="/" class="logo">
-			<YarnLogo size={28} />
-			<span class="logo-text">loooom</span>
-		</a>
-		<ThemeToggle />
-	</div>
-</nav>
+
+
 
 <section class="signup-section">
 	<div class="signup-card">
-		<span class="badge">🧵 Invite Only</span>
-		<h1 class="handwriting">Start Weaving</h1>
-		<p class="subtitle">You found the secret door. Create your account and start crafting skills.</p>
+
+		<h1 class="handwriting">Create an account</h1>
+		<p class="subtitle">Share your files and save useful context.</p>
 
 		{#if error}
 			<div class="error">{error}</div>
@@ -167,7 +154,7 @@
 				<input type="password" bind:value={confirmPassword} placeholder="confirm password" required autocomplete="new-password" />
 			</label>
 			<button type="submit" class="btn-primary" disabled={loading}>
-				{loading ? 'Creating account...' : 'Start Weaving'}
+				{loading ? 'Creating account...' : 'Create an account'}
 				{#if !loading}<span class="btn-arrow">→</span>{/if}
 			</button>
 		</form>
@@ -177,69 +164,14 @@
 </section>
 
 <style>
-	.ambient {
-		position: fixed;
-		inset: 0;
-		pointer-events: none;
-		z-index: 0;
-		overflow: hidden;
-	}
-	.orb {
-		position: absolute;
-		border-radius: 50%;
-		filter: blur(140px);
-		opacity: 0.12;
-	}
-	.orb-1 {
-		width: 500px; height: 500px;
-		background: var(--accent);
-		top: -100px; left: -100px;
-	}
-	.orb-2 {
-		width: 400px; height: 400px;
-		background: var(--ocean);
-		bottom: -100px; right: -100px;
-	}
-
-	nav {
-		position: fixed;
-		top: 0; left: 0; right: 0;
-		z-index: 100;
-		backdrop-filter: blur(20px);
-		background: var(--nav-bg, rgba(10, 10, 15, 0.8));
-		border-bottom: 1px solid var(--border);
-	}
-	.nav-inner {
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: 0 2rem;
-		height: 64px;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
-	.logo {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		color: var(--text-primary);
-	}
-	.logo:hover { color: var(--text-primary); }
-	.logo-text {
-		font-family: var(--font-handwriting);
-		font-size: 1.25rem;
-		font-weight: 100;
-		letter-spacing: -0.02em;
-	}
-
 	.signup-section {
 		position: relative;
 		z-index: 1;
-		min-height: 100vh;
+		min-height: 0;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: 6rem 2rem;
+		padding: 48px 0 40px;
 	}
 
 	.signup-card {
@@ -248,27 +180,17 @@
 		background: var(--bg-card);
 		border: 1px solid var(--border);
 		border-radius: var(--radius-xl);
-		padding: 3rem;
-	}
-
-	.badge {
-		display: inline-block;
-		font-size: 0.75rem;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.12em;
-		color: var(--ocean);
-		margin-bottom: 1rem;
+		padding: 28px;
 	}
 
 	.handwriting {
 		font-family: var(--font-handwriting);
-		font-size: 3rem;
-		font-weight: 100;
-		background: var(--gradient-hero);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-clip: text;
+		font-size: clamp(32px,4vw,48px);
+		font-weight: 500;
+		color: var(--paper);
+
+
+
 		margin-bottom: 0.75rem;
 	}
 
@@ -330,8 +252,8 @@
 		justify-content: center;
 		gap: 0.5rem;
 		padding: 0.875rem 2rem;
-		background: var(--accent);
-		color: white;
+		background: var(--action-bg);
+		color: var(--action-ink);
 		border: none;
 		border-radius: var(--radius-md);
 		font-family: var(--font-display);
@@ -342,12 +264,12 @@
 		margin-top: 0.5rem;
 	}
 	.btn-primary:hover:not(:disabled) {
-		background: var(--accent-bright);
-		transform: translateY(-1px);
+		background: var(--action-hover);
+
 		box-shadow: 0 8px 30px rgba(45, 42, 62, 0.2);
 	}
 	:global(html[data-theme="dark"]) .btn-primary {
-		color: var(--bg-primary);
+		color: var(--action-ink);
 	}
 	.btn-primary:disabled {
 		opacity: 0.6;

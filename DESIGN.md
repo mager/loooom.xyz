@@ -146,7 +146,7 @@ components:
 
 Large Outfit headings, fine woven lines, and compact source records define Loooom. Dark mode uses pale text on ink. Light mode uses dark text on warm paper. Both modes use the same layout and controls.
 
-This system applies to the context pages in `src/lib/harness/context.css` and `src/lib/components/harness/`. Existing Skills, Gym, and older profile styles stay within their current scope. This document replaces the old cream and cyan direction for the context pages.
+This system applies to every HTML page. The root layout provides one ContextShell, navigation, and footer. `src/lib/harness/context.css` defines the shared theme roles; `src/app.css` maps older component names to those roles. Skills, Gym, documentation, profiles, and account tools use the same system. Raw Markdown and API routes remain separate.
 
 **Key Characteristics:**
 
@@ -218,7 +218,7 @@ All interactive controls need a visible keyboard focus ring (2px accent outline 
 
 ### Do:
 
-- **Do** use the existing theme properties for every new context surface.
+- **Do** use the existing theme properties for every new surface.
 - **Do** lead with AGENTS.md and describe other context files as optional.
 - **Do** keep one primary share entry and one footer.
 - **Do** preserve exact source text and separate owner and sharer attribution.
@@ -227,7 +227,7 @@ All interactive controls need a visible keyboard focus ring (2px accent outline 
 ### Don't:
 
 - **Don't** use the text accent as the primary button background in light mode.
-- **Don't** add decorative gradients, large pill buttons, or the old cyan theme to context pages.
+- **Don't** add decorative gradients, large pill buttons, or the old cyan theme.
 - **Don't** add catchphrases, invented activity, membership claims, or eval scores.
 - **Don't** execute imported instructions or hide source records to simplify the layout.
-- **Don't** apply these styles to Skills or Gym without a separate request.
+- **Don't** add page-specific site headers, footers, or theme controls. The root layout owns these.

@@ -28,15 +28,6 @@ const loaded = import.meta.glob('/eval-scores.json', { eager: true, import: 'def
 >;
 const scores: ScoresFile | null = loaded['/eval-scores.json'] ?? null;
 
-// Dimension display order + labels (mirrors eval/rubric.ts DIMENSIONS).
-export const QUALITY_DIMENSIONS: { id: string; label: string }[] = [
-	{ id: 'method', label: 'Method' },
-	{ id: 'specificity', label: 'Specificity' },
-	{ id: 'worked_example', label: 'Worked example' },
-	{ id: 'point_of_view', label: 'Point of view' },
-	{ id: 'voice', label: 'Voice' }
-];
-
 export interface SkillQualityView extends SkillQuality {
 	rubricVersion: string;
 	specPassed: number;

@@ -1,6 +1,4 @@
 <script lang="ts">
-	import YarnLogo from '$lib/components/YarnLogo.svelte';
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 
 	let { data } = $props();
 
@@ -22,20 +20,9 @@
 	<title>Admin — Loooom</title>
 </svelte:head>
 
-<nav>
-	<div class="nav-inner">
-		<a href="/" class="logo">
-			<YarnLogo size={28} />
-			<span class="logo-text">loooom</span>
-		</a>
-		<div class="nav-right">
-			<span class="admin-badge">⚡ admin</span>
-			<ThemeToggle />
-		</div>
-	</div>
-</nav>
 
-<main class="admin">
+
+<section class="admin">
 	<header class="admin-header">
 		<h1 class="handwriting">Mission Control</h1>
 		<p class="subtitle">The full picture.</p>
@@ -212,62 +199,14 @@
 			</table>
 		</div>
 	{/if}
-</main>
+</section>
 
 <style>
-	nav {
-		position: sticky;
-		top: 0;
-		z-index: 100;
-		background: var(--bg);
-		border-bottom: 1px solid var(--border);
-	}
-
-	.nav-inner {
-		max-width: 1100px;
-		margin: 0 auto;
-		padding: 0 1.5rem;
-		height: 56px;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
-
-	.logo {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		text-decoration: none;
-		color: var(--text);
-	}
-
-	.logo-text {
-		font-family: 'Playwrite IT Moderna', cursive;
-		font-weight: 200;
-		font-size: 1.15rem;
-		letter-spacing: -0.01em;
-	}
-
-	.nav-right {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-	}
-
-	.admin-badge {
-		font-family: 'Space Mono', monospace;
-		font-size: 0.75rem;
-		padding: 0.2rem 0.6rem;
-		background: var(--ink);
-		color: var(--bg);
-		border-radius: 999px;
-	}
-
 	/* Main */
 	.admin {
 		max-width: 1100px;
 		margin: 0 auto;
-		padding: 2.5rem 1.5rem 5rem;
+		padding: 48px 0 40px;
 	}
 
 	.admin-header {
@@ -275,16 +214,16 @@
 	}
 
 	.admin-header h1 {
-		font-family: 'Playwrite IT Moderna', cursive;
-		font-weight: 100;
+		font-family: var(--font-display);
+		font-weight: 500;
 		font-size: 2.2rem;
 		line-height: 1.1;
-		color: var(--ink);
+		color: var(--paper);
 		margin: 0 0 0.25rem;
 	}
 
 	.subtitle {
-		color: var(--muted);
+		color: var(--quiet);
 		font-size: 0.95rem;
 		margin: 0;
 	}
@@ -292,7 +231,7 @@
 	/* Stats */
 	.stats-grid {
 		display: grid;
-		grid-template-columns: repeat(4, 1fr);
+		grid-template-columns: repeat(4, minmax(0, 1fr));
 		gap: 1rem;
 		margin-bottom: 2.5rem;
 	}
@@ -302,7 +241,7 @@
 	}
 
 	.stat-card {
-		background: var(--surface);
+		background: var(--panel);
 		border: 1px solid var(--border);
 		border-radius: 12px;
 		padding: 1.25rem 1.5rem;
@@ -315,29 +254,29 @@
 		font-family: 'Space Mono', monospace;
 		font-size: 2rem;
 		font-weight: 700;
-		color: var(--ink);
+		color: var(--paper);
 		line-height: 1;
 	}
 
 	.stat-sub {
 		font-size: 1.1rem;
-		color: var(--muted);
+		color: var(--quiet);
 		font-weight: 400;
 	}
 
 	.stat-label {
 		font-size: 0.8rem;
-		color: var(--muted);
+		color: var(--quiet);
 		text-transform: uppercase;
 		letter-spacing: 0.06em;
 	}
 
 	.stat-badge {
 		font-size: 0.72rem;
-		color: #16a34a;
-		background: #dcfce7;
+		color: var(--lime);
+		background: var(--accent-soft);
 		padding: 0.1rem 0.5rem;
-		border-radius: 999px;
+		border-radius: 6px;
 		width: fit-content;
 		margin-top: 0.25rem;
 	}
@@ -345,17 +284,19 @@
 	/* Tabs */
 	.tabs {
 		display: flex;
+		overflow-x: auto;
 		gap: 0.25rem;
 		border-bottom: 1px solid var(--border);
 		margin-bottom: 1.5rem;
 	}
 
 	.tab {
+		flex-shrink: 0;
 		background: none;
 		border: none;
 		padding: 0.65rem 1.1rem;
 		font-size: 0.9rem;
-		color: var(--muted);
+		color: var(--quiet);
 		cursor: pointer;
 		border-bottom: 2px solid transparent;
 		margin-bottom: -1px;
@@ -366,12 +307,12 @@
 	}
 
 	.tab:hover {
-		color: var(--ink);
+		color: var(--paper);
 	}
 
 	.tab.active {
-		color: var(--ink);
-		border-bottom-color: var(--ink);
+		color: var(--paper);
+		border-bottom-color: var(--paper);
 		font-weight: 600;
 	}
 
@@ -380,7 +321,7 @@
 		font-size: 0.7rem;
 		background: var(--border);
 		padding: 0.05rem 0.4rem;
-		border-radius: 999px;
+		border-radius: 6px;
 	}
 
 	/* Table */
@@ -397,7 +338,7 @@
 	}
 
 	thead {
-		background: var(--surface);
+		background: var(--panel);
 		border-bottom: 1px solid var(--border);
 	}
 
@@ -407,14 +348,14 @@
 		font-size: 0.75rem;
 		text-transform: uppercase;
 		letter-spacing: 0.06em;
-		color: var(--muted);
+		color: var(--quiet);
 		font-weight: 600;
 	}
 
 	td {
 		padding: 0.75rem 1rem;
 		border-bottom: 1px solid var(--border);
-		color: var(--text);
+		color: var(--paper);
 		vertical-align: middle;
 	}
 
@@ -423,11 +364,11 @@
 	}
 
 	tr:hover td {
-		background: var(--surface);
+		background: var(--panel);
 	}
 
 	.muted {
-		color: var(--muted);
+		color: var(--quiet);
 	}
 
 	.mono {
@@ -436,7 +377,7 @@
 	}
 
 	.link {
-		color: var(--ink);
+		color: var(--paper);
 		text-decoration: none;
 		font-weight: 500;
 	}
@@ -448,18 +389,18 @@
 	.badge {
 		font-size: 0.7rem;
 		padding: 0.15rem 0.5rem;
-		border-radius: 999px;
+		border-radius: 6px;
 		font-weight: 500;
 	}
 
 	.badge-green {
-		background: #dcfce7;
-		color: #16a34a;
+		background: var(--accent-soft);
+		color: var(--lime);
 	}
 
 	.badge-muted {
 		background: var(--border);
-		color: var(--muted);
+		color: var(--quiet);
 	}
 
 	.empty {
@@ -476,4 +417,6 @@
 			grid-column: span 2;
 		}
 	}
+@media(max-width:1000px){.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.stats-grid{grid-template-columns:1fr}.stat-card{padding:20px}.admin{padding-top:32px}}
 </style>

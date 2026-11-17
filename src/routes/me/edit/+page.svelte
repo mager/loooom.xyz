@@ -1,6 +1,4 @@
 <script lang="ts">
-	import YarnLogo from '$lib/components/YarnLogo.svelte';
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import {
 		ME_MD_TEMPLATE,
 		parseMeMd,
@@ -204,35 +202,25 @@
 
 <svelte:window onkeydown={onKeydown} />
 
-<div class="ambient">
-	<div class="orb orb-1"></div>
-	<div class="orb orb-2"></div>
-</div>
+
 
 <!-- ── Nav ── -->
-<nav>
+<section class="editor-toolbar" aria-label="Editor actions">
 	<div class="nav-inner">
-		<a href="/" class="logo">
-			<YarnLogo size={22} />
-			<span class="logo-text">loooom</span>
-		</a>
-		<div class="nav-center">
-			<span class="breadcrumb-dim">ME.md</span>
-			<span class="sep">/</span>
-			<span class="breadcrumb-accent">edit</span>
-		</div>
+
+		<h1>Edit ME.md</h1>
 		<div class="nav-right">
-			<ThemeToggle />
+
 			{#if sidebarParsed.frontmatter.handle && sidebarParsed.frontmatter.handle !== 'unknown'}
 				<a href="/me/{sidebarParsed.frontmatter.handle.replace('@', '')}" class="btn-ghost-sm">
 					Preview ↗
 				</a>
 			{/if}
 			<button class="btn-label-toggle" onclick={() => (showLabelInput = !showLabelInput)} title="Add save label">
-				🏷
+				Label
 			</button>
 			<button class="btn-save" onclick={save} disabled={saving}>
-				{saving ? 'Saving…' : saved ? '✓ Saved' : '⌘S Save'}
+				{saving ? 'Saving…' : saved ? 'Saved' : '⌘S Save'}
 			</button>
 		</div>
 	</div>
@@ -247,28 +235,28 @@
 			<span class="label-hint">Press Enter or ⌘S to save with this label</span>
 		</div>
 	{/if}
-</nav>
+</section>
 
 <!-- ── Mode tabs ── -->
 <div class="mode-bar">
 	<div class="mode-tabs">
 		<button class="mode-tab" class:active={editorMode === 'form'} onclick={() => switchMode('form')}>
-			<span class="tab-icon">✦</span> Form
+			Form
 		</button>
 		<button class="mode-tab" class:active={editorMode === 'raw'} onclick={() => switchMode('raw')}>
-			<span class="tab-icon">{ '{' }</span> Raw
+			Raw
 		</button>
 		<button class="mode-tab" class:active={editorMode === 'preview'} onclick={() => switchMode('preview')}>
-			<span class="tab-icon">◉</span> Preview
+			Preview
 		</button>
 	</div>
 	{#if saveError}
-		<span class="mode-error">⚠ {saveError}</span>
+		<span class="mode-error">{saveError}</span>
 	{/if}
 	{#if sidebarParsed.valid}
-		<span class="mode-valid">✓ Valid ME.md</span>
+		<span class="mode-valid">Valid ME.md</span>
 	{:else}
-		<span class="mode-invalid">⚠ {sidebarParsed.errors.length} issue{sidebarParsed.errors.length > 1 ? 's' : ''}</span>
+		<span class="mode-invalid">{sidebarParsed.errors.length} issue{sidebarParsed.errors.length > 1 ? 's' : ''}</span>
 	{/if}
 </div>
 
@@ -285,7 +273,7 @@
 				<!-- Identity card -->
 				<div class="form-card identity-card">
 					<div class="card-header">
-						<span class="card-icon">🪪</span>
+
 						<div>
 							<div class="card-title">Your Identity</div>
 							<div class="card-hint">The basics — who you are and how agents find you</div>
@@ -360,7 +348,7 @@
 				<!-- Fleet card -->
 				<div class="form-card fleet-card">
 					<div class="card-header">
-						<span class="card-icon">🤖</span>
+
 						<div>
 							<div class="card-title">Your Agent Fleet</div>
 							<div class="card-hint">The AI agents you run and what they do</div>
@@ -402,7 +390,7 @@
 						style="--section-color: {SECTION_COLORS[section.id] ?? '#8b5cf6'}"
 					>
 						<div class="card-header">
-							<span class="card-icon">{section.icon}</span>
+
 							<div>
 								<div class="card-title">{section.title}</div>
 								<div class="card-hint">{section.hint}</div>
@@ -493,11 +481,11 @@
 			<div class="sidebar-section validation-errors">
 				<div class="sidebar-label">Issues</div>
 				{#each sidebarParsed.errors as err}
-					<div class="val-error">⚠ {err}</div>
+					<div class="val-error">{err}</div>
 				{/each}
 			</div>
 		{:else}
-			<div class="validation-ok">✓ Valid ME.md</div>
+			<div class="validation-ok">Valid ME.md</div>
 		{/if}
 
 		<!-- Parsed meta (collapsed in form mode since form IS the edit) -->
@@ -531,10 +519,10 @@
 				<div class="sidebar-label">Sections</div>
 				{#each KNOWN_SECTIONS as s}
 					<div class="guide-item" class:found={sidebarParsed.sections.some(sec => sec.id === s.id)}>
-						<span>{s.icon}</span>
+
 						<span class="guide-title">{s.title}</span>
 						{#if sidebarParsed.sections.some(sec => sec.id === s.id)}
-							<span class="guide-check">✓</span>
+							<span class="guide-check">Present</span>
 						{/if}
 					</div>
 				{/each}
@@ -600,36 +588,15 @@
 </div>
 
 <style>
-	/* ── Ambient ── */
-	.ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-	.orb { position: absolute; border-radius: 50%; filter: blur(100px); }
-	.orb-1 {
-		width: 600px; height: 600px; opacity: 0.06;
-		background: radial-gradient(circle, var(--violet, #8b5cf6) 0%, transparent 70%);
-		top: -150px; right: -100px;
-	}
-	.orb-2 {
-		width: 400px; height: 400px; opacity: 0.04;
-		background: radial-gradient(circle, var(--emerald, #10b981) 0%, transparent 70%);
-		bottom: -100px; left: -50px;
-	}
-
-	/* ── Nav ── */
-	nav {
-		position: sticky; top: 0; z-index: 100;
-		background: var(--nav-bg, rgba(250,246,240,0.9)); backdrop-filter: blur(12px);
+	.editor-toolbar {
+		position: relative; z-index: 2;
+		background: var(--nav-bg, rgba(250,246,240,0.9));
 		border-bottom: 1px solid var(--border, #e5e0d8);
 	}
 	.nav-inner {
 		padding: 10px 24px;
 		display: flex; align-items: center; justify-content: space-between;
 	}
-	.logo { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--text-primary); }
-	.logo-text { font-family: var(--font-handwriting); font-size: 1.1rem; font-weight: 200; }
-	.nav-center { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 0.85rem; }
-	.breadcrumb-dim { color: var(--text-muted); }
-	.sep { color: var(--border); }
-	.breadcrumb-accent { color: var(--accent); }
 	.nav-right { display: flex; align-items: center; gap: 10px; }
 	.btn-ghost-sm {
 		font-size: 0.82rem; color: var(--text-muted); font-family: var(--font-mono);
@@ -644,8 +611,8 @@
 	}
 	.btn-label-toggle:hover { border-color: var(--accent); }
 	.btn-save {
-		background: var(--gradient-cta, linear-gradient(135deg, #8b5cf6, #06b6d4)); border: none; color: white;
-		padding: 8px 20px; border-radius: 999px; font-size: 0.85rem;
+		background: var(--action-bg); border: none; color: var(--action-ink);
+		padding: 8px 20px; border-radius: 6px; font-size: 0.85rem;
 		font-weight: 600; cursor: pointer; transition: opacity 0.2s;
 	}
 	.btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -673,7 +640,7 @@
 		background: var(--bg-secondary, #f5f0ea);
 		border-bottom: 1px solid var(--border);
 		height: 44px;
-		position: sticky; top: 49px; z-index: 90;
+		position: sticky; top: 0; z-index: 25;
 	}
 	.mode-tabs { display: flex; gap: 2px; }
 	.mode-tab {
@@ -693,7 +660,7 @@
 		content: ''; position: absolute; bottom: -1px; left: 8px; right: 8px;
 		height: 2px; background: var(--accent, #8b5cf6); border-radius: 1px;
 	}
-	.tab-icon { font-size: 0.7rem; opacity: 0.7; }
+
 	.mode-valid { margin-left: auto; font-size: 0.75rem; color: var(--emerald, #10b981); font-weight: 600; }
 	.mode-invalid { margin-left: auto; font-size: 0.75rem; color: var(--rose, #f43f5e); font-weight: 600; }
 	.mode-error { font-size: 0.75rem; color: var(--rose, #f43f5e); }
@@ -701,13 +668,14 @@
 	/* ── Main layout ── */
 	.editor-layout {
 		display: grid;
-		grid-template-columns: 1fr 300px;
-		height: calc(100vh - 93px); /* nav + mode-bar */
+		grid-template-columns: minmax(0,1fr) 260px;
+		height: max(620px, calc(100dvh - 270px));
 		position: relative; z-index: 1;
 	}
 
 	/* ── Content area ── */
 	.content-area {
+		min-height: 0;
 		overflow: hidden;
 		display: flex; flex-direction: column;
 		border-right: 1px solid var(--border);
@@ -715,6 +683,7 @@
 
 	/* ── Form mode ── */
 	.form-scroll {
+		min-height: 0;
 		flex: 1; overflow-y: auto;
 		padding: 24px 32px;
 		display: flex; flex-direction: column; gap: 20px;
@@ -722,6 +691,7 @@
 	.form-spacer { height: 48px; }
 
 	.form-card {
+		flex-shrink: 0;
 		background: var(--bg-card, white);
 		border: 1px solid var(--border);
 		border-radius: 12px;
@@ -730,23 +700,23 @@
 		overflow: hidden;
 	}
 	.section-card {
-		border-left: 4px solid var(--section-color, #8b5cf6);
+		border-color: var(--line);
 	}
 	.fleet-card {
-		border-left: 4px solid #8b5cf6;
+		border-color: var(--line);
 	}
 
 	.card-header {
 		display: flex; align-items: flex-start; gap: 12px;
 		margin-bottom: 16px;
 	}
-	.card-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 1px; }
+
 	.card-title { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
 	.card-hint { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
 	.char-badge {
 		margin-left: auto; font-family: var(--font-mono); font-size: 0.7rem;
 		color: var(--text-muted); background: var(--bg-secondary);
-		padding: 2px 7px; border-radius: 999px; flex-shrink: 0;
+		padding: 2px 7px; border-radius: 6px; flex-shrink: 0;
 	}
 
 	/* Identity grid */
@@ -768,7 +738,7 @@
 		transition: border-color 0.15s;
 		font-family: inherit;
 	}
-	.field-input:focus { outline: none; border-color: var(--accent, #8b5cf6); box-shadow: 0 0 0 3px rgba(139,92,246,0.1); }
+	.field-input:focus { outline: none; border-color: var(--accent, #8b5cf6); box-shadow: 0 0 0 3px var(--accent-soft); }
 	.handle-input { font-family: var(--font-mono); }
 	.mt-4 { margin-top: 14px; }
 	.field-hint { font-size: 0.72rem; color: var(--text-muted); margin-top: 3px; }
@@ -781,13 +751,13 @@
 		min-height: 42px; cursor: text;
 		transition: border-color 0.15s;
 	}
-	.tag-editor:focus-within { border-color: var(--accent, #8b5cf6); box-shadow: 0 0 0 3px rgba(139,92,246,0.1); }
+	.tag-editor:focus-within { border-color: var(--accent, #8b5cf6); box-shadow: 0 0 0 3px var(--accent-soft); }
 	.tag-chip {
 		display: flex; align-items: center; gap: 4px;
-		background: var(--accent-glow, rgba(139,92,246,0.1));
-		border: 1px solid rgba(139,92,246,0.3);
+		background: var(--accent-glow, var(--accent-soft));
+		border: 1px solid var(--accent-soft);
 		color: var(--accent, #8b5cf6);
-		padding: 2px 8px 2px 10px; border-radius: 999px;
+		padding: 2px 8px 2px 10px; border-radius: 6px;
 		font-size: 0.78rem; font-weight: 500;
 	}
 	.tag-remove {
@@ -848,7 +818,7 @@
 	.btn-add-agent:hover {
 		border-color: var(--accent, #8b5cf6);
 		color: var(--accent, #8b5cf6);
-		background: var(--accent-glow, rgba(139,92,246,0.05));
+		background: var(--accent-glow, var(--accent-soft));
 	}
 
 	/* Section textarea */
@@ -903,7 +873,7 @@
 	.preview-tag {
 		background: var(--bg-secondary); color: var(--text-muted);
 		border: 1px solid var(--border);
-		padding: 2px 10px; border-radius: 999px; font-size: 0.75rem;
+		padding: 2px 10px; border-radius: 6px; font-size: 0.75rem;
 	}
 	.preview-section {
 		margin-bottom: 40px;
@@ -939,7 +909,7 @@
 		padding-bottom: 6px; border-bottom: 1px solid var(--border);
 	}
 
-	.validation-errors { }
+
 	.val-error { color: var(--rose, #f43f5e); font-size: 0.78rem; }
 	.validation-ok {
 		background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3);
@@ -958,12 +928,12 @@
 		padding: 5px 6px; border-radius: 5px;
 		font-size: 0.78rem; opacity: 0.45; transition: all 0.2s;
 	}
-	.guide-item.found { opacity: 1; background: var(--accent-glow, rgba(139,92,246,0.08)); }
+	.guide-item.found { opacity: 1; background: var(--accent-glow, var(--accent-soft)); }
 	.guide-title { flex: 1; color: var(--text-secondary); }
 	.guide-check { color: var(--emerald, #10b981); font-weight: 700; font-size: 0.7rem; }
 
 	/* Version timeline */
-	.versions-section { }
+
 	.versions-empty { font-size: 0.78rem; color: var(--text-muted); font-style: italic; margin: 0; }
 	.version-timeline {
 		display: flex; flex-direction: column; gap: 0;
@@ -986,7 +956,7 @@
 	}
 	.dot-latest {
 		background: var(--accent, #8b5cf6);
-		box-shadow: 0 0 0 3px rgba(139,92,246,0.2);
+		box-shadow: 0 0 0 3px var(--accent-soft);
 	}
 	.version-body { flex: 1; }
 	.version-top { display: flex; align-items: center; gap: 6px; }
@@ -1025,4 +995,12 @@
 		cursor: pointer; flex-shrink: 0; transition: all 0.15s;
 	}
 	.copy-btn:hover { border-color: var(--accent); color: var(--accent); }
-</style>
+
+ .editor-toolbar{margin-top:32px}.editor-toolbar h1{font-size:28px;margin:0}
+ .nav-inner{gap:16px;flex-wrap:wrap;padding:16px 0}.nav-right{flex-wrap:wrap}
+ .mode-bar{height:auto;min-height:48px;padding:8px 0;flex-wrap:wrap}.mode-tabs{flex-wrap:wrap}
+ .content-area,.field-input,.fleet-cell{min-width:0}.fleet-table{overflow-x:auto}
+ .fleet-header,.fleet-row{min-width:620px}.label-bar{padding:12px;flex-wrap:wrap}.label-input{min-width:0;width:100%}
+ @media(max-width:1100px){.editor-layout{grid-template-columns:minmax(0,1fr);height:auto}.content-area{border-right:0}.form-scroll{overflow:visible;padding:20px 0}.sidebar{border-top:1px solid var(--line)}.raw-editor{min-height:500px}}
+ @media(max-width:600px){.identity-grid{grid-template-columns:1fr}.form-card{padding:16px}.nav-right{width:100%}.nav-inner{padding:12px 0}.mode-tab{padding:8px}.editor-toolbar{margin-top:24px}}
+ </style>

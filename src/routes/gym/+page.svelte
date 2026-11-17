@@ -1,6 +1,4 @@
 <script lang="ts">
- import YarnLogo from '$lib/components/YarnLogo.svelte';
- import ThemeToggle from '$lib/components/ThemeToggle.svelte';
  import TestWeave from '$lib/components/gym/TestWeave.svelte';
  import type { ClimbSession } from '$lib/gym/session';
  import SessionLogEntry from '$lib/components/gym/SessionLogEntry.svelte';
@@ -27,10 +25,8 @@
 
 <svelte:head><title>Gym session log — Loooom</title><meta name="description" content="A log of real skills gym sessions: problems found, changes tried, and test results. Failed attempts and unchanged skills included." /></svelte:head>
 
-<div class="gym-shell">
- <header><a href="/" class="brand" aria-label="Loooom home"><YarnLogo size={24} /><span>loooom</span></a><nav aria-label="Primary navigation"><a href="/browse">Skills</a><a href="/gym" aria-current="page">Gym</a><a href="/docs">Docs</a></nav><ThemeToggle /></header>
- <main>
-  <div class="intro"><div><h1>Gym log<span>.</span></h1><p>Compare saved answers before and after each skill change.</p></div><div class="import"><label class="load-file">{loading ? 'Reading report…' : 'Open results file'}<input type="file" accept=".json,application/json" onchange={loadFile} disabled={loading} /></label><small>JSON file. Nothing is uploaded.</small></div></div>
+<section class="gym-page" aria-labelledby="gym-heading">
+  <div class="intro"><div><h1 id="gym-heading">Gym log<span>.</span></h1><p>Compare saved answers before and after each skill change.</p><a class="runner-link" href="https://github.com/mager/loooom">Runner source <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10" /></svg></a></div><div class="import"><label class="load-file" class:loading>{loading ? 'Reading report…' : 'Open results file'}<input type="file" accept=".json,application/json" onchange={loadFile} disabled={loading} /></label><small>JSON file. Nothing is uploaded.</small></div></div>
   {#if error}<p class="import-error" role="alert">{error}</p>{/if}
   <TestWeave {sessions} importedId={imported?.id} />
   <div class="log-intro"><h2>Session history</h2><p>{reports.length} saved {reports.length===1?'session':'sessions'} · latest completed first</p></div>
@@ -38,10 +34,34 @@
   <ol class="session-log" aria-label="Gym session history">{#each reports as run (run.id)}<SessionLogEntry {run} imported={imported?.id===run.id} />{/each}</ol>
   {#if !reports.length}<div class="empty"><h2>No sessions recorded yet.</h2><p>Run a skill through the gym, then open its results file here.</p></div>{/if}
 
- </main>
- <footer><a href="/">loooom</a><a href="https://github.com/mager/loooom">Runner source</a></footer>
-</div>
+</section>
 
 <style>
- .gym-shell{max-width:1320px;margin:0 auto;padding:0 40px}header{min-height:74px;display:flex;gap:32px;align-items:center;border-bottom:1px solid var(--border)}.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text-primary)}.brand span{font-family:var(--font-handwriting);font-size:1.5rem}header nav{margin-left:auto;display:flex;gap:30px}header nav a{font-size:.9rem;color:var(--text-secondary);text-decoration:none}header nav a[aria-current]{color:var(--accent);font-weight:600}.intro{display:flex;justify-content:space-between;gap:30px;align-items:center;padding:40px 0 28px}h1{font-size:clamp(2.8rem,5vw,3.5rem);font-weight:500;line-height:1.08;letter-spacing:-.04em}h1 span{color:var(--accent)}.intro p{font-size:1rem;line-height:1.6;margin-top:16px;color:var(--text-secondary);max-width:50ch}.import{display:flex;flex-direction:column;align-items:flex-start;gap:10px;flex-shrink:0}.import small{font-size:.75rem;color:var(--text-secondary)}.load-file{position:relative;overflow:hidden;padding:13px 20px;border-radius:var(--radius-sm);border:1px solid var(--accent);color:var(--accent);font-weight:500;cursor:pointer}.load-file:hover{background:var(--accent-glow)}.load-file:focus-within{outline:2px solid var(--accent);outline-offset:4px}.load-file input{position:absolute;inset:0;opacity:0;width:100%;cursor:pointer}.log-intro{display:flex;justify-content:space-between;gap:20px;align-items:baseline;padding-bottom:24px;color:var(--text-secondary);line-height:1.65;font-size:.85rem}.log-intro h2{font-family:var(--font-display);font-size:1.5rem;font-weight:500;color:var(--text-primary)}.session-log{list-style:none;padding:0;margin:0}.local-note,.import-error{padding:16px 20px;border:1px solid var(--border);margin-bottom:24px;line-height:1.6}.import-error{border-color:var(--rose)}.local-note button{margin-left:10px;background:none;border:0;font:inherit;text-decoration:underline;color:var(--accent);cursor:pointer}.empty{padding:30px 0;border-top:1px solid var(--border)}.empty p{margin-top:12px}a{color:var(--accent);text-underline-offset:4px}a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:4px}footer{display:flex;justify-content:space-between;flex-wrap:wrap;gap:18px;border-top:1px solid var(--border);margin-top:32px;padding:28px 0 36px;font-size:.8rem;color:var(--text-secondary)}.gym-shell :global([id^="session-"]){scroll-margin-top:24px}.gym-shell ::selection{background:var(--accent-glow);color:var(--text-primary)}@media(max-width:700px){.log-intro{display:block}.log-intro p{margin-top:8px}.gym-shell{padding:0 20px}header{gap:16px}.brand span{font-size:1.1rem}header nav{gap:18px}header nav a{font-size:.8rem}.intro{flex-direction:column;align-items:flex-start;gap:24px;padding:34px 0 28px}}
+ .gym-page{min-width:0;padding-bottom:28px}
+ .intro{display:flex;justify-content:space-between;gap:32px;align-items:center;padding:54px 0 36px}
+ .intro h1{font-size:clamp(36px,4vw,60px);font-weight:500;line-height:1.02;letter-spacing:-.035em;margin:0}
+ h1 span{color:var(--lime)}
+ .intro p{font-size:17px;line-height:1.6;margin-top:18px;color:var(--quiet);max-width:50ch}
+ .runner-link{display:inline-flex;align-items:center;gap:6px;margin-top:16px;color:var(--quiet);font-size:13px;text-decoration:underline;text-underline-offset:4px}
+ .runner-link svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5}
+ .import{display:flex;flex-direction:column;align-items:flex-start;gap:10px;flex-shrink:0}
+ .import small{font-size:12px;color:var(--quiet)}
+ .load-file{position:relative;display:inline-flex;align-items:center;overflow:hidden;min-height:46px;padding:12px 20px;border-radius:6px;border:1px solid var(--action-bg);background:var(--action-bg);color:var(--action-ink);font-size:14px;font-weight:500;cursor:pointer;transition:background .2s}
+ .load-file:hover{background:var(--action-hover)}
+ .load-file.loading{opacity:.55;cursor:wait}
+ .load-file:focus-within{outline:2px solid var(--lime);outline-offset:5px}
+ .load-file input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+ .log-intro{display:flex;justify-content:space-between;gap:20px;align-items:baseline;padding-bottom:24px;color:var(--quiet);line-height:1.65;font-size:13px}
+ .log-intro h2{font-size:28px;line-height:1.2;font-weight:500;color:var(--paper);margin:0}
+ .session-log{list-style:none;padding:0;margin:0}
+ .local-note,.import-error{padding:16px 20px;border:1px solid var(--notice-border);border-radius:6px;background:var(--notice-bg);color:var(--notice-ink);margin:0 0 24px;line-height:1.6}
+ .import-error{border-color:var(--error-border);background:var(--error-bg);color:var(--error-ink)}
+ .local-note button{min-height:46px;margin-left:10px;padding:0;background:none;border:0;font:inherit;text-decoration:underline;text-underline-offset:4px;color:inherit;cursor:pointer}
+ .empty{padding:30px 0;border-top:1px solid var(--line)}
+ .empty p{margin-top:12px;color:var(--quiet)}
+ a:focus-visible,button:focus-visible{outline:2px solid var(--lime);outline-offset:5px}
+ .gym-page :global([id^="session-"]){scroll-margin-top:24px}
+ @media(max-width:900px){.intro{align-items:flex-start;flex-direction:column;gap:24px}.log-intro{display:block}.log-intro p{margin-top:8px}}
+ @media(max-width:760px){.intro{padding:36px 0 28px}.intro p{font-size:16px}.local-note button{display:block;margin-left:0}.log-intro h2{font-size:26px}}
+ @media(prefers-reduced-motion:reduce){.load-file{transition:none}}
 </style>

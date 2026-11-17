@@ -1,6 +1,4 @@
 <script lang="ts">
-	import YarnLogo from '$lib/components/YarnLogo.svelte';
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { enhance } from '$app/forms';
 	import { parseMeMd, generateInjectionPrompt, KNOWN_SECTIONS } from '$lib/memd';
 
@@ -52,39 +50,18 @@
 	<title>Dashboard — Loooom</title>
 </svelte:head>
 
-<div class="ambient">
-	<div class="orb orb-1"></div>
-	<div class="orb orb-2"></div>
-</div>
+
 
 <!-- Nav -->
-<nav>
-	<div class="nav-inner">
-		<a href="/" class="logo">
-			<YarnLogo size={22} />
-			<span class="logo-text">loooom</span>
-		</a>
-		<div class="nav-right">
-			<ThemeToggle />
-			<div class="user-chip">
-				{#if data.profile.avatarUrl}
-					<img src={data.profile.avatarUrl} alt="" class="user-chip-avatar" />
-				{:else}
-					<span class="user-chip-initial">{data.profile.displayName[0]}</span>
-				{/if}
-				<span class="user-chip-name">@{handle}</span>
-			</div>
-		</div>
-	</div>
-</nav>
 
-<main class="dashboard">
+
+<section class="dashboard">
 	<div class="dashboard-inner">
 
 		<!-- Header -->
 		<header class="dash-header">
 			<div class="dash-greeting">
-				<h1>Hey, {data.profile.displayName.split(' ')[0]}. 👋</h1>
+				<h1>Hey, {data.profile.displayName.split(' ')[0]}.</h1>
 				<p class="dash-sub">Your ME.md is your context. Keep it sharp.</p>
 			</div>
 			<a href="/me/edit" class="btn-primary">
@@ -126,9 +103,9 @@
 					{#each KNOWN_SECTIONS as s}
 						{@const filled = filledSections.some(fs => fs.id === s.id)}
 						<div class="section-pill" class:filled>
-							<span>{s.icon}</span>
+
 							<span class="pill-name">{s.title}</span>
-							<span class="pill-check">{filled ? '✓' : '◎'}</span>
+							<span class="pill-check">{filled ? 'Added' : 'Empty'}</span>
 						</div>
 					{/each}
 				</div>
@@ -138,23 +115,23 @@
 					<div class="url-row">
 						<code class="url-display">{profileUrl}</code>
 						<button class="btn-copy" onclick={copyProfileUrl}>
-							{copiedUrl ? '✓' : 'Copy'}
+							{copiedUrl ? 'Copied' : 'Copy'}
 						</button>
 						<a href={profileUrl} target="_blank" rel="noopener" class="btn-copy">View ↗</a>
 					</div>
 					<div class="url-row">
 						<code class="url-display">{rawUrl}</code>
 						<button class="btn-copy" onclick={copyRawUrl}>
-							{copiedRaw ? '✓' : 'Copy raw'}
+							{copiedRaw ? 'Copied' : 'Copy raw'}
 						</button>
 					</div>
 					<div class="prompt-row">
 						<div class="prompt-label">
-							<span class="prompt-icon">🤖</span>
+
 							<span>Injection prompt — paste into any AI system prompt</span>
 						</div>
 						<button class="btn-inject" onclick={copyInjectionPrompt}>
-							{copiedPrompt ? '✓ Copied!' : 'Copy injection prompt'}
+							{copiedPrompt ? 'Copied' : 'Copy injection prompt'}
 						</button>
 					</div>
 				</div>
@@ -163,11 +140,11 @@
 			<!-- Agent Fleet -->
 			{#if agentCount > 0}
 				<section class="fleet-section">
-					<h2 class="section-title">🤖 Your Fleet</h2>
+					<h2 class="section-title">Your Fleet</h2>
 					<div class="fleet-grid">
 						{#each parsed?.frontmatter.agents ?? [] as agent}
 							<div class="agent-card">
-								<div class="agent-emoji">{agent.emoji ?? '🤖'}</div>
+								{#if agent.emoji}<div class="agent-emoji">{agent.emoji}</div>{/if}
 								<div class="agent-info">
 									<span class="agent-id">{agent.id}</span>
 									{#if agent.role}<span class="agent-role">{agent.role}</span>{/if}
@@ -185,7 +162,7 @@
 		{:else}
 			<!-- Empty state -->
 			<section class="empty-state">
-				<div class="empty-icon">📄</div>
+
 				<h2>You don't have a ME.md yet.</h2>
 				<p>
 					One file at a public URL. Any AI can fetch it. Every tool you use will know who you are
@@ -199,13 +176,13 @@
 		<!-- Skills Section -->
 		<section class="skills-section">
 			<div class="skills-header">
-				<h2 class="section-title">🧶 My Skills</h2>
+				<h2 class="section-title">My Skills</h2>
 				<a href="/create" class="btn-new-skill">+ New Skill</a>
 			</div>
 
 			{#if data.skills.length === 0}
 				<div class="skills-empty">
-					<div class="skills-empty-icon">✍️</div>
+
 					<p>You haven't published any skills yet.</p>
 					<a href="/create" class="btn-primary">Write your first skill →</a>
 				</div>
@@ -257,77 +234,24 @@
 		<!-- Quick links -->
 		<section class="quick-links">
 			<a href="/me/edit" class="quick-link">
-				<span class="ql-icon">✏️</span>
 				<span class="ql-text">Edit ME.md</span>
 			</a>
 			<a href={`/me/${handle}`} target="_blank" class="quick-link">
-				<span class="ql-icon">👤</span>
 				<span class="ql-text">View profile</span>
 			</a>
 			<a href="/me/spec" class="quick-link">
-				<span class="ql-icon">📐</span>
 				<span class="ql-text">ME.md spec</span>
 			</a>
 			<a href={rawUrl} target="_blank" class="quick-link">
-				<span class="ql-icon">⚡</span>
 				<span class="ql-text">Raw (for AIs)</span>
 			</a>
 		</section>
 
 	</div>
-</main>
+</section>
 
 <style>
-	/* ─── Ambient ─────────────────────────────────────────────────────────── */
-	.ambient {
-		position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
-	}
-	.orb {
-		position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.13;
-	}
-	.orb-1 {
-		width: 500px; height: 500px;
-		background: radial-gradient(circle, var(--violet) 0%, transparent 70%);
-		top: -100px; left: -50px;
-	}
-	.orb-2 {
-		width: 400px; height: 400px;
-		background: radial-gradient(circle, var(--ocean) 0%, transparent 70%);
-		bottom: 10%; right: -100px;
-	}
-
-	/* ─── Nav ─────────────────────────────────────────────────────────────── */
-	nav {
-		position: sticky; top: 0; z-index: 100;
-		background: var(--nav-bg); backdrop-filter: blur(12px);
-		border-bottom: 1px solid var(--border);
-	}
-	.nav-inner {
-		max-width: 900px; margin: 0 auto; padding: 14px 32px;
-		display: flex; align-items: center; justify-content: space-between;
-	}
-	.logo {
-		display: flex; align-items: center; gap: 8px;
-		text-decoration: none; color: var(--text-primary);
-	}
-	.logo-text { font-family: var(--font-handwriting); font-size: 1.2rem; font-weight: 200; }
-	.nav-right { display: flex; align-items: center; gap: 16px; }
-	.user-chip {
-		display: flex; align-items: center; gap: 8px;
-		background: var(--bg-card); border: 1px solid var(--border);
-		padding: 5px 12px 5px 6px; border-radius: 999px;
-	}
-	.user-chip-avatar { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; }
-	.user-chip-initial {
-		width: 22px; height: 22px; border-radius: 50%;
-		background: var(--accent-glow); border: 1px solid var(--accent-bright);
-		color: var(--accent); font-size: 0.75rem; font-weight: 700;
-		display: flex; align-items: center; justify-content: center;
-	}
-	.user-chip-name { font-size: 0.85rem; color: var(--text-secondary); }
-
-	/* ─── Dashboard ───────────────────────────────────────────────────────── */
-	.dashboard { position: relative; z-index: 1; padding: 48px 32px 80px; }
+	.dashboard { position: relative; z-index: 1; padding: 48px 0 40px; }
 	.dashboard-inner { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
 
 	/* ─── Header ──────────────────────────────────────────────────────────── */
@@ -339,8 +263,8 @@
 
 	/* ─── Buttons ─────────────────────────────────────────────────────────── */
 	.btn-primary {
-		background: var(--gradient-cta); color: white;
-		padding: 12px 24px; border-radius: 999px;
+		background: var(--action-bg); color: var(--action-ink);
+		padding: 12px 24px; border-radius: 6px;
 		font-weight: 600; font-size: 0.95rem;
 		text-decoration: none; display: inline-block;
 		transition: opacity 0.2s; border: none; cursor: pointer; white-space: nowrap;
@@ -348,7 +272,7 @@
 	.btn-primary:hover { opacity: 0.88; }
 	.btn-ghost {
 		background: none; border: 1px solid var(--border); color: var(--text-secondary);
-		padding: 10px 20px; border-radius: 999px; font-size: 0.9rem;
+		padding: 10px 20px; border-radius: 6px; font-size: 0.9rem;
 		cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block;
 	}
 	.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
@@ -366,7 +290,7 @@
 		border-radius: 8px; font-size: 0.85rem; font-weight: 600;
 		cursor: pointer; transition: all 0.2s; white-space: nowrap;
 	}
-	.btn-inject:hover { background: var(--accent); color: white; }
+	.btn-inject:hover { background: var(--action-bg); color: var(--action-ink); }
 
 	/* ─── ME.md Card ──────────────────────────────────────────────────────── */
 	.me-card {
@@ -383,7 +307,7 @@
 	.me-badge {
 		font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700;
 		background: var(--accent-glow); border: 1px solid var(--accent-bright);
-		color: var(--accent); padding: 3px 10px; border-radius: 999px;
+		color: var(--accent); padding: 3px 10px; border-radius: 6px;
 	}
 	.me-handle { font-family: var(--font-mono); font-size: 1rem; color: var(--text-primary); }
 	.me-updated { font-size: 0.8rem; color: var(--text-muted); }
@@ -402,7 +326,7 @@
 	.section-pill {
 		display: flex; align-items: center; gap: 5px;
 		background: var(--bg-secondary); border: 1px solid var(--border);
-		padding: 5px 10px; border-radius: 999px; font-size: 0.8rem;
+		padding: 5px 10px; border-radius: 6px; font-size: 0.8rem;
 		color: var(--text-muted); transition: all 0.2s;
 	}
 	.section-pill.filled {
@@ -429,10 +353,10 @@
 		border-radius: 8px; padding: 12px 16px; flex-wrap: wrap;
 	}
 	.prompt-label { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); }
-	.prompt-icon { font-size: 1rem; }
+
 
 	/* ─── Fleet ───────────────────────────────────────────────────────────── */
-	.fleet-section {}
+
 	.section-title { font-size: 1.1rem; margin: 0 0 14px; color: var(--text-secondary); font-weight: 600; }
 	.fleet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
 	.agent-card {
@@ -450,7 +374,7 @@
 	.agent-channel {
 		font-size: 0.72rem; color: var(--accent);
 		background: var(--accent-glow); border: 1px solid var(--accent-bright);
-		padding: 2px 8px; border-radius: 999px; white-space: nowrap; align-self: flex-start;
+		padding: 2px 8px; border-radius: 6px; white-space: nowrap; align-self: flex-start;
 	}
 
 	/* ─── Empty state ─────────────────────────────────────────────────────── */
@@ -459,7 +383,7 @@
 		border-radius: var(--radius-lg); padding: 60px 32px;
 		text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px;
 	}
-	.empty-icon { font-size: 3rem; }
+
 	.empty-state h2 { margin: 0; font-size: 1.4rem; }
 	.empty-state p { color: var(--text-secondary); max-width: 400px; line-height: 1.6; margin: 0; }
 
@@ -474,11 +398,11 @@
 		transition: all 0.2s;
 	}
 	.quick-link:hover { border-color: var(--accent); box-shadow: var(--card-shadow-hover); }
-	.ql-icon { font-size: 1.4rem; }
+
 	.ql-text { font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; }
 
 	/* ─── Skills Section ─────────────────────────────────────────────────────── */
-	.skills-section {}
+
 
 	.skills-header {
 		display: flex; align-items: center; justify-content: space-between;
@@ -488,8 +412,8 @@
 	.btn-new-skill {
 		display: inline-flex; align-items: center; gap: 6px;
 		padding: 8px 18px;
-		background: var(--gradient-cta); color: white;
-		border-radius: 999px; font-weight: 700; font-size: 0.85rem;
+		background: var(--action-bg); color: var(--action-ink);
+		border-radius: 6px; font-weight: 700; font-size: 0.85rem;
 		text-decoration: none; transition: opacity 0.2s;
 		white-space: nowrap;
 	}
@@ -501,7 +425,7 @@
 		text-align: center; display: flex; flex-direction: column;
 		align-items: center; gap: 12px;
 	}
-	.skills-empty-icon { font-size: 2.5rem; }
+
 	.skills-empty p { color: var(--text-secondary); margin: 0; font-size: 0.95rem; }
 
 	.skills-list {
@@ -551,7 +475,7 @@
 		padding: 2px 8px; border-radius: 4px;
 	}
 	.skill-status.published {
-		color: #16a34a; background: rgba(22, 163, 74, 0.1); border: 1px solid rgba(22, 163, 74, 0.25);
+		color: var(--lime); background: rgba(22, 163, 74, 0.1); border: 1px solid rgba(22, 163, 74, 0.25);
 	}
 	.skill-status.draft {
 		color: var(--text-muted); background: var(--bg-secondary); border: 1px solid var(--border);
@@ -574,11 +498,11 @@
 		text-decoration: none; transition: all 0.15s; white-space: nowrap;
 	}
 	.skill-action-btn:hover { border-color: var(--accent); color: var(--accent); }
-	.skill-action-btn.danger:hover { border-color: #ef4444; color: #ef4444; }
+	.skill-action-btn.danger:hover { border-color: var(--failure); color: var(--failure); }
 
 	/* ─── Responsive ──────────────────────────────────────────────────────── */
 	@media (max-width: 640px) {
-		.dashboard { padding: 32px 16px 60px; }
+		.dashboard { padding: 32px 0; }
 		.dash-header { flex-direction: column; align-items: flex-start; }
 		.me-card-top { flex-direction: column; align-items: flex-start; }
 		.prompt-row { flex-direction: column; align-items: flex-start; }

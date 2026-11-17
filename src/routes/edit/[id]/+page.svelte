@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
-	import YarnLogo from '$lib/components/YarnLogo.svelte';
 
 	let { data, form } = $props();
 
@@ -49,27 +47,9 @@
 	<title>Edit {data.skill.title} — Loooom</title>
 </svelte:head>
 
-<div class="ambient">
-	<div class="orb orb-1"></div>
-	<div class="orb orb-2"></div>
-</div>
 
-<nav>
-	<div class="nav-inner">
-		<a href="/" class="logo">
-			<YarnLogo size={28} />
-			<span class="logo-text">loooom</span>
-		</a>
-		<div class="nav-right">
-			<ThemeToggle />
-			{#if data.user}
-				<a href="/u/{data.user.username}" class="btn-nav">{data.user.displayName}</a>
-			{:else}
-				<a href="/login" class="btn-nav">Sign In</a>
-			{/if}
-		</div>
-	</div>
-</nav>
+
+
 
 <section class="create-page">
 	<div class="create-inner">
@@ -155,26 +135,10 @@
 </section>
 
 <style>
-	.ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-	.orb { position: absolute; border-radius: 50%; filter: blur(140px); opacity: 0.06; }
-	:global(html[data-theme="dark"]) .orb { opacity: 0.12; }
-	.orb-1 { width: 500px; height: 500px; background: var(--accent); top: -100px; left: -100px; animation: drift 25s ease-in-out infinite; }
-	.orb-2 { width: 400px; height: 400px; background: var(--ocean); bottom: 10%; right: -100px; animation: drift 30s ease-in-out infinite reverse; }
-	@keyframes drift { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(30px, -20px); } }
+	.handwriting { font-family: var(--font-handwriting); font-weight: 500;  }
 
-	nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; backdrop-filter: blur(20px); background: var(--nav-bg); border-bottom: 1px solid var(--border); }
-	.nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 2rem; height: 64px; display: flex; align-items: center; justify-content: space-between; }
-	.logo { display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary); }
-	.logo:hover { color: var(--text-primary); }
-	.logo-text { font-family: var(--font-handwriting); font-size: 1.3rem; font-weight: 100; letter-spacing: 0.02em; }
-	.nav-right { display: flex; align-items: center; gap: 1rem; }
-	.btn-nav { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border); padding: 0.5rem 1.25rem; border-radius: var(--radius-sm); font-size: 0.875rem; font-weight: 500; transition: all 0.2s; text-decoration: none; }
-	.btn-nav:hover { border-color: var(--accent); }
 
-	.handwriting { font-family: var(--font-handwriting); font-weight: 100; text-shadow: 0 0.5px 0 rgba(0,0,0,0.06); }
-	:global(html[data-theme="dark"]) .handwriting { text-shadow: 0 0.5px 0 rgba(255,255,255,0.08); }
-
-	.create-page { position: relative; z-index: 1; min-height: 100vh; padding: 7rem 2rem 4rem; }
+	.create-page { position: relative; z-index: 1; min-height: 0; padding: 48px 0 40px; }
 	.create-inner { max-width: 960px; margin: 0 auto; }
 	.create-inner h1 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 0.5rem; color: var(--text-primary); }
 	.create-sub { color: var(--text-secondary); font-size: 1.05rem; margin-bottom: 2.5rem; }
@@ -183,7 +147,7 @@
 
 	.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 2rem; }
 	.field { display: flex; flex-direction: column; gap: 0.4rem; }
-	.field label { font-family: var(--font-handwriting); font-size: 1.1rem; color: var(--text-primary); font-weight: 100; }
+	.field label { font-family: var(--font-handwriting); font-size: 1.1rem; color: var(--text-primary); font-weight: 500; }
 	.field input, .field select { padding: 0.75rem 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text-primary); font-family: var(--font-display); font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
 	.field input:focus, .field select:focus { border-color: var(--accent); }
 	.field input::placeholder { color: var(--text-muted); }
@@ -191,17 +155,17 @@
 	.field-hint { font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); }
 
 	.editor-section { margin-bottom: 2rem; }
-	.editor-section > label { font-family: var(--font-handwriting); font-size: 1.1rem; color: var(--text-primary); font-weight: 100; display: block; margin-bottom: 0.5rem; }
+	.editor-section > label { font-family: var(--font-handwriting); font-size: 1.1rem; color: var(--text-primary); font-weight: 500; display: block; margin-bottom: 0.5rem; }
 	.editor-container { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; min-height: 400px; background: var(--bg-card); }
 	.md-editor { padding: 1.25rem; background: transparent; border: none; border-right: 1px solid var(--border); color: var(--text-primary); font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.6; resize: vertical; outline: none; min-height: 400px; }
 	.md-editor::placeholder { color: var(--text-muted); }
 	.md-preview { padding: 1.25rem; overflow-y: auto; font-family: var(--font-display); font-size: 0.95rem; line-height: 1.5; color: var(--text-secondary); }
-	.md-preview :global(h1) { font-family: var(--font-handwriting); font-size: 1.6rem; font-weight: 100; color: var(--text-primary); margin: 0 0 0.75rem; }
-	.md-preview :global(h2) { font-family: var(--font-handwriting); font-size: 1.3rem; font-weight: 100; color: var(--text-primary); margin: 1.25rem 0 0.5rem; }
-	.md-preview :global(h3) { font-family: var(--font-handwriting); font-size: 1.1rem; font-weight: 100; color: var(--text-primary); margin: 1rem 0 0.4rem; }
+	.md-preview :global(h1) { font-family: var(--font-handwriting); font-size: 1.6rem; font-weight: 500; color: var(--text-primary); margin: 0 0 0.75rem; }
+	.md-preview :global(h2) { font-family: var(--font-handwriting); font-size: 1.3rem; font-weight: 500; color: var(--text-primary); margin: 1.25rem 0 0.5rem; }
+	.md-preview :global(h3) { font-family: var(--font-handwriting); font-size: 1.1rem; font-weight: 500; color: var(--text-primary); margin: 1rem 0 0.4rem; }
 	.md-preview :global(p) { margin: 0 0 0.75rem; }
 	.md-preview :global(strong) { color: var(--text-primary); font-weight: 600; }
-	.md-preview :global(code) { font-family: var(--font-mono); font-size: 0.85em; background: rgba(108,92,231,0.08); padding: 0.15em 0.4em; border-radius: 3px; }
+	.md-preview :global(code) { font-family: var(--font-mono); font-size: 0.85em; background: var(--accent-soft); padding: 0.15em 0.4em; border-radius: 3px; }
 	.md-preview :global(pre) { background: rgba(0,0,0,0.06); padding: 1rem; border-radius: var(--radius-sm); overflow-x: auto; margin: 0.75rem 0; }
 	.md-preview :global(pre code) { background: none; padding: 0; }
 	.md-preview :global(ul) { padding-left: 1.5rem; margin: 0 0 0.75rem; }
@@ -210,12 +174,12 @@
 
 	.additional-files { margin-bottom: 2rem; }
 	.files-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }
-	.files-header label { font-family: var(--font-handwriting); font-size: 1.1rem; color: var(--text-primary); font-weight: 100; }
+	.files-header label { font-family: var(--font-handwriting); font-size: 1.1rem; color: var(--text-primary); font-weight: 500; }
 	.btn-add-file { padding: 0.4rem 1rem; background: var(--bg-card); border: 1px dashed var(--border); border-radius: var(--radius-sm); color: var(--text-secondary); font-family: var(--font-display); font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
 	.btn-add-file:hover { border-color: var(--accent); color: var(--accent); }
 
 	.extra-file { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 0.75rem; overflow: hidden; }
-	.extra-file-header { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); background: rgba(108,92,231,0.03); }
+	.extra-file-header { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); background: var(--accent-soft); }
 	.file-name-input { flex: 1; padding: 0.4rem 0.5rem; background: transparent; border: none; color: var(--text-primary); font-family: var(--font-mono); font-size: 0.8rem; outline: none; }
 	.file-name-input::placeholder { color: var(--text-muted); }
 	.btn-remove-file { background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; padding: 0.25rem 0.5rem; }
@@ -223,8 +187,8 @@
 	.file-content-input { width: 100%; min-height: 120px; padding: 0.75rem; background: transparent; border: none; color: var(--text-primary); font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.5; resize: vertical; outline: none; box-sizing: border-box; }
 
 	.publish-bar { display: flex; align-items: center; gap: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); }
-	.btn-publish { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.875rem 2.5rem; background: var(--accent); color: white; border: none; border-radius: var(--radius-md); font-family: var(--font-display); font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.25s; }
-	.btn-publish:hover:not(:disabled) { background: var(--accent-bright); transform: translateY(-1px); box-shadow: 0 8px 30px rgba(108,92,231,0.3); }
+	.btn-publish { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.875rem 2.5rem; background: var(--action-bg); color: var(--action-ink); border: none; border-radius: var(--radius-md); font-family: var(--font-display); font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.25s; }
+	.btn-publish:hover:not(:disabled) { background: var(--action-hover);   }
 	.btn-publish:disabled { opacity: 0.5; cursor: not-allowed; }
 	.btn-publish .btn-arrow { transition: transform 0.2s; }
 	.btn-publish:hover:not(:disabled) .btn-arrow { transform: translateX(3px); }
@@ -238,4 +202,7 @@
 		.publish-bar { flex-direction: column; align-items: stretch; gap: 0.75rem; }
 		.publish-note { text-align: center; }
 	}
+
+ .field,.editor-container,.md-editor,.md-preview{min-width:0}.field input,.field select{width:100%}.md-preview{overflow-wrap:anywhere}.file-name-input{min-width:0}
+ @media(max-width:600px){.files-header{gap:12px;flex-wrap:wrap}.form-grid{grid-template-columns:1fr}}
 </style>
