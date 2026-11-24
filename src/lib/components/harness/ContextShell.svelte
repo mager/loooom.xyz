@@ -6,6 +6,7 @@
  import '$lib/harness/context.css';
  let {children,user}: {children:Snippet;user:{username:string}|null}=$props();
  let theme=$state<'light'|'dark'>('dark');
+ let isReader=$derived(page.url.pathname.startsWith('/h/'));
  function setTheme(value:'light'|'dark') {
   theme=value;
   document.documentElement.dataset.theme=value;
@@ -23,7 +24,7 @@
   return ()=>window.removeEventListener('storage',syncTheme);
  });
 </script>
-<div class="context-app">
+<div class="context-app" class:reader-view={isReader}>
  <a class="skip" href="#main-content">Skip to content</a>
  <aside class="site-rail">
   <a href="/" class="wordmark" aria-label="Loooom home"><svg class="loom-mark" aria-hidden="true" viewBox="0 0 50 34" fill="none" stroke="currentColor" stroke-width="1.7"><ellipse cx="11" cy="17" rx="8" ry="14"/><ellipse cx="20" cy="17" rx="8" ry="14"/><ellipse cx="29" cy="17" rx="8" ry="14"/><ellipse cx="38" cy="17" rx="8" ry="14"/></svg>loooom<span class="brand-period">.</span></a>
@@ -43,7 +44,11 @@
   <div class="rail-bottom"><a href="https://github.com/mager/loooom.xyz" target="_blank" rel="noreferrer"><Icon name="github" size={16}/> Source code <Icon name="external" size={12}/></a></div>
  </aside>
  <div class="site-body">
-  <header class="topbar"><span class="topbar-copy">Let anyone <strong>try on your harness</strong></span><div><a class="sign-in" href={user?'/dashboard':'/login?next=/'}>{user?`@${user.username}`:'Sign in'}</a>{#if page.url.pathname!=='/share'}<a class="button primary compact" href="/share"><Icon name="plus" size={16}/><span>Share AGENTS.md</span></a>{/if}</div></header>
+  <header class="topbar">
+   {#if isReader}<nav class="reader-breadcrumb" aria-label="Breadcrumb"><a href="/#discover">Discover</a><span aria-hidden="true">/</span><span>Source file</span></nav>
+   {:else}<span class="topbar-copy">Let anyone <strong>try on your harness</strong></span>{/if}
+   <div><a class="sign-in" href={user?'/dashboard':'/login?next=/'}>{user?`@${user.username}`:'Sign in'}</a>{#if page.url.pathname!=='/share'}<a class="button compact" class:primary={!isReader} class:secondary={isReader} href="/share"><Icon name="plus" size={16}/><span>Share AGENTS.md</span></a>{/if}</div>
+  </header>
   <main id="main-content">{@render children()}</main>
  </div>
  <footer class="utility-footer" aria-label="Site information and appearance">

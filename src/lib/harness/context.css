@@ -83,3 +83,25 @@ html:not([data-theme="light"]) .context-app [data-theme-choice="dark"],html[data
 .context-app .rail-bottom{display:grid;gap:14px}
 .context-app .topbar>div{min-width:0}.context-app .sign-in{max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:760px){.context-app .rail-bottom{display:none}.context-app .sign-in{max-width:120px}}
+
+/* Reading pages give the source priority over site chrome. */
+.context-app.reader-view{--footer-space:52px}
+.context-app.reader-view .topbar{min-height:58px;padding:8px 28px;justify-content:space-between}
+.context-app.reader-view .reader-breadcrumb{display:flex;align-items:center;gap:12px;font-size:.8125rem;color:var(--quiet);white-space:nowrap}
+.context-app.reader-view .reader-breadcrumb a{color:var(--paper)}
+.context-app.reader-view .utility-footer{min-height:52px;padding-top:5px;padding-bottom:calc(5px + env(safe-area-inset-bottom,0px));box-shadow:none}
+.context-app.reader-view #main-content{padding-left:28px;padding-right:28px}
+.context-app.reader-view .theme-control{border:0;padding:0}
+@media(max-width:760px){
+ .context-app.reader-view .site-rail{padding-top:12px}
+ .context-app.reader-view .wordmark{font-size:26px}
+ .context-app.reader-view .site-rail nav{padding-top:10px;padding-bottom:8px}
+ .context-app.reader-view .topbar{padding-left:20px;padding-right:20px;min-height:54px;gap:12px}
+ .context-app.reader-view .reader-breadcrumb{font-size:.75rem}
+ .context-app.reader-view .reader-breadcrumb>span{display:none}
+ .context-app.reader-view .topbar>div{width:auto;gap:12px;margin-left:auto}
+ .context-app.reader-view .topbar .button{min-height:38px;font-size:.75rem;padding:8px}
+ .context-app.reader-view #main-content{padding-left:16px;padding-right:16px}
+ .context-app.reader-view .sign-in{font-size:.75rem;max-width:72px}
+ .context-app.reader-view .utility-footer{min-height:calc(52px + env(safe-area-inset-bottom,0px))}
+}

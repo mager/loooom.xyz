@@ -75,13 +75,13 @@ typography:
     fontWeight: 400
   source:
     fontFamily: "Space Mono, monospace"
-    fontSize: "12px"
+    fontSize: "0.875rem"
     fontWeight: 400
-    lineHeight: 1.8
+    lineHeight: 1.85
 rounded:
   small: "4px"
   control: "6px"
-  reader: "8px"
+  reader: "6px"
   panel: "10px"
 spacing:
   small: "8px"
@@ -177,7 +177,7 @@ Do not add unobserved color ramps. The CSS contains the available colors and sta
 
 Use the frontmatter hierarchy. Headings use medium weight, tight tracking, and balanced line breaks. Body copy uses regular weight. Use Space Mono for file names, hashes, commits, line numbers, and compact metadata. Use tabular numbers for comparable values.
 
-Page introductions use a smaller heading range (`clamp(36px, 4vw, 60px)`). The home heading has route-specific responsive sizes. Source text reduces to 11px on mobile. Preserve source spacing and allow long lines, URLs, and hashes to wrap inside their container.
+Page introductions use a smaller heading range (`clamp(36px, 4vw, 60px)`). The home heading has route-specific responsive sizes. Source text stays at 0.875rem in both desktop and mobile readers. File detail titles use 2rem on desktop and 1.75rem on mobile. Preserve source spacing and allow long lines, URLs, and hashes to wrap inside their container.
 
 Copy names the file or action directly. AGENTS.md leads; ME.md, SOUL.md, and DESIGN.md are optional supporting files. Keep captions short. Do not use catchphrases or labels such as “Human context” and “Open by choice.”
 
@@ -187,7 +187,7 @@ The desktop shell has a fixed left rail (220px), a top action bar, and a main ar
 
 At 760px and below, the rail becomes a top navigation area with horizontal scrolling. Main content uses 20px side gutters. Columns stack as each route requires; keep file text and metadata inside the available width. Existing route breakpoints are listed in the sidecar, not a new uniform grid scale.
 
-Use one sticky footer on desktop and mobile. The implementation fixes it to the viewport bottom. It contains About, the site version, “A side project by @mager,” and the Light and Dark controls. Keep all four items on one line, including at 320px. Mobile theme controls show icons with accessible text labels. Reserve the footer height (76px desktop, 60px mobile) plus the safe-area inset in page padding.
+Use one sticky footer on desktop and mobile. The implementation fixes it to the viewport bottom. It contains About, the site version, “A side project by @mager,” and the Light and Dark controls. Keep all four items on one line, including at 320px. Mobile theme controls show icons with accessible text labels. Reserve the footer height (76px desktop, 60px mobile; 52px in the file reader) plus the safe-area inset in page padding.
 
 Check the context shell at 1440px, 390px, and 320px in both themes. Confirm that the footer does not hide the final content or keyboard focus.
 
@@ -208,7 +208,7 @@ Use small rounded controls and slightly softer source panels, as recorded in `ro
 - **Navigation:** quiet links; a soft accent surface for the active route. Provide one primary share entry in the topbar. Omit that entry on the share page. Mobile navigation scrolls horizontally.
 - **Topic chips:** small text labels with a soft accent fill, accent border, and modest corners. Selected filters also show a line or explicit pressed state.
 - **Source cards:** owner and sharer attribution, file name, short text preview, source metadata, and separate read and save actions. Card previews use real source line numbers. Do not imply that a curated source owner is a member.
-- **Source reader:** a compact filename and copy toolbar above numbered text. Show imported content as text. Use a distinct background for the linked line. Keep the source URL, commit, file update date, line count, and SHA-256 available next to the reader.
+- **Source reader:** a compact filename and copy toolbar above numbered text. On file detail pages, Copy is the lime primary action and the toolbar stays visible while reading. The compact title and secondary Save/GitHub controls sit above the reader. Source details occupy a 224px side column above 1100px and move below the file on narrower screens, with a File details jump link. Snapshot details disclose the import date and hash. Show imported content as text, with neutral prose and lime headings. Use a distinct background for the linked line. Keep the source URL, commit, file update date, line count, and SHA-256 accessible.
 - **Brand and weave:** four rings form the small mark. Fine crossing threads and file fragments form the larger illustration. Use the illustration where it helps explain files; keep reading and form areas clear.
 - **Footer and theme control:** one continuous bar. The active theme uses the action colors and `aria-pressed`. Keep labels accessible when their visible text is hidden on mobile. Save the choice between visits.
 
